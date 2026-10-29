@@ -1,0 +1,619 @@
+[
+{
+"d": "Português",
+"a": "Interpretação de texto",
+"t": "Durante anos, Dona Lia guardou garrafas vazias no quintal, \"para um dia vender\". O dia nunca chegou, mas a chuva chegou todo ano. Quando o agente mostrou as larvas se mexendo dentro de uma delas, ela não discutiu: pegou um saco e começou, ali mesmo, a separar o que ia para a reciclagem.",
+"c": "Pode-se inferir do texto que Dona Lia:",
+"o": [
+"recusou as orientações do agente.",
+"mudou de atitude ao ver a prova concreta do risco.",
+"vendia garrafas todos os anos.",
+"já sabia que havia larvas nas garrafas."
+],
+"g": "B",
+"x": "Ela \"não discutiu\" e começou a separar o material logo após ver as larvas: a prova concreta mudou sua atitude. A contraria o texto; C é desmentida por \"o dia nunca chegou\"; D não tem base no texto.",
+"r": "Inferência = conclusão que o texto permite, mas não diz com todas as letras. Não pode contrariar o texto nem ir além dele.",
+"m": "Inferir = ler o que está \"nas entrelinhas\", sem inventar."
+},
+{
+"d": "Português",
+"a": "Inferência",
+"t": "Durante anos, Dona Lia guardou garrafas vazias no quintal, \"para um dia vender\". O dia nunca chegou, mas a chuva chegou todo ano.",
+"c": "No trecho \"O dia nunca chegou, mas a chuva chegou todo ano\", o autor:",
+"o": [
+"informa que não chovia na região.",
+"contrapõe, com ironia, a intenção nunca realizada ao problema que se repetia (a água acumulada).",
+"afirma que Dona Lia vendeu as garrafas.",
+"elogia a organização do quintal."
+],
+"g": "B",
+"x": "O \"mas\" opõe o plano que nunca se cumpriu (vender) à chuva que sempre vinha (acúmulo de água = criadouro). Há um tom irônico na repetição de \"chegou\".",
+"r": "Ironia: dizer algo de forma que o sentido real seja outro ou crítico.",
+"m": "Repetição + oposição = ironia na crônica."
+},
+{
+"d": "Português",
+"a": "Argumentação",
+"c": "Em um texto argumentativo, a TESE é:",
+"o": [
+"o resumo dos fatos narrados.",
+"a ideia principal que o autor defende, sustentada por argumentos.",
+"a descrição de um personagem.",
+"a conclusão obrigatória com uma pergunta."
+],
+"g": "B",
+"x": "Tese = ponto de vista defendido. Argumentos = dados, exemplos, comparações, citações e relações de causa e consequência que sustentam a tese.",
+"r": "Tipos de argumento: autoridade, dados estatísticos, exemplificação, causa e consequência, comparação.",
+"m": "TESE = o que eu defendo. ARGUMENTO = por que eu defendo."
+},
+{
+"d": "Português",
+"a": "Argumentação",
+"c": "\"Segundo a Organização Mundial da Saúde, a dengue é uma das doenças que mais cresceram no mundo.\" Esse trecho usa principalmente o argumento:",
+"o": [
+"de autoridade.",
+"por analogia.",
+"de exemplificação pessoal.",
+"por ironia."
+],
+"g": "A",
+"x": "Citar uma instituição reconhecida (OMS) para dar credibilidade é argumento de autoridade.",
+"r": "Argumento de autoridade = citar especialista ou instituição.",
+"m": "\"Segundo a OMS...\" = AUTORIDADE falou."
+},
+{
+"d": "Português",
+"a": "Gêneros textuais",
+"c": "O gênero que combina linguagem verbal e não verbal, geralmente com humor e crítica a um fato atual, publicado em jornais, é:",
+"o": [
+"a charge.",
+"o editorial.",
+"a ata.",
+"o requerimento."
+],
+"g": "A",
+"x": "A charge faz crítica bem-humorada a um fato atual, com imagem e texto. A tirinha é uma sequência de quadrinhos, nem sempre ligada a fato atual.",
+"r": "Interpretação de charge caiu em várias provas da EDUCA de 2025.",
+"m": "CHARGE = crítica + desenho + notícia do momento."
+},
+{
+"d": "Português",
+"a": "Gêneros textuais",
+"c": "O documento que registra de forma resumida e objetiva o que ocorreu em uma reunião, assinado pelos participantes, é:",
+"o": [
+"a ata.",
+"o ofício.",
+"o memorando.",
+"a crônica."
+],
+"g": "A",
+"x": "Ata = registro de reunião. Ofício = comunicação oficial entre órgãos ou com particulares. Memorando = comunicação interna. Requerimento = pedido formal.",
+"r": "Gêneros administrativos: ata, ofício, memorando, requerimento, relatório, edital.",
+"m": "ATA = Anotação de Tudo que Aconteceu."
+},
+{
+"d": "Português",
+"a": "Adequação",
+"c": "Em um ofício enviado ao Secretário Municipal de Saúde, a forma de tratamento adequada é:",
+"o": [
+"Você",
+"Vossa Senhoria",
+"Vossa Majestade",
+"Vossa Santidade"
+],
+"g": "B",
+"x": "Para secretários municipais e autoridades em geral, usa-se Vossa Senhoria (V. Sa.). Vossa Excelência é para altas autoridades (presidente, governador, prefeito, ministros, parlamentares, juízes). Majestade é para reis; Santidade, para o papa.",
+"r": "Os pronomes de tratamento levam o verbo para a 3ª pessoa: \"Vossa Senhoria decidiu\".",
+"m": "Prefeito = Excelência. Secretário municipal = Senhoria."
+},
+{
+"d": "Português",
+"a": "Classes de palavras",
+"c": "Em \"O agente trabalhou BASTANTE\" e \"Havia BASTANTES focos\", as palavras destacadas são, respectivamente:",
+"o": [
+"advérbio e adjetivo (pronome indefinido).",
+"adjetivo e advérbio.",
+"advérbio e advérbio.",
+"substantivo e adjetivo."
+],
+"g": "A",
+"x": "Junto a verbo, \"bastante\" é advérbio (não varia). Junto a substantivo, equivale a \"muitos\" e varia: bastantes focos.",
+"r": "Troque por \"muito/muitos\": se virar \"muitos\", vai para o plural.",
+"m": "BASTANTE = MUITO; BASTANTES = MUITOS."
+},
+{
+"d": "Português",
+"a": "Classes de palavras",
+"c": "Em \"O POR QUÊ da visita não foi explicado\", a grafia CORRETA seria:",
+"o": [
+"o porque",
+"o porquê",
+"o por que",
+"o por quê"
+],
+"g": "B",
+"x": "Substantivado (com artigo, = o motivo), escreve-se \"o porquê\", junto e com acento. Por que = pergunta (separado). Por quê = no fim da frase. Porque = resposta/explicação.",
+"r": "Erro registrado: os porquês.",
+"m": "Pergunta: por que. Fim: por quê. Resposta: porque. Com artigo: o porquê."
+},
+{
+"d": "Português",
+"a": "Classes de palavras",
+"c": "Assinale a frase em que o \"porquê\" está CORRETO:",
+"o": [
+"Você faltou porquê?",
+"Por que você faltou?",
+"Faltei por que estava doente.",
+"Não sei o porque da falta."
+],
+"g": "B",
+"x": "Pergunta no início = por que (separado, sem acento). A: no fim = por quê. C: explicação = porque. D: com artigo = o porquê.",
+"r": "Os quatro porquês.",
+"m": "Começou perguntando? POR QUE separado."
+},
+{
+"d": "Português",
+"a": "Concordância verbal",
+"c": "Assinale a alternativa CORRETA:",
+"o": [
+"Os agentes, em sua maioria, concordou com a escala.",
+"Mais de um agente faltou à reunião.",
+"Fazem três semanas que a equipe chegou.",
+"Haviam muitos pneus no terreno."
+],
+"g": "B",
+"x": "\"Mais de um\" leva o verbo ao singular (faltou). A: o sujeito é \"os agentes\" (plural), então concordaram. C: Faz três semanas. D: Havia muitos pneus.",
+"r": "Haver (existir) e fazer (tempo) = singular. \"Mais de um\" = singular.",
+"m": "MAIS DE UM = um só verbo no singular."
+},
+{
+"d": "Português",
+"a": "Concordância verbal",
+"c": "\"______ vinte casas na quadra, e ______ dois dias que ninguém as visita.\" Completa corretamente:",
+"o": [
+"Existem / faz",
+"Existe / fazem",
+"Há / fazem",
+"Existem / fazem"
+],
+"g": "A",
+"x": "\"Existir\" concorda com o sujeito: existem vinte casas. \"Fazer\" indicando tempo é impessoal: faz dois dias.",
+"r": "Existir concorda; haver (existir) e fazer (tempo) não.",
+"m": "EXISTEM varia; HÁ e FAZ ficam quietos."
+},
+{
+"d": "Português",
+"a": "Concordância nominal",
+"c": "Assinale a alternativa CORRETA:",
+"o": [
+"É proibidos a entrada de pessoas estranhas.",
+"É proibida a entrada de pessoas estranhas.",
+"É proibida entrada de pessoas estranhas.",
+"É proibido a entrada de pessoas estranhas no posto."
+],
+"g": "B",
+"x": "Com artigo (A entrada), o adjetivo concorda: é proibidA a entrada. Sem artigo, fica invariável: é proibido entrada. A mistura usa artigo com adjetivo no masculino.",
+"r": "\"É necessário/proibido/bom\": sem artigo não varia; com artigo varia.",
+"m": "Tem artigo? Concorda. Sem artigo? Fica no masculino."
+},
+{
+"d": "Português",
+"a": "Regência",
+"c": "Assinale a alternativa CORRETA quanto à regência:",
+"o": [
+"O agente chegou na casa às oito horas.",
+"O agente chegou à casa às oito horas.",
+"O agente visou o cargo durante anos (no sentido de desejar).",
+"Ele namora com a vizinha."
+],
+"g": "B",
+"x": "Chegar pede a preposição A (chegar a algum lugar), na norma-padrão. Visar, no sentido de desejar/objetivar, pede A (visou ao cargo). Namorar é transitivo direto (namora a vizinha).",
+"r": "Chegar a, ir a, aspirar a (desejar), visar a (objetivar), namorar alguém (sem com).",
+"m": "Quem chega, chega A algum lugar."
+},
+{
+"d": "Português",
+"a": "Regência",
+"c": "Assinale a frase em que o pronome relativo está CORRETAMENTE regido:",
+"o": [
+"O bairro que eu moro tem muitos focos.",
+"O bairro em que eu moro tem muitos focos.",
+"O curso que eu gosto acabou.",
+"A vacina que precisamos chegou."
+],
+"g": "B",
+"x": "Morar EM → o bairro EM QUE moro. C: gosto DE → o curso DE QUE gosto. D: precisar DE → a vacina DE QUE precisamos.",
+"r": "A preposição do verbo vai para antes do QUE relativo.",
+"m": "Quem mora, mora EM: \"em que moro\"."
+},
+{
+"d": "Português",
+"a": "Crase",
+"c": "Assinale a alternativa em que o acento grave é OBRIGATÓRIO:",
+"o": [
+"Fiquei frente a frente com o morador.",
+"Refiro-me àquela casa da esquina.",
+"Comecei a estudar ontem.",
+"Entreguei o relatório a ela."
+],
+"g": "B",
+"x": "Referir-se A + AQUELA = ÀQUELA. A: entre palavras repetidas não há crase. C: antes de verbo, não. D: antes de pronome pessoal (ela), não.",
+"r": "Crase com aquele/aquela/aquilo quando o termo anterior pede A.",
+"m": "Refiro-me A + AQUELA = ÀQUELA."
+},
+{
+"d": "Português",
+"a": "Crase",
+"c": "\"O posto fica aberto das 7h ______ 17h e atende ______ quem chegar.\" Completa corretamente:",
+"o": [
+"às / a",
+"as / à",
+"às / à",
+"a / às"
+],
+"g": "A",
+"x": "Em horas determinadas, com \"das\" antes, usa-se \"às\" (das 7h às 17h). Antes do pronome \"quem\", não há crase (atende a quem).",
+"r": "De... a (sem artigo) / Da... à (com artigo): das 7h às 17h; de segunda a sexta.",
+"m": "DAS combina com ÀS; DE combina com A."
+},
+{
+"d": "Português",
+"a": "Pontuação",
+"c": "Assinale a alternativa em que a vírgula foi usada CORRETAMENTE para isolar um adjunto adverbial deslocado:",
+"o": [
+"No último sábado, os agentes fizeram um mutirão.",
+"Os agentes, fizeram um mutirão no último sábado.",
+"Os agentes fizeram, um mutirão no último sábado.",
+"No último, sábado os agentes fizeram um mutirão."
+],
+"g": "A",
+"x": "Adjunto adverbial no início (deslocado), principalmente se for longo, é separado por vírgula. B e C separam termos essenciais (sujeito/verbo/objeto).",
+"r": "Vírgula: isolar vocativo, aposto, adjunto adverbial deslocado, orações explicativas e intercaladas.",
+"m": "Circunstância no começo = vírgula depois dela."
+},
+{
+"d": "Português",
+"a": "Pontuação",
+"c": "Em \"João Pessoa, capital da Paraíba, recebeu o seminário\", as vírgulas isolam:",
+"o": [
+"um vocativo.",
+"um aposto explicativo.",
+"um adjunto adverbial.",
+"uma oração adjetiva restritiva."
+],
+"g": "B",
+"x": "\"Capital da Paraíba\" explica quem é João Pessoa: é aposto explicativo, sempre entre vírgulas.",
+"r": "Aposto explica um termo; vocativo chama alguém.",
+"m": "Aposto = \"explicação\" do nome, entre vírgulas."
+},
+{
+"d": "Português",
+"a": "Ortografia",
+"c": "Assinale a alternativa em que todas as palavras estão corretamente grafadas:",
+"o": [
+"paralisar, pesquisar, análise",
+"paralizar, pesquizar, análize",
+"paralisar, pesquizar, análise",
+"paralizar, pesquisar, analise"
+],
+"g": "A",
+"x": "Paralisar vem de paralisia (com s), pesquisar de pesquisa, análise com s. \"Analise\" sem acento é forma do verbo analisar, não o substantivo.",
+"r": "Palavras derivadas mantêm a grafia da primitiva (paralisia → paralisar).",
+"m": "Se a família tem S, o derivado também tem."
+},
+{
+"d": "Português",
+"a": "Ortografia",
+"c": "Assinale a palavra escrita INCORRETAMENTE:",
+"o": [
+"exceção",
+"privilégio",
+"beneficiente",
+"ascensão"
+],
+"g": "C",
+"x": "O correto é \"beneficente\" (sem i depois do c). As demais estão corretas.",
+"r": "Palavras traiçoeiras: beneficente, privilégio, exceção, ascensão, mortadela, cabeleireiro.",
+"m": "BENEFICENTE: \"fi-cen\", não \"fi-ci-en\"."
+},
+{
+"d": "Português",
+"a": "Acentuação",
+"c": "As palavras \"saúde\" e \"país\" são acentuadas porque:",
+"o": [
+"são proparoxítonas.",
+"têm I e U tônicos formando hiato com a vogal anterior.",
+"são oxítonas terminadas em S.",
+"têm ditongo aberto."
+],
+"g": "B",
+"x": "Sa-ú-de e pa-ís: o U e o I são tônicos, sozinhos na sílaba, formando hiato com a vogal anterior. Por isso levam acento.",
+"r": "Hiato com I/U tônico: saúde, país, baú, juízo. Não leva acento se seguido de NH (rainha) ou se formar sílaba com outra letra que não S (ruim, Raul).",
+"m": "I e U sozinhos e fortes depois de vogal = acento."
+},
+{
+"d": "Português",
+"a": "Acentuação",
+"c": "\"Têm\" e \"vêm\" levam acento circunflexo porque:",
+"o": [
+"são formas do singular.",
+"diferenciam a 3ª pessoa do plural (eles têm, eles vêm) do singular (ele tem, ele vem).",
+"são paroxítonas terminadas em EM.",
+"o Acordo Ortográfico eliminou esse acento."
+],
+"g": "B",
+"x": "O circunflexo marca o plural dos verbos ter e vir (e derivados levam acento agudo no singular e circunflexo no plural: ele mantém, eles mantêm).",
+"r": "Leem, creem, veem (sem acento após o Acordo) × têm, vêm (mantiveram o acento).",
+"m": "Chapéu no têm/vêm = tem muita gente (plural)."
+},
+{
+"d": "Português",
+"a": "Tempos e modos verbais",
+"c": "Em \"Se eu ______ tempo, ______ mais questões\", a forma CORRETA é:",
+"o": [
+"tiver / faria",
+"tivesse / faria",
+"tivesse / farei",
+"tenho / faria"
+],
+"g": "B",
+"x": "Hipótese: SE + imperfeito do subjuntivo (tivesse) + futuro do pretérito (faria). \"Se eu tiver tempo, farei\" também seria correto (futuro do subjuntivo + futuro do presente).",
+"r": "Correlação verbal: -SSE com -RIA; -R com -RÁ.",
+"m": "tiveSSE → faRIA."
+},
+{
+"d": "Português",
+"a": "Tempos e modos verbais",
+"c": "Complete: \"Quando o agente ______ ao posto, entregará o relatório.\" (verbo VIR)",
+"o": [
+"vir",
+"vier",
+"viesse",
+"vim"
+],
+"g": "B",
+"x": "Futuro do subjuntivo de VIR: quando eu vier, quando ele vier. \"Vir\" é o futuro do subjuntivo de VER (quando eu vir).",
+"r": "VER → quando eu vir. VIR → quando eu vier. MANTER → quando eu mantiver. INTERVIR → se ele intervier.",
+"m": "VIR (chegar) → VIER. VER (olhar) → VIR."
+},
+{
+"d": "Português",
+"a": "Tempos e modos verbais",
+"c": "A forma verbal \"esquecera\", em \"Ela esquecera o protetor solar\", corresponde ao:",
+"o": [
+"pretérito perfeito do indicativo.",
+"pretérito mais-que-perfeito do indicativo (= tinha esquecido).",
+"futuro do pretérito.",
+"presente do subjuntivo."
+],
+"g": "B",
+"x": "Esquecera = tinha esquecido: ação passada anterior a outra também passada.",
+"r": "Terminação -RA (sem acento na tônica do radical) = mais-que-perfeito.",
+"m": "-RA = TINHA + particípio."
+},
+{
+"d": "Português",
+"a": "Colocação pronominal",
+"c": "Assinale a alternativa CORRETA quanto à colocação pronominal:",
+"o": [
+"Nunca vi-o tão preocupado.",
+"Nunca o vi tão preocupado.",
+"Me diga a verdade.",
+"Tudo resolveu-se rapidamente."
+],
+"g": "B",
+"x": "\"Nunca\" é palavra atrativa: o pronome vem antes do verbo (próclise). C: não se inicia frase com pronome oblíquo na norma-padrão (Diga-me). D: \"tudo\" também atrai: tudo se resolveu.",
+"r": "Atraem o pronome: palavras negativas, advérbios, pronomes relativos, indefinidos (tudo, ninguém), conjunções subordinativas.",
+"m": "NUNCA, TUDO, NINGUÉM, QUE: puxam o pronome para a frente do verbo."
+},
+{
+"d": "Português",
+"a": "Funções do QUE",
+"c": "Em \"Estudou tanto QUE passou\", o QUE é:",
+"o": [
+"pronome relativo.",
+"conjunção consecutiva.",
+"conjunção integrante.",
+"pronome interrogativo."
+],
+"g": "B",
+"x": "\"Tanto... que\" indica consequência: conjunção subordinativa consecutiva.",
+"r": "Funções do QUE: relativo, integrante, explicativo/causal, consecutivo, comparativo (mais... que), partícula expletiva (é que).",
+"m": "TANTO... QUE = consequência."
+},
+{
+"d": "Português",
+"a": "Funções do QUE",
+"c": "Em \"Nós É QUE organizamos o mutirão\", a expressão \"é que\":",
+"o": [
+"é sujeito da oração.",
+"é partícula expletiva (de realce) e pode ser retirada sem prejuízo ao sentido.",
+"é conjunção integrante.",
+"indica tempo."
+],
+"g": "B",
+"x": "\"Nós organizamos o mutirão\": retirando \"é que\", a frase continua completa. É partícula de realce (expletiva).",
+"r": "Partícula expletiva pode sair da frase sem mudar o sentido.",
+"m": "Tirou e a frase ficou igual? Era só enfeite (realce)."
+},
+{
+"d": "Português",
+"a": "Termos da oração",
+"c": "Em \"O relatório foi entregue PELO AGENTE\", o termo destacado é:",
+"o": [
+"objeto indireto.",
+"agente da passiva.",
+"adjunto adnominal.",
+"complemento nominal."
+],
+"g": "B",
+"x": "A oração está na voz passiva analítica (foi entregue). Quem pratica a ação é o agente da passiva, introduzido por \"por/pelo\". Na ativa: \"O agente entregou o relatório\".",
+"r": "Voz passiva analítica = ser + particípio + (por) agente da passiva.",
+"m": "FOI + particípio + PELO = agente da passiva."
+},
+{
+"d": "Português",
+"a": "Termos da oração",
+"c": "Em \"Os moradores consideraram a campanha IMPORTANTE\", o termo destacado é:",
+"o": [
+"predicativo do objeto.",
+"adjunto adnominal.",
+"predicativo do sujeito.",
+"objeto direto."
+],
+"g": "A",
+"x": "\"Importante\" atribui uma qualidade ao objeto \"a campanha\" por meio do verbo considerar: predicativo do objeto. Predicado verbo-nominal.",
+"r": "Predicativo do sujeito qualifica o sujeito; predicativo do objeto qualifica o objeto (verbos: considerar, achar, julgar, eleger, nomear).",
+"m": "Considerar ALGO + COMO = predicativo do objeto."
+},
+{
+"d": "Português",
+"a": "Sinônimos e antônimos",
+"c": "Em \"A medida foi INÓCUA contra o mosquito\", a palavra destacada significa:",
+"o": [
+"eficaz.",
+"inofensiva, sem efeito.",
+"perigosa.",
+"rápida."
+],
+"g": "B",
+"x": "Inócuo = que não faz mal ou que não produz efeito. Antônimo, no contexto: eficaz.",
+"r": "Vocabulário de prova: inócuo, profícuo, exíguo (pouco), iminente (prestes), eminente (ilustre).",
+"m": "INÓCUO = Inútil/Inofensivo."
+},
+{
+"d": "Português",
+"a": "Homônimos e parônimos",
+"c": "Assinale a alternativa CORRETA:",
+"o": [
+"O prefeito vai RATIFICAR o erro, corrigindo o texto.",
+"O médico vai RETIFICAR o laudo, corrigindo o erro, e o gestor vai RATIFICAR (confirmar) a decisão.",
+"O ladrão foi pego em FRAGRANTE delito.",
+"EMIGRAR é entrar em um país."
+],
+"g": "B",
+"x": "Retificar = corrigir; ratificar = confirmar. Flagrante = no ato; fragrante = perfumado. Emigrar = sair do país; imigrar = entrar.",
+"r": "Pares clássicos: retificar/ratificar, emigrar/imigrar, flagrante/fragrante, comprimento/cumprimento.",
+"m": "RETificar = deixar RETO (corrigir). EMIGRAR = Embora (sair). IMIGRAR = In (entrar)."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"Já te disse um milhão de vezes para tampar a caixa-d'água\", a figura é:",
+"o": [
+"hipérbole.",
+"eufemismo.",
+"metonímia.",
+"antítese."
+],
+"g": "A",
+"x": "Exagero intencional para dar ênfase = hipérbole.",
+"r": "Hipérbole exagera; eufemismo suaviza.",
+"m": "HIPÉRBOLE = HIPER exagero."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"Rir e chorar fazem parte do trabalho no campo\", há:",
+"o": [
+"antítese.",
+"paradoxo.",
+"pleonasmo.",
+"catacrese."
+],
+"g": "A",
+"x": "Ideias opostas (rir × chorar) aparecem lado a lado, sem se fundir em algo absurdo: antítese.",
+"r": "Antítese = oposição. Paradoxo = oposição que gera absurdo aparente na mesma coisa.",
+"m": "Antítese = lados opostos da balança."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"Subir para cima\" e \"entrar para dentro\", ocorre:",
+"o": [
+"pleonasmo (redundância).",
+"metáfora.",
+"ironia.",
+"onomatopeia."
+],
+"g": "A",
+"x": "Repetição desnecessária da ideia = pleonasmo vicioso. O pleonasmo pode ser literário quando usado para dar ênfase (\"vi com meus próprios olhos\").",
+"r": "Pleonasmo vicioso é vício de linguagem.",
+"m": "Pleonasmo = falar a mesma coisa duas vezes."
+},
+{
+"d": "Português",
+"a": "Coesão",
+"c": "\"O agente encontrou larvas no tonel. ______ foram eliminadas imediatamente.\" O termo que retoma \"larvas\" de forma coesa é:",
+"o": [
+"Ele",
+"Elas",
+"Aquilo",
+"Isso"
+],
+"g": "B",
+"x": "\"Larvas\" é feminino plural; o pronome que a retoma é \"elas\".",
+"r": "O pronome deve concordar com o termo retomado.",
+"m": "Larvas → ELAS."
+},
+{
+"d": "Português",
+"a": "Reescrita",
+"c": "Assinale a reescrita que mantém o sentido e a correção de \"Os focos foram eliminados pelos agentes\":",
+"o": [
+"Os agentes eliminaram os focos.",
+"Os focos eliminaram os agentes.",
+"Eliminaram-se os agentes pelos focos.",
+"Os agentes foram eliminados pelos focos."
+],
+"g": "A",
+"x": "Passar da voz passiva analítica para a ativa: o agente da passiva vira sujeito e o sujeito vira objeto direto. O tempo verbal se mantém (foram eliminados → eliminaram).",
+"r": "Transposição de vozes: manter o tempo e o modo do verbo.",
+"m": "Passiva → ativa: quem fazia vira sujeito."
+},
+{
+"d": "Português",
+"a": "Subordinação",
+"c": "Em \"Não sei SE o agente virá hoje\", a oração introduzida por SE é:",
+"o": [
+"adverbial condicional.",
+"substantiva objetiva direta.",
+"adjetiva restritiva.",
+"coordenada alternativa."
+],
+"g": "B",
+"x": "\"Não sei ISSO\": o SE aqui é conjunção integrante e a oração é objeto direto de \"sei\". Não há condição.",
+"r": "SE integrante (= não sei ISSO) × SE condicional (= caso).",
+"m": "Depois de \"não sei\", \"pergunto\", \"verifique\": SE integrante."
+},
+{
+"d": "Português",
+"a": "Subordinação",
+"c": "Em \"Conforme o agente orientou, os moradores taparam os tonéis\", a oração destacada expressa:",
+"o": [
+"conformidade.",
+"causa.",
+"consequência.",
+"finalidade."
+],
+"g": "A",
+"x": "Conforme, como (= conforme), segundo e consoante introduzem oração adverbial conformativa.",
+"r": "\"Como\" pode ser causal (no início, = porque), comparativo ou conformativo (= conforme).",
+"m": "CONFORME = de acordo com."
+},
+{
+"d": "Português",
+"a": "Subordinação",
+"c": "Em \"À medida que a chuva aumentava, surgiam mais criadouros\", a oração destacada expressa:",
+"o": [
+"proporção.",
+"tempo pontual.",
+"condição.",
+"concessão."
+],
+"g": "A",
+"x": "\"À medida que\" e \"à proporção que\" indicam proporção (uma coisa aumenta junto com a outra).",
+"r": "Cuidado: \"na medida em que\" indica causa.",
+"m": "À medida que = quanto mais... mais."
+}
+]
