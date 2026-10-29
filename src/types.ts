@@ -19,6 +19,8 @@ export interface Questao {
   alternativas: Alternativa[];
   gabarito: string;
   comentario?: string;
+  /** Questão criada pela IA a partir de um edital do aluno. */
+  ia?: boolean;
 }
 
 export interface Resposta {
@@ -36,4 +38,14 @@ export interface Filtros {
   assunto: string;
   ano: string;
   status: 'todas' | 'ineditas' | 'erradas' | 'revisar';
+}
+
+export interface Edital {
+  id: string;
+  nome: string;
+  banca: string;
+  orgao: string;
+  cargo: string;
+  disciplinas: { nome: string; assuntos: string[] }[];
+  criadoEm: number;
 }
