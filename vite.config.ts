@@ -35,6 +35,16 @@ function iaDeExemplo(): Plugin {
         sessoes.set(token, u);
         responder(200, { token, usuario: u, nome: contas.get(u)!.nome });
       });
+      server.middlewares.use('/api/ranking', (req, res) => {
+        const eu = sessoes.get(String(req.headers.authorization ?? '').replace('Bearer ', ''));
+        res.setHeader('content-type', 'application/json');
+        const linhas = Array.from(contas.entries()).map(([u, c]) => {
+          const h: { certa: boolean }[] = JSON.parse(progresso.get(u) ?? '{}')['cq:historico'] ?? [];
+          const a = h.filter((x) => x.certa).length;
+          return { usuario: u, eu: u === eu, nome: c.nome, total: h.length, acertos: a, hoje: h.length, acertosHoje: a, provas: 0, provasHoje: 0 };
+        });
+        res.end(JSON.stringify(linhas));
+      });
       server.middlewares.use('/api/progresso', async (req, res) => {
         const u = sessoes.get(String(req.headers.authorization ?? '').replace('Bearer ', ''));
         res.setHeader('content-type', 'application/json');

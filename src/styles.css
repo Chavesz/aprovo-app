@@ -553,3 +553,13 @@ textarea {
 .conta-btn { font-size: 0.8125rem; color: var(--tinta-2); border: 1px solid var(--linha); border-radius: var(--raio); background: none; min-height: 44px; padding: 0 10px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sync.ok { color: var(--ok); }
 .sync.offline { color: var(--nok); }
+
+/* ---------- Ranking ---------- */
+.ranking { margin-bottom: 40px; }
+.ranking .periodo { flex-wrap: wrap; }
+.ranking-lista { list-style: none; padding: 0; margin: 8px 0; border-top: 1px solid var(--tinta); }
+.ranking-lista li { display: grid; grid-template-columns: 2.5rem 1fr auto; gap: 10px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--linha); }
+.ranking-lista li.eu { background: var(--papel-2); padding-left: 8px; padding-right: 8px; border-radius: 6px; }
+.ranking-pos { font-size: 1rem; }
+.ranking-lista li:first-child .ranking-pos { color: var(--acento); font-weight: 600; }
+.ranking-nome { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }

@@ -46,7 +46,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
             autoComplete="username"
             autoCapitalize="none"
             required
-            placeholder="ex.: kaua"
+            placeholder="ex.: Kauã Chaves"
           />
         </label>
         <label className="campo">
@@ -57,7 +57,6 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
             onChange={(e) => setSenha(e.target.value)}
             autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'}
             required
-            minLength={6}
           />
         </label>
         {erro && (

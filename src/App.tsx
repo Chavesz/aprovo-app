@@ -4,6 +4,7 @@ import { usePersist } from './store';
 import { md } from './md';
 import Edital from './Edital';
 import Login from './Login';
+import Ranking from './Ranking';
 import { baixar, contaSalva, enviar, sairDaConta, type Conta } from './nuvem';
 
 type Aba = 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
@@ -201,7 +202,10 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
           />
         )}
         {questoes && aba === 'desempenho' && (
-          <Desempenho questoes={questoes} historico={historico} onLimpar={() => setHistorico([])} />
+          <>
+            <Ranking conta={conta} />
+            <Desempenho questoes={questoes} historico={historico} onLimpar={() => setHistorico([])} />
+          </>
         )}
         {questoes && aba === 'revisar' && (
           <Revisar

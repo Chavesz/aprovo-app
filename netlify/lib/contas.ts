@@ -16,7 +16,15 @@ interface Usuario {
 export const json = (corpo: unknown, status = 200) =>
   new Response(JSON.stringify(corpo), { status, headers: { 'content-type': 'application/json' } });
 
-export const normalizar = (u: string) => (u ?? '').trim().toLowerCase();
+/** Usuário como chave: sem acento, minúsculo, espaços viram ponto ("Kauã Chaves" → "kaua.chaves"). */
+export const normalizar = (u: string) =>
+  (u ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '.')
+    .replace(/[^a-z0-9._@-]/g, '');
 
 function hashSenha(senha: string, sal: string) {
   return scryptSync(senha, sal, 64).toString('hex');
@@ -30,8 +38,8 @@ async function novaSessao(usuario: string) {
 
 export async function criarConta(usuario: string, nome: string, senha: string) {
   const u = normalizar(usuario);
-  if (!/^[a-z0-9._-]{3,30}$/.test(u)) throw new Error('Use de 3 a 30 letras, números, ponto, hífen ou sublinhado no usuário.');
-  if ((senha ?? '').length < 6) throw new Error('A senha precisa ter pelo menos 6 caracteres.');
+  if (u.length < 2 || u.length > 40) throw new Error('Escolha um usuário com 2 a 40 caracteres.');
+  if (!(senha ?? '').length) throw new Error('Digite uma senha.');
   if (await usuarios().get(u)) throw new Error('Esse usuário já existe. Escolha outro ou entre.');
   const sal = randomBytes(16).toString('hex');
   const dados: Usuario = { usuario: u, nome: (nome ?? '').trim().slice(0, 60) || u, sal, hash: hashSenha(senha, sal), criadoEm: Date.now() };
