@@ -1,0 +1,426 @@
+[
+{
+"d": "Português",
+"a": "Interpretação de texto",
+"t": "O Aedes aegypti não escolhe endereço. Ele aparece na casa do rico e na do pobre, no centro e na periferia, sempre que encontra água parada. Por isso, o combate ao mosquito não é tarefa apenas do agente de endemias: depende de cada morador que, toda semana, dedica dez minutos para vistoriar o próprio quintal. Sem essa parceria, nenhuma campanha, por maior que seja, consegue resultados duradouros.",
+"c": "De acordo com o texto, é CORRETO afirmar que:",
+"o": [
+"o mosquito prefere as áreas periféricas da cidade.",
+"as campanhas, quando são grandes, dispensam a participação dos moradores.",
+"o sucesso duradouro do combate depende da parceria entre agentes e moradores.",
+"o combate ao mosquito é tarefa exclusiva do agente de endemias."
+],
+"g": "C",
+"x": "O texto diz que, sem a parceria, nenhuma campanha consegue resultados duradouros. A e D contrariam o texto (o mosquito não escolhe endereço; não é tarefa APENAS do agente). B contradiz \"por maior que seja\".",
+"r": "Desconfie de palavras absolutas (exclusiva, apenas, sempre, dispensam). A EDUCA usa muito isso para tornar a alternativa falsa.",
+"m": "Absoluto na alternativa = luz amarela."
+},
+{
+"d": "Português",
+"a": "Inferência",
+"t": "O Aedes aegypti não escolhe endereço. Ele aparece na casa do rico e na do pobre, no centro e na periferia, sempre que encontra água parada. Por isso, o combate ao mosquito não é tarefa apenas do agente de endemias: depende de cada morador que, toda semana, dedica dez minutos para vistoriar o próprio quintal.",
+"c": "A expressão \"não escolhe endereço\" foi usada no texto com sentido:",
+"o": [
+"literal, indicando que o mosquito não tem moradia fixa.",
+"figurado, indicando que o mosquito pode estar em qualquer lugar.",
+"irônico, criticando a falta de endereços na periferia.",
+"técnico, indicando o raio de voo do mosquito."
+],
+"g": "B",
+"x": "A expressão é uma personificação (atribui ao mosquito a ação humana de escolher) com sentido figurado: ele pode aparecer em qualquer lugar onde haja água parada.",
+"r": "Sentido figurado/conotativo × literal/denotativo.",
+"m": "Mosquito não \"escolhe\" nada: se a frase dá ação humana a um bicho, é figurada (personificação)."
+},
+{
+"d": "Português",
+"a": "Conectores",
+"t": "O Aedes aegypti não escolhe endereço. Ele aparece em qualquer bairro sempre que encontra água parada. Por isso, o combate ao mosquito não é tarefa apenas do agente de endemias.",
+"c": "O conector \"Por isso\" estabelece, entre os períodos, relação de:",
+"o": [
+"oposição.",
+"conclusão/consequência.",
+"condição.",
+"adição."
+],
+"g": "B",
+"x": "\"Por isso\" apresenta a consequência/conclusão do que foi dito antes (o mosquito está em todo lugar → o combate depende de todos).",
+"r": "Conectores conclusivos: portanto, logo, por isso, assim, então, pois (depois do verbo).",
+"m": "POR ISSO = POR causa DISSO → conclusão."
+},
+{
+"d": "Português",
+"a": "Conectores",
+"c": "Em \"O bairro recebeu o mutirão; ENTRETANTO, os casos continuaram altos\", a palavra destacada pode ser substituída, sem mudança de sentido, por:",
+"o": [
+"portanto.",
+"no entanto.",
+"porque.",
+"assim."
+],
+"g": "B",
+"x": "\"Entretanto\" indica OPOSIÇÃO, como \"no entanto\", \"porém\" e \"contudo\". \"Portanto\" e \"assim\" são conclusivos; \"porque\" é causal.",
+"r": "Não confundir ENTRETANTO (oposição) com PORTANTO (conclusão).",
+"m": "ENTRE-TANTO = trava; POR-TANTO = conclui."
+},
+{
+"d": "Português",
+"a": "Conectores",
+"c": "\"A dengue pode ser grave, ______ é importante procurar atendimento ao surgirem sinais de alarme.\" O conector que completa a frase com sentido de conclusão é:",
+"o": [
+"porém",
+"embora",
+"logo",
+"contudo"
+],
+"g": "C",
+"x": "A segunda parte é conclusão da primeira (é grave → é importante procurar atendimento): \"logo\". \"Porém\" e \"contudo\" são adversativos; \"embora\" é concessivo e pediria subjuntivo.",
+"r": "Identifique a relação lógica antes de escolher o conector.",
+"m": "Leia com \"então\": se fizer sentido, é conclusão."
+},
+{
+"d": "Português",
+"a": "Tipologia textual",
+"c": "Um texto que defende a ideia de que a vacinação deve ser obrigatória, apresentando dados e argumentos para convencer o leitor, é predominantemente:",
+"o": [
+"narrativo.",
+"descritivo.",
+"dissertativo-argumentativo.",
+"injuntivo."
+],
+"g": "C",
+"x": "Defender uma tese com argumentos para convencer = tipologia dissertativo-argumentativa. Narrativo conta fatos com personagens e tempo; descritivo caracteriza; injuntivo dá instruções.",
+"r": "Tipologias: narrar, descrever, expor, argumentar, injungir (instruir).",
+"m": "Tem OPINIÃO + defesa = ARGUMENTATIVO."
+},
+{
+"d": "Português",
+"a": "Tipologia textual",
+"c": "\"Retire a tampa, lave o reservatório com bucha e sabão, enxágue bem e feche novamente.\" Esse trecho é predominantemente:",
+"o": [
+"injuntivo (instrucional).",
+"narrativo.",
+"argumentativo.",
+"descritivo."
+],
+"g": "A",
+"x": "Verbos no imperativo dando ordens/instruções passo a passo = tipologia injuntiva.",
+"r": "Injuntivo: receitas, manuais, bulas, campanhas com orientações.",
+"m": "Imperativo em sequência (faça, retire, lave) = INJUNTIVO."
+},
+{
+"d": "Português",
+"a": "Gêneros textuais",
+"c": "Um texto que relata um fato recente de forma objetiva, respondendo o quê, quem, quando, onde e como, publicado em jornal, é do gênero:",
+"o": [
+"editorial.",
+"notícia.",
+"crônica.",
+"artigo de opinião."
+],
+"g": "B",
+"x": "Notícia relata fatos de forma objetiva e impessoal. Editorial expressa a opinião do VEÍCULO (jornal); artigo de opinião é assinado por um autor; crônica é texto curto e leve sobre o cotidiano.",
+"r": "Editorial = opinião do jornal (sem assinatura). Notícia = fato, sem opinião.",
+"m": "NOTÍCIA informa; EDITORIAL opina pelo jornal; ARTIGO opina pelo autor."
+},
+{
+"d": "Português",
+"a": "Gêneros textuais",
+"c": "Texto curto, de linguagem leve, que parte de um fato do cotidiano para fazer uma reflexão, muitas vezes com humor, publicado em jornal ou revista. Trata-se de:",
+"o": [
+"crônica.",
+"notícia.",
+"bula.",
+"relatório."
+],
+"g": "A",
+"x": "Essas são as características da crônica: cotidiano + linguagem leve + reflexão.",
+"r": "Crônica × conto: a crônica parte do cotidiano real e é publicada em jornal/revista.",
+"m": "CRÔNICA = CRONOS (tempo, dia a dia)."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"O agente é um soldado na guerra contra o mosquito\", a figura de linguagem é:",
+"o": [
+"metonímia.",
+"metáfora.",
+"hipérbole.",
+"comparação (símile)."
+],
+"g": "B",
+"x": "Há uma comparação implícita, sem conectivo (\"é um soldado\"): metáfora. Se houvesse \"como\" (\"é COMO um soldado\"), seria comparação.",
+"r": "Metáfora = comparação sem \"como\". Comparação = com \"como, tal qual, feito\".",
+"m": "Tem COMO? Comparação. Não tem? Metáfora."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"Ele leu Augusto dos Anjos a tarde inteira\", ocorre:",
+"o": [
+"metáfora.",
+"metonímia.",
+"personificação.",
+"antítese."
+],
+"g": "B",
+"x": "Leu a OBRA de Augusto dos Anjos: troca-se a obra pelo autor. É metonímia (substituição por relação lógica, de proximidade).",
+"r": "Metonímia = autor pela obra, marca pelo produto, parte pelo todo, continente pelo conteúdo (\"bebeu dois copos\").",
+"m": "METONÍMIA = troca por VIZINHANÇA (autor/obra, copo/bebida). METÁFORA = troca por SEMELHANÇA."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"O vento sussurrava segredos pelas ruas de Cuité\", a figura é:",
+"o": [
+"personificação (prosopopeia).",
+"hipérbole.",
+"eufemismo.",
+"pleonasmo."
+],
+"g": "A",
+"x": "Sussurrar segredos é ação humana atribuída ao vento: personificação.",
+"r": "Personificação = dar ação, sentimento ou fala humana a seres inanimados ou animais.",
+"m": "Coisa fazendo coisa de gente = PERSONIFICAÇÃO."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "\"Ele é um homem rico de pobreza\" e \"um silêncio ensurdecedor\" são exemplos de:",
+"o": [
+"antítese.",
+"paradoxo.",
+"eufemismo.",
+"ironia."
+],
+"g": "B",
+"x": "Paradoxo une ideias contrárias NO MESMO SER, criando algo aparentemente impossível. Na antítese as ideias opostas apenas aparecem próximas (\"rir e chorar\"), sem se fundir.",
+"r": "Antítese = opostos lado a lado. Paradoxo = opostos fundidos numa mesma coisa (absurdo aparente).",
+"m": "PARADOXO = \"PARA-doido\": não faz sentido lógico. ANTÍTESE = só contraste."
+},
+{
+"d": "Português",
+"a": "Figuras de linguagem",
+"c": "Em \"Ele partiu desta para melhor\" (morreu), há:",
+"o": [
+"eufemismo.",
+"hipérbole.",
+"ironia.",
+"catacrese."
+],
+"g": "A",
+"x": "Suavizar uma ideia triste ou desagradável = eufemismo.",
+"r": "Eufemismo suaviza; hipérbole exagera; ironia diz o contrário do que pensa.",
+"m": "EU-femismo = EU suavizo."
+},
+{
+"d": "Português",
+"a": "Pronomes demonstrativos",
+"c": "\"Dengue e chikungunya são transmitidas pelo mesmo mosquito; ______ causa dor intensa nas articulações, ______ pode ter sinais de alarme hemorrágicos.\" Completa corretamente:",
+"o": [
+"esta / aquela",
+"aquela / esta",
+"essa / esta",
+"isto / aquilo"
+],
+"g": "A",
+"x": "Para retomar dois termos: ESTE se refere ao mais próximo (chikungunya, dor nas articulações) e AQUELE ao mais distante (dengue, sinais de alarme).",
+"r": "Este/esta = o último citado (mais perto). Aquele/aquela = o primeiro citado (mais longe).",
+"m": "ESTE = Último que Entrou. AQUELE = lá Atrás."
+},
+{
+"d": "Português",
+"a": "Pronomes demonstrativos",
+"c": "Assinale o uso CORRETO do demonstrativo:",
+"o": [
+"Esse é o meu conselho: elimine a água parada.",
+"Este é o meu conselho: elimine a água parada.",
+"Isso é o que vou dizer: elimine a água parada.",
+"Aquele é o meu conselho: elimine a água parada."
+],
+"g": "B",
+"x": "Para anunciar algo que ainda vai ser dito (catáfora), usa-se ESTE/ISTO. ESSE/ISSO retoma o que já foi dito.",
+"r": "Este = vou falar (adiante). Esse = já falei (retoma).",
+"m": "ESTE = vem aí. ESSE = já passou."
+},
+{
+"d": "Português",
+"a": "Coesão",
+"t": "Maria visitou o posto de saúde. Lá, ela recebeu a vacina contra a febre amarela, que protege por toda a vida.",
+"c": "Os termos \"Lá\", \"ela\" e \"que\" retomam, respectivamente:",
+"o": [
+"Maria, posto de saúde, vacina.",
+"posto de saúde, Maria, vacina.",
+"posto de saúde, vacina, Maria.",
+"vacina, Maria, febre amarela."
+],
+"g": "B",
+"x": "\"Lá\" = no posto de saúde; \"ela\" = Maria; \"que\" (relativo) = a vacina (é a vacina que protege).",
+"r": "Coesão referencial: identificar o termo que cada palavra retoma.",
+"m": "Pergunte: \"lá ONDE?\", \"ela QUEM?\", \"que O QUÊ?\"."
+},
+{
+"d": "Português",
+"a": "Sinônimos e antônimos",
+"c": "Em \"A ação foi PROFÍCUA\", a palavra destacada pode ser substituída, sem prejuízo de sentido, por:",
+"o": [
+"proveitosa.",
+"prejudicial.",
+"demorada.",
+"proibida."
+],
+"g": "A",
+"x": "Profícuo = útil, proveitoso, que dá bons resultados.",
+"r": "Sinonímia: palavras de sentido próximo no contexto.",
+"m": "PROFÍCUO lembra PROVEITO."
+},
+{
+"d": "Português",
+"a": "Homônimos e parônimos",
+"c": "Assinale a alternativa em que as palavras destacadas foram usadas CORRETAMENTE:",
+"o": [
+"O preso voltou para a SELA e o cavalo recebeu a CELA.",
+"O agente fez o CONCERTO da bomba costal.",
+"O prefeito vai SANCIONAR a lei e o infrator receberá uma SANÇÃO.",
+"O médico fez um diagnóstico EMINENTE de dengue."
+],
+"g": "C",
+"x": "Sancionar (aprovar) e sanção (punição/aprovação) estão corretos. A: preso na CELA, cavalo com SELA. B: CONSERTO (reparo); concerto é apresentação musical. D: IMINENTE (prestes a acontecer); eminente = ilustre.",
+"r": "Cela (prisão) × sela (arreio); conserto (reparo) × concerto (música); iminente (prestes) × eminente (ilustre); descrição × discrição.",
+"m": "SELA = Sentar no cavalo. CONSERTO = Sinal de Solda (reparo). IMINENTE = Imediato."
+},
+{
+"d": "Português",
+"a": "Homônimos e parônimos",
+"c": "\"Cessão\", \"seção\" e \"sessão\" são palavras:",
+"o": [
+"parônimas.",
+"homônimas homófonas.",
+"sinônimas.",
+"homógrafas."
+],
+"g": "B",
+"x": "Têm o mesmo som e grafias diferentes: homônimas homófonas. Cessão = ato de ceder; seção = divisão/departamento; sessão = reunião/duração.",
+"r": "Homófonas: mesmo som, escrita diferente. Homógrafas: mesma escrita, som diferente (sede/sede). Parônimas: parecidas, mas não iguais (comprimento/cumprimento).",
+"m": "HOMÓ-FONO = mesmo FONE (som). HOMÓ-GRAFO = mesma GRAFIA. PARÔNIMO = PARecido."
+},
+{
+"d": "Português",
+"a": "Classes de palavras",
+"c": "Em \"A visita ocorreu APÓS a chuva\" e \"Saiu cedo, POIS tinha visita\", as palavras destacadas são, respectivamente:",
+"o": [
+"preposição e conjunção.",
+"conjunção e preposição.",
+"advérbio e conjunção.",
+"preposição e advérbio."
+],
+"g": "A",
+"x": "\"Após\" liga palavras (ocorreu / a chuva) sem formar nova oração: preposição. \"Pois\" liga orações (saiu cedo / tinha visita): conjunção explicativa.",
+"r": "Preposição liga termos; conjunção liga orações (tem verbo depois).",
+"m": "Tem VERBO depois? Provavelmente conjunção."
+},
+{
+"d": "Português",
+"a": "Formação de palavras",
+"c": "As palavras \"linhagem\", \"infelizmente\" e \"desleal\" são formadas, respectivamente, por derivação:",
+"o": [
+"sufixal, prefixal e sufixal, prefixal.",
+"prefixal, sufixal, sufixal.",
+"sufixal, parassintética, prefixal.",
+"parassintética, prefixal e sufixal, sufixal."
+],
+"g": "A",
+"x": "Linhagem = linha + -agem (sufixal). Infelizmente = in- + feliz + -mente, mas existe \"infeliz\" e \"felizmente\", então é prefixal e sufixal (não parassintética). Desleal = des- + leal (prefixal).",
+"r": "Parassintética só quando prefixo e sufixo entram JUNTOS e não existe a palavra só com um deles (entardecer, emagrecer, enriquecer).",
+"m": "Tira o prefixo: ainda existe? Então NÃO é parassintética."
+},
+{
+"d": "Português",
+"a": "Acentuação",
+"c": "Assinale a alternativa em que todas as palavras são acentuadas pela mesma regra:",
+"o": [
+"saúde, país, baú",
+"médico, rápido, árvore",
+"café, até, você",
+"Pará, ninguém, também"
+],
+"g": "B",
+"x": "Médico, rápido e árvore são proparoxítonas, e TODA proparoxítona é acentuada. A: hiato (í/ú tônicos). C: oxítonas terminadas em -e/-é. D: oxítonas em -a e -em.",
+"r": "Proparoxítonas: todas acentuadas. Oxítonas: a(s), e(s), o(s), em, ens. Paroxítonas: as que NÃO terminam em a, e, o, em(s).",
+"m": "Proparoxítona é \"chique\": sempre usa acento."
+},
+{
+"d": "Português",
+"a": "Acentuação",
+"c": "Assinale a palavra INCORRETAMENTE acentuada, segundo o Acordo Ortográfico:",
+"o": [
+"ideia",
+"heroico",
+"vôo",
+"plateia"
+],
+"g": "C",
+"x": "Depois do Acordo, \"voo\" e \"enjoo\" perderam o acento (hiato oo). Ideia, heroico e plateia também perderam (ditongos abertos ei/oi em paroxítonas).",
+"r": "Sem acento após o Acordo: ideia, assembleia, heroico, jiboia, voo, enjoo, leem, veem.",
+"m": "\"Voo\" e \"leem\" ficaram carecas."
+},
+{
+"d": "Português",
+"a": "Ortografia",
+"c": "Assinale a alternativa em que todas as palavras estão escritas corretamente:",
+"o": [
+"exceção, análise, pesquisa",
+"excessão, analize, pesquiza",
+"exceção, análize, pesquisa",
+"excessão, análise, pesquiza"
+],
+"g": "A",
+"x": "Grafias corretas: exceção (com ç), análise e pesquisa (com s).",
+"r": "Palavras frequentes: exceção, análise, pesquisa, paralisar, ascensão, privilégio, beneficente.",
+"m": "Exceção vem de exceto (sem ss)."
+},
+{
+"d": "Português",
+"a": "Ortoépia e prosódia",
+"c": "Assinale a alternativa em que a sílaba tônica está CORRETAMENTE indicada (em maiúsculas):",
+"o": [
+"ruBRIca",
+"RUbrica",
+"gratuÍto",
+"inTErim"
+],
+"g": "A",
+"x": "Rubrica é paroxítona (ru-BRI-ca). Gratuito tem tônica no U (gra-TUI-to, ditongo ui). Ínterim é proparoxítona (ÍN-te-rim).",
+"r": "Prosódia = sílaba tônica certa: rubrica, recorde, ruim (ru-IM), gratuito (TUI), ínterim, Nobel (bel).",
+"m": "\"RuBRIca\" rima com \"fabrica\" (ele fabrica)."
+},
+{
+"d": "Português",
+"a": "Reescrita",
+"c": "Assinale a reescrita que MANTÉM o sentido de \"Apesar de estar cansado, o agente terminou as visitas\":",
+"o": [
+"Como estava cansado, o agente terminou as visitas.",
+"Embora estivesse cansado, o agente terminou as visitas.",
+"Se estivesse cansado, o agente terminaria as visitas.",
+"O agente terminou as visitas porque estava cansado."
+],
+"g": "B",
+"x": "\"Apesar de\" e \"embora\" são concessivos: o cansaço não impediu a ação. A e D mudam para causa; C, para condição.",
+"r": "Ao reescrever, mantenha a mesma relação lógica (concessão continua concessão).",
+"m": "Apesar de = Embora = Ainda que = Mesmo que."
+},
+{
+"d": "Português",
+"a": "Variação linguística",
+"c": "Em uma conversa informal entre amigos, a frase \"A gente vamos no posto amanhã\" representa:",
+"o": [
+"um erro que impede a comunicação.",
+"uma variação linguística que, em situação formal, seria adequada como \"Nós vamos ao posto amanhã\".",
+"a norma-padrão da língua.",
+"um regionalismo exclusivo da Paraíba."
+],
+"g": "B",
+"x": "A frase é uma variação de uso popular/informal. Ela comunica, mas não segue a norma-padrão; em contexto formal, o adequado seria \"Nós vamos ao posto\" ou \"A gente vai ao posto\".",
+"r": "Não existe \"certo/errado\" absoluto em variação, e sim adequação ao contexto. Cuidado com \"exclusivo\".",
+"m": "Linguagem é como roupa: depende da ocasião."
+}
+]

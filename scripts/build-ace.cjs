@@ -37,5 +37,5 @@ for (const arquivo of fs.readdirSync(pasta).filter((f) => f.endsWith('.json')).s
 }
 fs.writeFileSync(path.join(__dirname, '..', 'public', 'data', 'ace-cuite.json'), JSON.stringify(saida));
 const por = {};
-saida.forEach((q) => (por[q.d] = (por[q.d] ?? 0) + 1));
+saida.forEach((q) => (por[q.disciplina] = (por[q.disciplina] ?? 0) + 1));
 console.log(`${saida.length} questões`, por);
