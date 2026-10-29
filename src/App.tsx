@@ -34,9 +34,14 @@ export default function App() {
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
 
   useEffect(() => {
-    Promise.all(
-      ['/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>))
-    )
+    // privado/educa.json só existe na máquina de quem importou as provas (fica fora do Git).
+    const opcional = fetch('/data/privado/educa.json')
+      .then((r) => (r.ok && r.headers.get('content-type')?.includes('json') ? (r.json() as Promise<Questao[]>) : []))
+      .catch(() => [] as Questao[]);
+    Promise.all([
+      opcional,
+      ...['/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
+    ])
       .then((partes) => setOficiais(partes.flat()))
       .catch(() => setErro(true));
   }, []);

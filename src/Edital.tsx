@@ -65,7 +65,9 @@ const sem = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 
 // Liga o nome da disciplina no edital às disciplinas (e assuntos) dos bancos abertos.
 const EQUIVALENCIAS: [RegExp, (q: Questao) => boolean][] = [
-  [/portugues|lingua materna|interpretacao|redacao/, (q) => q.disciplina === 'Linguagens' && q.assunto !== 'Língua estrangeira'],
+  [/portugues|lingua materna|interpretacao|redacao/, (q) => q.disciplina === 'Língua Portuguesa' || (q.disciplina === 'Linguagens' && q.assunto !== 'Língua estrangeira')],
+  [/informatica/, (q) => q.disciplina === 'Informática'],
+  [/conhecimentos gerais|atualidades/, (q) => q.disciplina === 'Conhecimentos Gerais'],
   [/matematica|raciocinio|logic/, (q) => q.disciplina === 'Matemática'],
   [/historia|geografia|atualidades|conhecimentos gerais|realidade|sociologia|filosofia(?! do direito)/, (q) => q.disciplina === 'Ciências Humanas'],
   [/ciencias|biologia|quimica|fisica|saude|meio ambiente/, (q) => q.disciplina === 'Ciências da Natureza'],
@@ -89,6 +91,8 @@ const EQUIVALENCIAS: [RegExp, (q: Questao) => boolean][] = [
 
 function montarBloco(edital: TEdital, questoes: Questao[]) {
   const banca = sem(edital.banca);
+  // "Educa PB" no edital deve casar com "Educa" no banco, e vice-versa.
+  const mesmaBanca = (q: Questao) => !q.ia && (banca.includes(sem(q.banca)) || sem(q.banca).includes(banca));
   const porDisciplina = edital.disciplinas.map((d) => {
     const nome = sem(d.nome);
     const regra = EQUIVALENCIAS.find(([re]) => re.test(nome));
@@ -96,9 +100,9 @@ function montarBloco(edital: TEdital, questoes: Questao[]) {
       (q) => (q.ia && q.orgao === edital.orgao && q.disciplina === d.nome) || (!q.ia && regra !== undefined && regra[1](q))
     );
     // Primeiro as da mesma banca do edital, depois as geradas para ele, depois as demais.
-    const peso = (q: Questao) => (sem(q.banca) === banca ? 0 : q.ia ? 1 : 2);
+    const peso = (q: Questao) => (mesmaBanca(q) ? 0 : q.ia ? 1 : 2);
     qs.sort((x, y) => peso(x) - peso(y));
-    return { nome: d.nome, qs, daBanca: qs.filter((q) => sem(q.banca) === banca).length, ia: qs.filter((q) => q.ia).length };
+    return { nome: d.nome, qs, daBanca: qs.filter(mesmaBanca).length, ia: qs.filter((q) => q.ia).length };
   });
   // Intercala as disciplinas para o bloco não virar uma sequência de uma matéria só.
   const ids: string[] = [];
