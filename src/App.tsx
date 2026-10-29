@@ -3,6 +3,8 @@ import type { Filtros, Questao, Resposta } from './types';
 import { usePersist } from './store';
 import { md } from './md';
 import Edital from './Edital';
+import Login from './Login';
+import { baixar, contaSalva, enviar, sairDaConta, type Conta } from './nuvem';
 
 type Aba = 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
 
@@ -23,6 +25,37 @@ function embaralhar<T>(arr: T[]): T[] {
 }
 
 export default function App() {
+  const [conta, setConta] = useState<Conta | null>(() => contaSalva());
+  const [pronto, setPronto] = useState(false);
+
+  // Antes de abrir o app, traz o progresso salvo na conta (se a rede falhar, segue com o que há no aparelho).
+  useEffect(() => {
+    if (!conta) return;
+    setPronto(false);
+    baixar(conta)
+      .catch((e: Error & { status?: number }) => {
+        if (e.status === 401) {
+          localStorage.removeItem('cq:conta');
+          setConta(null);
+        }
+      })
+      .finally(() => setPronto(true));
+  }, [conta]);
+
+  if (!conta) return <Login onEntrar={setConta} />;
+  if (!pronto) return <Carregando />;
+  return (
+    <Painel
+      conta={conta}
+      onSair={async () => {
+        await sairDaConta(conta);
+        setConta(null);
+      }}
+    />
+  );
+}
+
+function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [oficiais, setOficiais] = useState<Questao[] | null>(null);
   const [geradas, setGeradas] = usePersist<Questao[]>('cq:geradas', []);
   const [erro, setErro] = useState(false);
@@ -63,6 +96,23 @@ export default function App() {
 
   const questoes = useMemo(() => (oficiais ? [...geradas, ...oficiais] : null), [oficiais, geradas]);
 
+  // Envia o progresso para a conta pouco depois de cada mudança e quando o app vai para segundo plano.
+  const [sync, setSync] = useState<'ok' | 'salvando' | 'offline'>('ok');
+  useEffect(() => {
+    setSync('salvando');
+    const t = setTimeout(() => {
+      enviar(conta)
+        .then(() => setSync('ok'))
+        .catch(() => setSync('offline'));
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [conta, historico, revisar, bloco, geradas, aba]);
+  useEffect(() => {
+    const aoSair = () => document.visibilityState === 'hidden' && enviar(conta).catch(() => undefined);
+    document.addEventListener('visibilitychange', aoSair);
+    return () => document.removeEventListener('visibilitychange', aoSair);
+  }, [conta]);
+
   const registrar = (r: Resposta) => setHistorico((h) => [...h, r]);
   const alternarRevisar = (id: string) =>
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
@@ -96,6 +146,13 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <button
+          className="conta-btn"
+          onClick={() => confirm(`Sair da conta ${conta.usuario}? Seu progresso fica salvo.`) && onSair()}
+          title={sync === 'offline' ? 'Sem conexão: o progresso será enviado quando voltar a internet' : 'Progresso salvo na conta'}
+        >
+          {conta.nome.split(' ')[0]} <span className={`sync ${sync}`}>{sync === 'ok' ? '✓' : sync === 'salvando' ? '…' : '!'}</span>
+        </button>
         <a className="icone-btn" href="/resumao.html" target="_blank" rel="noopener" aria-label="Abrir o resumão" title="Resumão">
           <IconBook />
         </a>
