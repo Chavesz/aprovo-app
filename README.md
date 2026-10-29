@@ -49,14 +49,22 @@ npm run dev
 
 Para regerar o banco de questões a partir da API: `npm run bank`.
 
-## Fonte das questões e licença
+## Fontes das questões e licenças
 
-- **Origem:** [API pública enem.dev](https://enem.dev) ([código-fonte](https://github.com/yunger7/enem-api)), que disponibiliza as provas e os gabaritos oficiais do ENEM aplicados pelo INEP.
-- **Conteúdo:** provas do ENEM de 2019 a 2023, 892 questões (inclui as versões em inglês e espanhol de língua estrangeira). Provas oficiais são documentos públicos do INEP; textos de terceiros citados nos enunciados mantêm a referência de origem que aparece na própria prova.
-- **Como o banco é montado:** `scripts/build-bank.cjs` baixa as questões, remove duplicadas e grava `public/data/questoes.json`. O app não chama a API em tempo de execução, então não há CORS nem dependência de disponibilidade externa (por isso não foi preciso Netlify Function).
-- **Assunto:** a API não informa assunto. Ele é classificado automaticamente por palavras-chave (ver `TOPICS` no script); questões sem correspondência ficam como “Geral”.
-- **Banca/órgão:** todas são INEP/MEC por enquanto. O formato do JSON já aceita outras bancas: basta adicionar questões de provas públicas de concursos (por exemplo, editais e provas divulgados pelos próprios órgãos) com os campos `banca`, `orgao`, `prova`, `ano`, `disciplina`, `assunto`, `alternativas`, `gabarito` e, opcionalmente, `comentario`.
-- Não há scraping de sites pagos (QConcursos, TEC etc.).
+São 3.102 questões reais de duas fontes abertas. Nenhuma vem de scraping de sites pagos (QConcursos, TEC etc.).
+
+| Fonte | Conteúdo | Banca / órgão | Licença |
+| --- | --- | --- | --- |
+| [legal-nlp/oab-exams](https://github.com/legal-nlp/oab-exams), via [eduagarcia/oab_exams](https://huggingface.co/datasets/eduagarcia/oab_exams) | 2.210 questões da 1ª fase do Exame de Ordem, do I ao XXV Exame (2010 a 2018), 17 disciplinas de Direito | FGV (Cebraspe no I Exame) / OAB | MIT |
+| [API enem.dev](https://enem.dev) ([código](https://github.com/yunger7/enem-api)) | 892 questões do ENEM de 2019 a 2023 | INEP / MEC | Provas oficiais públicas do INEP |
+
+![Questão da OAB no desktop](docs/praticar-oab-desktop.jpg)
+
+- **Scripts:** `npm run bank` gera `public/data/questoes.json` (ENEM) e `node scripts/build-oab.cjs` gera `public/data/oab.json`. O app lê os arquivos estáticos, sem chamar APIs ao rodar.
+- **Disciplina da OAB:** 925 questões (provas de 2014 em diante) vieram sem rótulo no dataset. O script infere a disciplina pela posição da questão na prova (a OAB segue a mesma ordem de matérias) e desempata por palavras-chave. Testado contra as questões rotuladas, acerta 97% (418 de 429).
+- **Assunto:** nenhuma das fontes informa o assunto. Ele é classificado por palavras-chave; o que não se encaixa fica como "Geral".
+- **Gabarito comentado:** as provas oficiais não têm comentário publicado. As questões geradas pela IA vêm comentadas.
+- **Mais bancas:** o formato do JSON aceita qualquer prova pública. Basta incluir questões com `banca`, `orgao`, `prova`, `ano`, `disciplina`, `assunto`, `alternativas`, `gabarito` e, se houver, `comentario`.
 
 ## Deploy na Netlify
 
@@ -67,7 +75,7 @@ Pelo painel (sem CLI):
 2. Escolha o GitHub e o repositório `concurso-questoes`.
 3. Confirme as configurações (já vêm do `netlify.toml`) e clique em **Deploy**.
 
-Pela CLI:
+Pela CLI (a `netlify` CLI não está instalada nesta máquina, então o deploy ainda não foi feito):
 
 ```bash
 npm install -g netlify-cli

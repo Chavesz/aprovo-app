@@ -33,9 +33,10 @@ export default function App() {
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
 
   useEffect(() => {
-    fetch('/data/questoes.json')
-      .then((r) => r.json())
-      .then(setOficiais)
+    Promise.all(
+      ['/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>))
+    )
+      .then((partes) => setOficiais(partes.flat()))
       .catch(() => setErro(true));
   }, []);
 
@@ -353,7 +354,7 @@ function QuestaoCard(props: {
           <strong>{certa ? 'Resposta certa.' : `Não foi dessa vez. Gabarito: ${q.gabarito}.`}</strong>
           <p>
             {q.comentario ??
-              'Gabarito oficial do INEP. Esta prova não tem comentário publicado; releia o enunciado com a alternativa correta em mente.'}
+              `Gabarito oficial (${q.banca}). Esta prova não tem comentário publicado; releia o enunciado com a alternativa correta em mente.`}
           </p>
         </div>
       )}
