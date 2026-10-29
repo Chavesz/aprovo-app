@@ -1,6 +1,10 @@
 # Gabarito — questões para estudar
 
-App web para resolver questões de provas oficiais, com filtros, simulado cronometrado e estatísticas de desempenho por assunto. Mobile-first, modo claro e escuro, sem backend: o progresso fica salvo no navegador.
+App web para estudar para concursos: questões oficiais com filtros, simulado cronometrado, **questões geradas por IA a partir do seu edital (por texto ou voz)** e um painel de desempenho completo. Mobile-first, modo claro e escuro; o progresso fica salvo no navegador.
+
+| Meu edital (celular) | Painel de desempenho (desktop, escuro) |
+| --- | --- |
+| <img src="docs/edital-mobile.jpg" width="280" alt="Edital organizado pela IA" /> | ![Desempenho](docs/desempenho-desktop-escuro.jpg) |
 
 | Praticar (desktop) | Simulado (desktop) |
 | --- | --- |
@@ -15,7 +19,8 @@ App web para resolver questões de provas oficiais, com filtros, simulado cronom
 - **Filtros** por banca, órgão, disciplina, assunto e ano, além de “não feitas”, “errei” e “marcadas”.
 - **Resposta com feedback** imediato: alternativa certa em verde, a sua em vermelho quando erra, e o gabarito oficial. O campo `comentario` do banco aparece como gabarito comentado quando existir.
 - **Simulado cronometrado**: 5 a 45 questões sorteadas, 10 a 90 minutos, mapa de navegação, entrega automática quando o tempo acaba e correção questão por questão.
-- **Desempenho**: taxa de acerto geral, por assunto (do mais fraco ao mais forte) e histórico recente, tudo em `localStorage`.
+- **Meu edital com IA**: cole o conteúdo programático ou fale o que vai prestar (ditado por voz no Chrome/Edge). A IA identifica banca, órgão e cargo, separa disciplinas e assuntos, e cria questões inéditas no estilo da banca (A a E ou certo/errado, três níveis de dificuldade), cada uma com gabarito comentado. Dá para editar os assuntos, ter vários editais e praticar só as questões de um edital ou assunto.
+- **Painel de desempenho**: acerto geral, resolvidas, acertos, dias seguidos de estudo, gráfico dos últimos 14 dias, acerto por disciplina e por assunto (do mais fraco ao mais forte), filtro de 7 dias, 30 dias ou tudo, e histórico recente. Tudo em `localStorage`.
 - **Marcar para revisar** com a bandeira de cada questão e refazer só as marcadas.
 - **Modo escuro** automático (segue o sistema) com botão para alternar.
 
@@ -24,6 +29,16 @@ App web para resolver questões de provas oficiais, com filtros, simulado cronom
 Vite + React 18 + TypeScript, CSS puro com tokens. Nenhuma dependência de UI. O build final tem cerca de 50 KB de JS gzip, mais o banco de questões (~1,2 MB, cacheado).
 
 > Usa Vite 2 para rodar também em Node 14. A Netlify faz o build em Node 20 (definido no `netlify.toml`).
+
+## IA (Netlify Function + Claude)
+
+A rota `/api/ia` é a função [`netlify/functions/ia.mts`](netlify/functions/ia.mts). Ela chama a API do Claude (`claude-opus-5-5`) com saída em JSON estruturado, então a resposta sempre vem no formato que o app espera. A chave fica só no servidor, nunca no navegador.
+
+Para ligar em produção, na Netlify vá em **Site configuration → Environment variables** e crie `ANTHROPIC_API_KEY` com uma chave do [Console da Anthropic](https://console.anthropic.com). Sem a chave, o app funciona normalmente e a aba Edital mostra um aviso.
+
+- O ditado usa a Web Speech API do navegador (sem custo e sem enviar áudio para o servidor); o texto transcrito é o que vai para a IA.
+- Em `npm run dev`, a rota `/api/ia` responde com dados de exemplo (plugin em `vite.config.ts`), para testar a interface sem chave. Para testar a IA de verdade localmente: `netlify dev` com a variável definida (precisa de Node 18+).
+- Para vender: cada geração custa centavos de API. Antes de abrir ao público, vale colocar login e limite de uso por pessoa (ex.: Netlify Identity ou Supabase) para ninguém usar sua chave sem controle.
 
 ## Rodar localmente
 

@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Filtros, Questao, Resposta } from './types';
 import { usePersist } from './store';
 import { md } from './md';
+import Edital from './Edital';
 
-type Aba = 'praticar' | 'simulado' | 'desempenho' | 'revisar';
+type Aba = 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
 
 const FILTROS_VAZIOS: Filtros = { banca: '', orgao: '', disciplina: '', assunto: '', ano: '', status: 'todas' };
 
@@ -22,7 +23,8 @@ function embaralhar<T>(arr: T[]): T[] {
 }
 
 export default function App() {
-  const [questoes, setQuestoes] = useState<Questao[] | null>(null);
+  const [oficiais, setOficiais] = useState<Questao[] | null>(null);
+  const [geradas, setGeradas] = usePersist<Questao[]>('cq:geradas', []);
   const [erro, setErro] = useState(false);
   const [aba, setAba] = usePersist<Aba>('cq:aba', 'praticar');
   const [tema, setTema] = usePersist<'claro' | 'escuro' | ''>('cq:tema-pref', '');
@@ -33,7 +35,7 @@ export default function App() {
   useEffect(() => {
     fetch('/data/questoes.json')
       .then((r) => r.json())
-      .then(setQuestoes)
+      .then(setOficiais)
       .catch(() => setErro(true));
   }, []);
 
@@ -52,6 +54,8 @@ export default function App() {
   const escuroAgora = () =>
     tema ? tema === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+  const questoes = useMemo(() => (oficiais ? [...geradas, ...oficiais] : null), [oficiais, geradas]);
+
   const registrar = (r: Resposta) => setHistorico((h) => [...h, r]);
   const alternarRevisar = (id: string) =>
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
@@ -59,6 +63,7 @@ export default function App() {
   const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
+    { id: 'edital', rotulo: 'Edital', icone: <IconSpark /> },
     { id: 'desempenho', rotulo: 'Desempenho', icone: <IconChart /> },
     { id: 'revisar', rotulo: 'Revisar', icone: <IconFlag /> },
   ];
@@ -110,6 +115,16 @@ export default function App() {
         )}
         {questoes && aba === 'simulado' && (
           <Simulado questoes={questoes} onResponder={registrar} revisar={revisar} onRevisar={alternarRevisar} />
+        )}
+        {questoes && aba === 'edital' && (
+          <Edital
+            geradas={geradas}
+            onNovas={(qs) => setGeradas((g) => [...qs, ...g])}
+            onPraticar={(f) => {
+              setFiltros({ ...FILTROS_VAZIOS, ...f });
+              setAba('praticar');
+            }}
+          />
         )}
         {questoes && aba === 'desempenho' && (
           <Desempenho questoes={questoes} historico={historico} onLimpar={() => setHistorico([])} />
@@ -295,6 +310,7 @@ function QuestaoCard(props: {
       <div className="tags">
         <span className="tag">{q.disciplina}</span>
         <span className="tag">{q.assunto}</span>
+        {q.ia && <span className="tag tag-ia">Gerada por IA</span>}
         {q.idioma && <span className="tag">{q.idioma === 'ingles' ? 'Inglês' : 'Espanhol'}</span>}
         <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
       </div>
@@ -521,71 +537,150 @@ function Simulado(props: {
 
 /* ---------- Desempenho ---------- */
 
+function diaChave(t: number) {
+  const d = new Date(t);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+/** Dias seguidos com pelo menos uma resposta, contando até hoje (ou ontem, se hoje ainda não estudou). */
+function sequencia(historico: Resposta[]) {
+  const dias = new Set(historico.map((h) => diaChave(h.em)));
+  const d = new Date();
+  if (!dias.has(diaChave(d.getTime()))) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (dias.has(diaChave(d.getTime()))) {
+    n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}
+
+function agrupar(historico: Resposta[], porId: Map<string, Questao>, chave: (q: Questao) => string) {
+  const m = new Map<string, { nome: string; t: number; a: number }>();
+  historico.forEach((h) => {
+    const q = porId.get(h.id);
+    if (!q) return;
+    const k = chave(q);
+    const g = m.get(k) ?? { nome: k, t: 0, a: 0 };
+    g.t++;
+    if (h.certa) g.a++;
+    m.set(k, g);
+  });
+  return Array.from(m.values());
+}
+
 function Desempenho({ questoes, historico, onLimpar }: { questoes: Questao[]; historico: Resposta[]; onLimpar: () => void }) {
   const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
-  const acertos = historico.filter((h) => h.certa).length;
+  const [periodo, setPeriodo] = useState<7 | 30 | 0>(0);
+  const hist = useMemo(() => {
+    const desde = periodo ? Date.now() - periodo * 86400000 : 0;
+    return historico.filter((h) => h.em >= desde);
+  }, [historico, periodo]);
+  const acertos = hist.filter((h) => h.certa).length;
+  const unicas = new Set(hist.map((h) => h.id)).size;
 
-  const grupos = useMemo(() => {
-    const m = new Map<string, { disciplina: string; assunto: string; t: number; a: number }>();
-    historico.forEach((h) => {
-      const q = porId.get(h.id);
-      if (!q) return;
-      const k = `${q.disciplina}|${q.assunto}`;
-      const g = m.get(k) ?? { disciplina: q.disciplina, assunto: q.assunto, t: 0, a: 0 };
-      g.t++;
-      if (h.certa) g.a++;
-      m.set(k, g);
-    });
-    return Array.from(m.values()).sort((x, y) => pct(x.a, x.t) - pct(y.a, y.t) || y.t - x.t);
-  }, [historico, porId]);
+  const disciplinas = useMemo(() => agrupar(hist, porId, (q) => q.disciplina).sort((x, y) => y.t - x.t), [hist, porId]);
+  const assuntos = useMemo(
+    () => agrupar(hist, porId, (q) => `${q.assunto}|${q.disciplina}`).sort((x, y) => pct(x.a, x.t) - pct(y.a, y.t) || y.t - x.t),
+    [hist, porId]
+  );
 
-  const hoje = new Date().toDateString();
-  const feitasHoje = historico.filter((h) => new Date(h.em).toDateString() === hoje).length;
+  const dias = useMemo(() => {
+    const lista: { rotulo: string; t: number; a: number }[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = diaChave(d.getTime());
+      const doDia = historico.filter((h) => diaChave(h.em) === k);
+      lista.push({ rotulo: String(d.getDate()), t: doDia.length, a: doDia.filter((h) => h.certa).length });
+    }
+    return lista;
+  }, [historico]);
+  const maxDia = Math.max(1, ...dias.map((d) => d.t));
+  const hoje = dias[dias.length - 1];
 
   if (!historico.length) {
     return (
       <Vazio
         titulo="Seu desempenho aparece aqui"
-        texto="Responda algumas questões e você verá a taxa de acerto por assunto, do ponto mais fraco ao mais forte."
+        texto="Responda algumas questões e você verá a taxa de acerto por disciplina e por assunto, a evolução dos últimos dias e sua sequência de estudo."
       />
     );
   }
 
   return (
     <section className="coluna estreita">
-      <p className="sobretitulo">Desempenho</p>
-      <div className="numeros">
-        <div>
-          <span className="numero">{pct(acertos, historico.length)}%</span>
-          <span className="rotulo">de acerto</span>
-        </div>
-        <div>
-          <span className="numero">{historico.length}</span>
-          <span className="rotulo">respostas</span>
-        </div>
-        <div>
-          <span className="numero">{feitasHoje}</span>
-          <span className="rotulo">hoje</span>
+      <div className="edital-topo">
+        <p className="sobretitulo">Desempenho</p>
+        <div className="segmentado periodo" role="radiogroup" aria-label="Período">
+          {(
+            [
+              [7, '7 dias'],
+              [30, '30 dias'],
+              [0, 'Tudo'],
+            ] as const
+          ).map(([v, r]) => (
+            <label key={v} className="chip">
+              <input type="radio" name="periodo" checked={periodo === v} onChange={() => setPeriodo(v)} />
+              {r}
+            </label>
+          ))}
         </div>
       </div>
 
-      <h2 className="subtitulo">Por assunto <span className="nota">do mais fraco ao mais forte</span></h2>
-      <ul className="assuntos">
-        {grupos.map((g) => (
-          <li key={g.disciplina + g.assunto}>
-            <div className="assunto-linha">
-              <span>
-                {g.assunto} <span className="nota">{g.disciplina}</span>
-              </span>
-              <span className="mono">
-                {g.a}/{g.t} · {pct(g.a, g.t)}%
-              </span>
+      <div className="numeros numeros-4">
+        <div>
+          <span className="numero">{pct(acertos, hist.length)}%</span>
+          <span className="rotulo">de acerto</span>
+        </div>
+        <div>
+          <span className="numero">{hist.length}</span>
+          <span className="rotulo">resolvidas</span>
+        </div>
+        <div>
+          <span className="numero">{acertos}</span>
+          <span className="rotulo">acertos</span>
+        </div>
+        <div>
+          <span className="numero">{sequencia(historico)}</span>
+          <span className="rotulo">dias seguidos</span>
+        </div>
+      </div>
+      <p className="nota resumo">
+        {unicas} questões diferentes · {hist.length - acertos} erros · hoje: {hoje.t} {hoje.t === 1 ? 'questão' : 'questões'}
+        {hoje.t > 0 && `, ${pct(hoje.a, hoje.t)}% de acerto`}
+      </p>
+
+      <h2 className="subtitulo">Últimos 14 dias</h2>
+      <div className="grafico" role="img" aria-label={`Questões por dia: ${dias.map((d) => d.t).join(', ')}`}>
+        {dias.map((d, i) => (
+          <div key={i} className="grafico-col" title={`${d.t} questões, ${d.a} acertos`}>
+            <div className="grafico-barra" style={{ height: `${(d.t / maxDia) * 100}%` }}>
+              <span style={{ height: `${pct(d.a, d.t)}%` }} />
             </div>
-            <div className="barra" aria-hidden>
-              <span style={{ width: `${pct(g.a, g.t)}%` }} className={pct(g.a, g.t) < 50 ? 'fraca' : ''} />
-            </div>
-          </li>
+            <span className="mono grafico-rotulo">{d.rotulo}</span>
+          </div>
         ))}
+      </div>
+      <p className="nota legenda">
+        <span className="legenda-cor certo" /> acertos <span className="legenda-cor total" /> total do dia
+      </p>
+
+      <h2 className="subtitulo">Por disciplina</h2>
+      <ul className="assuntos">
+        {disciplinas.map((g) => (
+          <LinhaBarra key={g.nome} titulo={g.nome} a={g.a} t={g.t} />
+        ))}
+      </ul>
+
+      <h2 className="subtitulo">
+        Por assunto <span className="nota">do mais fraco ao mais forte</span>
+      </h2>
+      <ul className="assuntos">
+        {assuntos.map((g) => {
+          const [assunto, disciplina] = g.nome.split('|');
+          return <LinhaBarra key={g.nome} titulo={assunto} sub={disciplina} a={g.a} t={g.t} />;
+        })}
       </ul>
 
       <h2 className="subtitulo">Histórico recente</h2>
@@ -611,6 +706,25 @@ function Desempenho({ questoes, historico, onLimpar }: { questoes: Questao[]; hi
         Apagar histórico
       </button>
     </section>
+  );
+}
+
+function LinhaBarra({ titulo, sub, a, t }: { titulo: string; sub?: string; a: number; t: number }) {
+  const p = pct(a, t);
+  return (
+    <li>
+      <div className="assunto-linha">
+        <span>
+          {titulo} {sub && <span className="nota">{sub}</span>}
+        </span>
+        <span className="mono">
+          {a}/{t} · {p}%
+        </span>
+      </div>
+      <div className="barra" aria-hidden>
+        <span style={{ width: `${p}%` }} className={p < 50 ? 'fraca' : ''} />
+      </div>
+    </li>
   );
 }
 
@@ -711,4 +825,5 @@ const IconClock = () => <svg {...svg}><circle cx="12" cy="13" r="8" /><path d="M
 const IconChart = () => <svg {...svg}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>;
 const IconFlag = () => <svg {...svg}><path d="M5 21V4h11l-2 4 2 4H5" /></svg>;
 const IconFilter = () => <svg {...svg}><path d="M3 5h18M6 12h12M10 19h4" /></svg>;
+const IconSpark = () => <svg {...svg}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" /></svg>;
 const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;
