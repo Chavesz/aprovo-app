@@ -1,4 +1,4 @@
-# Gabarito — questões para estudar
+# Aprovô — questões para o seu edital
 
 App web para estudar para concursos: questões oficiais com filtros, simulado cronometrado, **questões geradas por IA a partir do seu edital (por texto ou voz)** e um painel de desempenho completo. Mobile-first, modo claro e escuro; o progresso fica salvo no navegador.
 

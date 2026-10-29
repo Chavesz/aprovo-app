@@ -79,8 +79,8 @@ export default function App() {
     <div className="app">
       <header className="topo">
         <div className="marca">
-          <span className="marca-selo" aria-hidden>G</span>
-          <span className="marca-nome">Gabarito</span>
+          <span className="marca-selo" aria-hidden>A</span>
+          <span className="marca-nome">Aprovô</span>
         </div>
         <nav className="abas" aria-label="Seções">
           {abas.map((a) => (
