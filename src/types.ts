@@ -21,6 +21,10 @@ export interface Questao {
   comentario?: string;
   /** Questão criada pela IA a partir de um edital do aluno. */
   ia?: boolean;
+  /** O ponto a revisar quando a pessoa erra. */
+  revisar?: string;
+  /** Dica curta para memorizar. */
+  macete?: string;
 }
 
 export interface Resposta {
@@ -37,7 +41,7 @@ export interface Filtros {
   disciplina: string;
   assunto: string;
   ano: string;
-  status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco';
+  status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco' | 'inteligente';
 }
 
 export interface Edital {

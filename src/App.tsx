@@ -40,7 +40,7 @@ export default function App() {
       .catch(() => [] as Questao[]);
     Promise.all([
       opcional,
-      ...['/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
+      ...['/data/ace-cuite.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])
       .then((partes) => setOficiais(partes.flat()))
       .catch(() => setErro(true));
@@ -96,6 +96,9 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <a className="icone-btn" href="/resumao.html" target="_blank" rel="noopener" aria-label="Abrir o resumão" title="Resumão">
+          <IconBook />
+        </a>
         <button
           className="icone-btn"
           onClick={() => setTema(escuroAgora() ? 'claro' : 'escuro')}
@@ -128,9 +131,9 @@ export default function App() {
           <Edital
             questoes={questoes}
             geradas={geradas}
-            onBloco={(ids) => {
+            onBloco={(ids, modo) => {
               setBloco(ids);
-              setFiltros({ ...FILTROS_VAZIOS, status: 'bloco' });
+              setFiltros({ ...FILTROS_VAZIOS, status: modo });
               setAba('praticar');
             }}
             onNovas={(qs) => setGeradas((g) => [...qs, ...g])}
@@ -161,6 +164,36 @@ export default function App() {
 
 /* ---------- Praticar ---------- */
 
+/**
+ * Treino inteligente: primeiro os assuntos com mais erros e as questões que a pessoa errou por último;
+ * assuntos nunca vistos vêm logo depois, para cobrir todo o edital; as que acertou por último vão para o fim.
+ */
+function ordemInteligente(lista: Questao[], historico: Resposta[]) {
+  const porId = new Map(lista.map((q) => [q.id, q]));
+  const assunto = new Map<string, { t: number; e: number }>();
+  const ultima = new Map<string, boolean>();
+  historico.forEach((h) => {
+    ultima.set(h.id, h.certa);
+    const q = porId.get(h.id);
+    if (!q) return;
+    const g = assunto.get(q.assunto) ?? { t: 0, e: 0 };
+    g.t++;
+    if (!h.certa) g.e++;
+    assunto.set(q.assunto, g);
+  });
+  const nota = (q: Questao) => {
+    const g = assunto.get(q.assunto);
+    const taxaErro = g ? g.e / g.t : 0.6;
+    const u = ultima.get(q.id);
+    return taxaErro * 2 + (u === false ? 1.5 : u === undefined ? 0.5 : -2);
+  };
+  // Desempate aleatório para não repetir sempre a mesma sequência.
+  return lista
+    .map((q) => ({ q, n: nota(q) + Math.random() * 0.3 }))
+    .sort((a, b) => b.n - a.n)
+    .map((x) => x.q);
+}
+
 function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[], bloco: string[]) {
   const respondidas = new Set(historico.map((h) => h.id));
   const ultimas = new Map<string, boolean>();
@@ -176,8 +209,10 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
         (f.status === 'ineditas' && !respondidas.has(q.id)) ||
         (f.status === 'erradas' && ultimas.get(q.id) === false) ||
         (f.status === 'revisar' && revisar.includes(q.id)) ||
-        (f.status === 'bloco' && bloco.includes(q.id)))
+        (f.status === 'bloco' && bloco.includes(q.id)) ||
+        (f.status === 'inteligente' && (!bloco.length || bloco.includes(q.id))))
   );
+  if (f.status === 'inteligente') return ordemInteligente(lista, historico);
   if (f.status !== 'bloco') return lista;
   const ordem = new Map(bloco.map((id, i) => [id, i]));
   return lista.sort((x, y) => (ordem.get(x.id) ?? 0) - (ordem.get(y.id) ?? 0));
@@ -245,6 +280,7 @@ function Praticar(props: {
                 ['erradas', 'Errei'],
                 ['revisar', 'Marcadas'],
                 ['bloco', 'Meu bloco'],
+                ['inteligente', 'Treino inteligente'],
               ] as const
             ).map(([v, r]) => (
               <label key={v} className="chip">
@@ -375,6 +411,18 @@ function QuestaoCard(props: {
             {q.comentario ??
               `Gabarito oficial (${q.banca}). Esta prova não tem comentário publicado; releia o enunciado com a alternativa correta em mente.`}
           </p>
+          {!certa && q.revisar && (
+            <p className="feedback-extra">
+              <span className="rotulo">O que revisar</span>
+              {q.revisar}
+            </p>
+          )}
+          {q.macete && (
+            <p className="feedback-extra macete">
+              <span className="rotulo">Macete</span>
+              {q.macete}
+            </p>
+          )}
         </div>
       )}
     </article>
@@ -846,4 +894,5 @@ const IconChart = () => <svg {...svg}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2
 const IconFlag = () => <svg {...svg}><path d="M5 21V4h11l-2 4 2 4H5" /></svg>;
 const IconFilter = () => <svg {...svg}><path d="M3 5h18M6 12h12M10 19h4" /></svg>;
 const IconSpark = () => <svg {...svg}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" /></svg>;
+const IconBook = () => <svg {...svg}><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" /></svg>;
 const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;

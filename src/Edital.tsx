@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Edital as TEdital, Filtros, Questao } from './types';
 import { usePersist } from './store';
+import { EDITAL_CUITE } from './editalCuite';
 
 interface Props {
   questoes: Questao[];
   geradas: Questao[];
-  onBloco: (ids: string[]) => void;
+  onBloco: (ids: string[], modo: 'bloco' | 'inteligente') => void;
   onNovas: (qs: Questao[]) => void;
   onPraticar: (f: Partial<Filtros>) => void;
 }
@@ -97,7 +98,9 @@ function montarBloco(edital: TEdital, questoes: Questao[]) {
     const nome = sem(d.nome);
     const regra = EQUIVALENCIAS.find(([re]) => re.test(nome));
     const qs = questoes.filter(
-      (q) => (q.ia && q.orgao === edital.orgao && q.disciplina === d.nome) || (!q.ia && regra !== undefined && regra[1](q))
+      (q) =>
+        (q.ia && q.orgao === edital.orgao && q.disciplina === d.nome) ||
+        (!q.ia && (q.disciplina === d.nome || (regra !== undefined && regra[1](q))))
     );
     // Primeiro as da mesma banca do edital, depois as geradas para ele, depois as demais.
     const peso = (q: Questao) => (mesmaBanca(q) ? 0 : q.ia ? 1 : 2);
@@ -111,7 +114,7 @@ function montarBloco(edital: TEdital, questoes: Questao[]) {
   return { porDisciplina, ids };
 }
 
-function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Questao[]; onBloco: (ids: string[]) => void }) {
+function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Questao[]; onBloco: Props['onBloco'] }) {
   const { porDisciplina, ids } = montarBloco(edital, questoes);
   const semQuestoes = porDisciplina.filter((d) => d.qs.length === 0);
   return (
@@ -123,9 +126,14 @@ function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Quest
             {ids.length} <span>questões ligadas a este edital</span>
           </p>
         </div>
-        <button className="btn" onClick={() => onBloco(ids)} disabled={!ids.length}>
-          Estudar o bloco
-        </button>
+        <div className="bloco-botoes">
+          <button className="btn" onClick={() => onBloco(ids, 'inteligente')} disabled={!ids.length}>
+            Treino inteligente
+          </button>
+          <button className="btn btn-sec" onClick={() => onBloco(ids, 'bloco')} disabled={!ids.length}>
+            Na ordem do edital
+          </button>
+        </div>
       </div>
       <ul className="bloco-lista">
         {porDisciplina.map((d) => (
@@ -137,6 +145,12 @@ function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Quest
           </li>
         ))}
       </ul>
+      <p className="nota">
+        O treino inteligente começa pelos assuntos em que você mais erra e passa por todos os do edital.{' '}
+        <a href="/resumao.html" target="_blank" rel="noopener">
+          Abrir o resumão
+        </a>
+      </p>
       {semQuestoes.length > 0 && (
         <p className="nota">
           Sem questões abertas para {semQuestoes.map((d) => d.nome).join(', ')}. Toque nos assuntos abaixo para gerar
@@ -150,7 +164,7 @@ function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Quest
 /* ---------- Tela ---------- */
 
 export default function Edital({ questoes, geradas, onNovas, onPraticar, onBloco }: Props) {
-  const [editais, setEditais] = usePersist<TEdital[]>('cq:editais', []);
+  const [editais, setEditais] = usePersist<TEdital[]>('cq:editais', [EDITAL_CUITE]);
   const [ativoId, setAtivoId] = usePersist<string>('cq:edital-ativo', '');
   const [novo, setNovo] = useState(false);
   const ativo = editais.find((e) => e.id === ativoId) ?? editais[0];
@@ -269,6 +283,9 @@ function NovoEdital({ temOutros, onCancelar, onPronto }: { temOutros: boolean; o
       {!ditado.suportado && <p className="nota">Para ditar por voz, use o Chrome ou o Edge.</p>}
       {ditado.ouvindo && <p className="nota" role="status">Ouvindo… fale com calma, o texto aparece acima.</p>}
       {erro && <p className="aviso" role="alert">{erro}</p>}
+      <button className="btn btn-sec btn-grande" onClick={() => onPronto({ ...EDITAL_CUITE, criadoEm: Date.now() })}>
+        Usar o edital de ACE Cuité de Mamanguape
+      </button>
       {temOutros && (
         <button className="link" onClick={onCancelar}>
           Voltar ao edital atual
