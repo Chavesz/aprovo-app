@@ -1,0 +1,714 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { Filtros, Questao, Resposta } from './types';
+import { usePersist } from './store';
+import { md } from './md';
+
+type Aba = 'praticar' | 'simulado' | 'desempenho' | 'revisar';
+
+const FILTROS_VAZIOS: Filtros = { banca: '', orgao: '', disciplina: '', assunto: '', ano: '', status: 'todas' };
+
+const unicos = (qs: Questao[], k: keyof Questao) =>
+  Array.from(new Set(qs.map((q) => String(q[k])))).sort((a, b) => a.localeCompare(b, 'pt-BR', { numeric: true }));
+
+const pct = (a: number, t: number) => (t ? Math.round((a / t) * 100) : 0);
+
+function embaralhar<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export default function App() {
+  const [questoes, setQuestoes] = useState<Questao[] | null>(null);
+  const [erro, setErro] = useState(false);
+  const [aba, setAba] = usePersist<Aba>('cq:aba', 'praticar');
+  const [tema, setTema] = usePersist<'claro' | 'escuro' | ''>('cq:tema-pref', '');
+  const [historico, setHistorico] = usePersist<Resposta[]>('cq:historico', []);
+  const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
+  const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
+
+  useEffect(() => {
+    fetch('/data/questoes.json')
+      .then((r) => r.json())
+      .then(setQuestoes)
+      .catch(() => setErro(true));
+  }, []);
+
+  useEffect(() => {
+    const el = document.documentElement;
+    if (tema) el.dataset.theme = tema === 'escuro' ? 'dark' : 'light';
+    else delete el.dataset.theme;
+    try {
+      if (tema) localStorage.setItem('cq:tema', el.dataset.theme!);
+      else localStorage.removeItem('cq:tema');
+    } catch {
+      /* ignore */
+    }
+  }, [tema]);
+
+  const escuroAgora = () =>
+    tema ? tema === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const registrar = (r: Resposta) => setHistorico((h) => [...h, r]);
+  const alternarRevisar = (id: string) =>
+    setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
+
+  const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
+    { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
+    { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
+    { id: 'desempenho', rotulo: 'Desempenho', icone: <IconChart /> },
+    { id: 'revisar', rotulo: 'Revisar', icone: <IconFlag /> },
+  ];
+
+  return (
+    <div className="app">
+      <header className="topo">
+        <div className="marca">
+          <span className="marca-selo" aria-hidden>G</span>
+          <span className="marca-nome">Gabarito</span>
+        </div>
+        <nav className="abas" aria-label="Seções">
+          {abas.map((a) => (
+            <button
+              key={a.id}
+              className="aba"
+              aria-current={aba === a.id ? 'page' : undefined}
+              onClick={() => setAba(a.id)}
+            >
+              {a.icone}
+              <span>{a.rotulo}</span>
+              {a.id === 'revisar' && revisar.length > 0 && <span className="contador">{revisar.length}</span>}
+            </button>
+          ))}
+        </nav>
+        <button
+          className="icone-btn"
+          onClick={() => setTema(escuroAgora() ? 'claro' : 'escuro')}
+          aria-label="Alternar modo escuro"
+          title="Alternar modo escuro"
+        >
+          <IconTheme />
+        </button>
+      </header>
+
+      <main className="conteudo">
+        {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
+        {!questoes && !erro && <Carregando />}
+        {questoes && aba === 'praticar' && (
+          <Praticar
+            questoes={questoes}
+            filtros={filtros}
+            setFiltros={setFiltros}
+            historico={historico}
+            revisar={revisar}
+            onResponder={registrar}
+            onRevisar={alternarRevisar}
+          />
+        )}
+        {questoes && aba === 'simulado' && (
+          <Simulado questoes={questoes} onResponder={registrar} revisar={revisar} onRevisar={alternarRevisar} />
+        )}
+        {questoes && aba === 'desempenho' && (
+          <Desempenho questoes={questoes} historico={historico} onLimpar={() => setHistorico([])} />
+        )}
+        {questoes && aba === 'revisar' && (
+          <Revisar
+            questoes={questoes}
+            revisar={revisar}
+            onRevisar={alternarRevisar}
+            onPraticar={() => {
+              setFiltros({ ...FILTROS_VAZIOS, status: 'revisar' });
+              setAba('praticar');
+            }}
+          />
+        )}
+      </main>
+    </div>
+  );
+}
+
+/* ---------- Praticar ---------- */
+
+function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[]) {
+  const respondidas = new Set(historico.map((h) => h.id));
+  const ultimas = new Map<string, boolean>();
+  historico.forEach((h) => ultimas.set(h.id, h.certa));
+  return qs.filter(
+    (q) =>
+      (!f.banca || q.banca === f.banca) &&
+      (!f.orgao || q.orgao === f.orgao) &&
+      (!f.disciplina || q.disciplina === f.disciplina) &&
+      (!f.assunto || q.assunto === f.assunto) &&
+      (!f.ano || String(q.ano) === f.ano) &&
+      (f.status === 'todas' ||
+        (f.status === 'ineditas' && !respondidas.has(q.id)) ||
+        (f.status === 'erradas' && ultimas.get(q.id) === false) ||
+        (f.status === 'revisar' && revisar.includes(q.id)))
+  );
+}
+
+function Praticar(props: {
+  questoes: Questao[];
+  filtros: Filtros;
+  setFiltros: (f: Filtros) => void;
+  historico: Resposta[];
+  revisar: string[];
+  onResponder: (r: Resposta) => void;
+  onRevisar: (id: string) => void;
+}) {
+  const { questoes, filtros, setFiltros, historico, revisar } = props;
+  // A lista é congelada ao mudar filtros, para a questão atual não sumir ao ser respondida.
+  const [lista, setLista] = useState<Questao[]>([]);
+  const [i, setI] = useState(0);
+  const [marcada, setMarcada] = useState<string | null>(null);
+  const [abrirFiltros, setAbrirFiltros] = useState(false);
+
+  useEffect(() => {
+    setLista(aplicarFiltros(questoes, filtros, historico, revisar));
+    setI(0);
+    setMarcada(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questoes, filtros]);
+
+  const base = useMemo(
+    () => questoes.filter((q) => !filtros.disciplina || q.disciplina === filtros.disciplina),
+    [questoes, filtros.disciplina]
+  );
+  const q = lista[i];
+  const set = (k: keyof Filtros, v: string) =>
+    setFiltros({ ...filtros, [k]: v, ...(k === 'disciplina' ? { assunto: '' } : {}) } as Filtros);
+  const ativos = (['banca', 'orgao', 'disciplina', 'assunto', 'ano'] as const).filter((k) => filtros[k]).length +
+    (filtros.status !== 'todas' ? 1 : 0);
+
+  const ir = (n: number) => {
+    setI(Math.max(0, Math.min(lista.length - 1, n)));
+    setMarcada(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="praticar">
+      <aside className={`filtros ${abrirFiltros ? 'aberto' : ''}`}>
+        <button className="filtros-toggle" onClick={() => setAbrirFiltros((v) => !v)} aria-expanded={abrirFiltros}>
+          <IconFilter /> Filtros {ativos > 0 && <span className="contador">{ativos}</span>}
+          <span className="filtros-total">{lista.length} questões</span>
+        </button>
+        <div className="filtros-corpo">
+          <Select rotulo="Banca" valor={filtros.banca} opcoes={unicos(questoes, 'banca')} onChange={(v) => set('banca', v)} />
+          <Select rotulo="Órgão" valor={filtros.orgao} opcoes={unicos(questoes, 'orgao')} onChange={(v) => set('orgao', v)} />
+          <Select rotulo="Disciplina" valor={filtros.disciplina} opcoes={unicos(questoes, 'disciplina')} onChange={(v) => set('disciplina', v)} />
+          <Select rotulo="Assunto" valor={filtros.assunto} opcoes={unicos(base, 'assunto')} onChange={(v) => set('assunto', v)} />
+          <Select rotulo="Ano" valor={filtros.ano} opcoes={unicos(questoes, 'ano').reverse()} onChange={(v) => set('ano', v)} />
+          <fieldset className="status">
+            <legend className="rotulo">Mostrar</legend>
+            {(
+              [
+                ['todas', 'Todas'],
+                ['ineditas', 'Não feitas'],
+                ['erradas', 'Errei'],
+                ['revisar', 'Marcadas'],
+              ] as const
+            ).map(([v, r]) => (
+              <label key={v} className="chip">
+                <input type="radio" name="status" checked={filtros.status === v} onChange={() => set('status', v)} />
+                {r}
+              </label>
+            ))}
+          </fieldset>
+          {ativos > 0 && (
+            <button className="link" onClick={() => setFiltros(FILTROS_VAZIOS)}>
+              Limpar filtros
+            </button>
+          )}
+        </div>
+      </aside>
+
+      <section className="coluna">
+        {!q ? (
+          <Vazio
+            titulo="Nenhuma questão com esses filtros"
+            texto="Tente outro ano ou assunto, ou limpe os filtros para ver o banco inteiro."
+            acao={<button className="btn" onClick={() => setFiltros(FILTROS_VAZIOS)}>Limpar filtros</button>}
+          />
+        ) : (
+          <>
+            <QuestaoCard
+              q={q}
+              posicao={`${i + 1} de ${lista.length}`}
+              marcada={marcada}
+              revelar={marcada !== null}
+              onMarcar={(l) => {
+                if (marcada) return;
+                setMarcada(l);
+                props.onResponder({ id: q.id, marcada: l, certa: l === q.gabarito, em: Date.now() });
+              }}
+              marcadaRevisar={revisar.includes(q.id)}
+              onRevisar={() => props.onRevisar(q.id)}
+            />
+            <div className="navegacao">
+              <button className="btn btn-sec" onClick={() => ir(i - 1)} disabled={i === 0}>
+                Anterior
+              </button>
+              <button className="btn" onClick={() => ir(i + 1)} disabled={i >= lista.length - 1}>
+                {marcada ? 'Próxima questão' : 'Pular'}
+              </button>
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+/* ---------- Questão ---------- */
+
+function QuestaoCard(props: {
+  q: Questao;
+  posicao: string;
+  marcada: string | null;
+  revelar: boolean;
+  onMarcar: (letra: string) => void;
+  marcadaRevisar: boolean;
+  onRevisar: () => void;
+}) {
+  const { q, marcada, revelar } = props;
+  const certa = marcada === q.gabarito;
+  return (
+    <article className="questao" aria-label={`Questão ${q.numero}, ${q.prova}`}>
+      <header className="questao-meta">
+        <span className="mono">{props.posicao}</span>
+        <span className="sep" aria-hidden />
+        <span>{q.prova} · Q{q.numero}</span>
+        <button
+          className={`icone-btn bandeira ${props.marcadaRevisar ? 'ativo' : ''}`}
+          onClick={props.onRevisar}
+          aria-pressed={props.marcadaRevisar}
+          title={props.marcadaRevisar ? 'Remover da revisão' : 'Marcar para revisar'}
+        >
+          <IconFlag />
+          <span className="sr">Marcar para revisar</span>
+        </button>
+      </header>
+      <div className="tags">
+        <span className="tag">{q.disciplina}</span>
+        <span className="tag">{q.assunto}</span>
+        {q.idioma && <span className="tag">{q.idioma === 'ingles' ? 'Inglês' : 'Espanhol'}</span>}
+        <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
+      </div>
+
+      {q.enunciado && <div className="enunciado" dangerouslySetInnerHTML={{ __html: md(q.enunciado) }} />}
+      {q.comando && <div className="comando" dangerouslySetInnerHTML={{ __html: md(q.comando) }} />}
+
+      <ol className="alternativas">
+        {q.alternativas.map((a) => {
+          const estado = !revelar
+            ? marcada === a.letra
+              ? 'marcada'
+              : ''
+            : a.letra === q.gabarito
+            ? 'correta'
+            : a.letra === marcada
+            ? 'errada'
+            : 'apagada';
+          return (
+            <li key={a.letra}>
+              <button
+                className={`alt ${estado}`}
+                onClick={() => props.onMarcar(a.letra)}
+                disabled={revelar}
+                aria-label={`Alternativa ${a.letra}${estado === 'correta' ? ', correta' : estado === 'errada' ? ', sua resposta, errada' : ''}`}
+              >
+                <span className="alt-letra">{a.letra}</span>
+                <span className="alt-texto">
+                  {a.texto && <span dangerouslySetInnerHTML={{ __html: md(a.texto) }} />}
+                  {a.imagem && <img src={a.imagem} alt={`Imagem da alternativa ${a.letra}`} loading="lazy" />}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      {revelar && marcada && (
+        <div className={`feedback ${certa ? 'ok' : 'nok'}`} role="status">
+          <strong>{certa ? 'Resposta certa.' : `Não foi dessa vez. Gabarito: ${q.gabarito}.`}</strong>
+          <p>
+            {q.comentario ??
+              'Gabarito oficial do INEP. Esta prova não tem comentário publicado; releia o enunciado com a alternativa correta em mente.'}
+          </p>
+        </div>
+      )}
+    </article>
+  );
+}
+
+/* ---------- Simulado ---------- */
+
+function Simulado(props: {
+  questoes: Questao[];
+  onResponder: (r: Resposta) => void;
+  revisar: string[];
+  onRevisar: (id: string) => void;
+}) {
+  const [config, setConfig] = useState({ total: 10, minutos: 30, disciplina: '' });
+  const [prova, setProva] = useState<Questao[] | null>(null);
+  const [respostas, setRespostas] = useState<Record<string, string>>({});
+  const [i, setI] = useState(0);
+  const [fim, setFim] = useState<number>(0);
+  const [agora, setAgora] = useState(Date.now());
+  const [encerrado, setEncerrado] = useState(false);
+
+  const restante = Math.max(0, Math.round((fim - agora) / 1000));
+
+  useEffect(() => {
+    if (!prova || encerrado) return;
+    const t = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [prova, encerrado]);
+
+  useEffect(() => {
+    if (prova && !encerrado && restante === 0) encerrar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restante]);
+
+  const iniciar = () => {
+    const pool = props.questoes.filter((q) => !config.disciplina || q.disciplina === config.disciplina);
+    setProva(embaralhar(pool).slice(0, config.total));
+    setRespostas({});
+    setI(0);
+    setEncerrado(false);
+    setFim(Date.now() + config.minutos * 60000);
+    setAgora(Date.now());
+  };
+
+  function encerrar() {
+    if (!prova) return;
+    const em = Date.now();
+    prova.forEach((q) => {
+      const m = respostas[q.id];
+      if (m) props.onResponder({ id: q.id, marcada: m, certa: m === q.gabarito, em, simulado: true });
+    });
+    setEncerrado(true);
+  }
+
+  if (!prova) {
+    return (
+      <section className="coluna estreita">
+        <p className="sobretitulo">Simulado</p>
+        <h1 className="titulo">Treine com o relógio correndo.</h1>
+        <p className="lead">Questões sorteadas, sem gabarito até o fim. O resultado entra no seu desempenho.</p>
+        <div className="form-simulado">
+          <Select
+            rotulo="Disciplina"
+            valor={config.disciplina}
+            opcoes={unicos(props.questoes, 'disciplina')}
+            vazio="Todas as disciplinas"
+            onChange={(v) => setConfig({ ...config, disciplina: v })}
+          />
+          <Segmentado rotulo="Questões" valores={[5, 10, 20, 45]} valor={config.total} onChange={(v) => setConfig({ ...config, total: v })} />
+          <Segmentado rotulo="Tempo (min)" valores={[10, 30, 60, 90]} valor={config.minutos} onChange={(v) => setConfig({ ...config, minutos: v })} />
+          <button className="btn btn-grande" onClick={iniciar}>
+            Começar simulado
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (encerrado) {
+    const acertos = prova.filter((q) => respostas[q.id] === q.gabarito).length;
+    return (
+      <section className="coluna estreita">
+        <p className="sobretitulo">Resultado</p>
+        <h1 className="titulo">
+          {acertos} de {prova.length} <span className="titulo-sub">({pct(acertos, prova.length)}%)</span>
+        </h1>
+        <p className="lead">
+          {Object.keys(respostas).length < prova.length
+            ? `${prova.length - Object.keys(respostas).length} em branco. `
+            : ''}
+          Toque numa questão para conferir.
+        </p>
+        <ol className="resultado">
+          {prova.map((q, n) => {
+            const m = respostas[q.id];
+            const st = !m ? 'branco' : m === q.gabarito ? 'ok' : 'nok';
+            return (
+              <li key={q.id}>
+                <details>
+                  <summary className={`resultado-linha ${st}`}>
+                    <span className="mono">{String(n + 1).padStart(2, '0')}</span>
+                    <span className="resultado-assunto">{q.assunto}</span>
+                    <span className="mono">
+                      {m ?? '—'} / {q.gabarito}
+                    </span>
+                  </summary>
+                  <QuestaoCard
+                    q={q}
+                    posicao={q.disciplina}
+                    marcada={m ?? null}
+                    revelar
+                    onMarcar={() => undefined}
+                    marcadaRevisar={props.revisar.includes(q.id)}
+                    onRevisar={() => props.onRevisar(q.id)}
+                  />
+                </details>
+              </li>
+            );
+          })}
+        </ol>
+        <button className="btn" onClick={() => setProva(null)}>
+          Novo simulado
+        </button>
+      </section>
+    );
+  }
+
+  const q = prova[i];
+  const mm = String(Math.floor(restante / 60)).padStart(2, '0');
+  const ss = String(restante % 60).padStart(2, '0');
+  return (
+    <section className="coluna">
+      <div className="barra-simulado">
+        <span className={`relogio mono ${restante < 60 ? 'urgente' : ''}`} role="timer" aria-label="Tempo restante">
+          {mm}:{ss}
+        </span>
+        <div className="mapa" aria-label="Mapa de questões">
+          {prova.map((p, n) => (
+            <button
+              key={p.id}
+              className={`mapa-item ${respostas[p.id] ? 'feita' : ''} ${n === i ? 'atual' : ''}`}
+              onClick={() => setI(n)}
+              aria-label={`Ir para questão ${n + 1}`}
+            >
+              {n + 1}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-sec" onClick={() => confirm('Entregar o simulado agora?') && encerrar()}>
+          Entregar
+        </button>
+      </div>
+      <QuestaoCard
+        q={q}
+        posicao={`${i + 1} de ${prova.length}`}
+        marcada={respostas[q.id] ?? null}
+        revelar={false}
+        onMarcar={(l) => setRespostas((r) => ({ ...r, [q.id]: l }))}
+        marcadaRevisar={props.revisar.includes(q.id)}
+        onRevisar={() => props.onRevisar(q.id)}
+      />
+      <div className="navegacao">
+        <button className="btn btn-sec" onClick={() => setI(i - 1)} disabled={i === 0}>
+          Anterior
+        </button>
+        {i < prova.length - 1 ? (
+          <button className="btn" onClick={() => setI(i + 1)}>
+            Próxima
+          </button>
+        ) : (
+          <button className="btn" onClick={encerrar}>
+            Entregar simulado
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Desempenho ---------- */
+
+function Desempenho({ questoes, historico, onLimpar }: { questoes: Questao[]; historico: Resposta[]; onLimpar: () => void }) {
+  const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
+  const acertos = historico.filter((h) => h.certa).length;
+
+  const grupos = useMemo(() => {
+    const m = new Map<string, { disciplina: string; assunto: string; t: number; a: number }>();
+    historico.forEach((h) => {
+      const q = porId.get(h.id);
+      if (!q) return;
+      const k = `${q.disciplina}|${q.assunto}`;
+      const g = m.get(k) ?? { disciplina: q.disciplina, assunto: q.assunto, t: 0, a: 0 };
+      g.t++;
+      if (h.certa) g.a++;
+      m.set(k, g);
+    });
+    return Array.from(m.values()).sort((x, y) => pct(x.a, x.t) - pct(y.a, y.t) || y.t - x.t);
+  }, [historico, porId]);
+
+  const hoje = new Date().toDateString();
+  const feitasHoje = historico.filter((h) => new Date(h.em).toDateString() === hoje).length;
+
+  if (!historico.length) {
+    return (
+      <Vazio
+        titulo="Seu desempenho aparece aqui"
+        texto="Responda algumas questões e você verá a taxa de acerto por assunto, do ponto mais fraco ao mais forte."
+      />
+    );
+  }
+
+  return (
+    <section className="coluna estreita">
+      <p className="sobretitulo">Desempenho</p>
+      <div className="numeros">
+        <div>
+          <span className="numero">{pct(acertos, historico.length)}%</span>
+          <span className="rotulo">de acerto</span>
+        </div>
+        <div>
+          <span className="numero">{historico.length}</span>
+          <span className="rotulo">respostas</span>
+        </div>
+        <div>
+          <span className="numero">{feitasHoje}</span>
+          <span className="rotulo">hoje</span>
+        </div>
+      </div>
+
+      <h2 className="subtitulo">Por assunto <span className="nota">do mais fraco ao mais forte</span></h2>
+      <ul className="assuntos">
+        {grupos.map((g) => (
+          <li key={g.disciplina + g.assunto}>
+            <div className="assunto-linha">
+              <span>
+                {g.assunto} <span className="nota">{g.disciplina}</span>
+              </span>
+              <span className="mono">
+                {g.a}/{g.t} · {pct(g.a, g.t)}%
+              </span>
+            </div>
+            <div className="barra" aria-hidden>
+              <span style={{ width: `${pct(g.a, g.t)}%` }} className={pct(g.a, g.t) < 50 ? 'fraca' : ''} />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="subtitulo">Histórico recente</h2>
+      <ol className="historico">
+        {historico
+          .slice(-15)
+          .reverse()
+          .map((h, n) => {
+            const q = porId.get(h.id);
+            return (
+              <li key={h.em + h.id + n} className={h.certa ? 'ok' : 'nok'}>
+                <span className="mono">{h.certa ? 'certa' : 'errada'}</span>
+                <span className="historico-texto">
+                  {q ? `${q.prova} · Q${q.numero} · ${q.assunto}` : h.id}
+                  {h.simulado && <span className="tag tag-fraca">simulado</span>}
+                </span>
+                <time className="nota">{new Date(h.em).toLocaleDateString('pt-BR')}</time>
+              </li>
+            );
+          })}
+      </ol>
+      <button className="link perigo" onClick={() => confirm('Apagar todo o histórico deste navegador?') && onLimpar()}>
+        Apagar histórico
+      </button>
+    </section>
+  );
+}
+
+/* ---------- Revisar ---------- */
+
+function Revisar(props: { questoes: Questao[]; revisar: string[]; onRevisar: (id: string) => void; onPraticar: () => void }) {
+  const lista = props.questoes.filter((q) => props.revisar.includes(q.id));
+  if (!lista.length) {
+    return (
+      <Vazio
+        titulo="Nada marcado para revisar"
+        texto="Use a bandeira no canto da questão para guardar as que você quer refazer depois."
+      />
+    );
+  }
+  return (
+    <section className="coluna estreita">
+      <p className="sobretitulo">Revisar</p>
+      <h1 className="titulo">{lista.length} {lista.length === 1 ? 'questão marcada' : 'questões marcadas'}</h1>
+      <button className="btn" onClick={props.onPraticar}>
+        Refazer as marcadas
+      </button>
+      <ul className="lista-revisar">
+        {lista.map((q) => (
+          <li key={q.id}>
+            <div>
+              <span className="mono nota">{q.prova} · Q{q.numero}</span>
+              <p className="lista-titulo">{q.assunto}</p>
+              <p className="nota">{q.disciplina}</p>
+            </div>
+            <button className="link" onClick={() => props.onRevisar(q.id)}>
+              Remover
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* ---------- Peças ---------- */
+
+function Select(props: { rotulo: string; valor: string; opcoes: string[]; onChange: (v: string) => void; vazio?: string }) {
+  return (
+    <label className="campo">
+      <span className="rotulo">{props.rotulo}</span>
+      <select value={props.valor} onChange={(e) => props.onChange(e.target.value)}>
+        <option value="">{props.vazio ?? 'Todos'}</option>
+        {props.opcoes.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Segmentado(props: { rotulo: string; valores: number[]; valor: number; onChange: (v: number) => void }) {
+  return (
+    <fieldset className="campo">
+      <legend className="rotulo">{props.rotulo}</legend>
+      <div className="segmentado">
+        {props.valores.map((v) => (
+          <label key={v} className="chip">
+            <input type="radio" name={props.rotulo} checked={props.valor === v} onChange={() => props.onChange(v)} />
+            {v}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function Vazio({ titulo, texto, acao }: { titulo: string; texto: string; acao?: JSX.Element }) {
+  return (
+    <section className="vazio">
+      <h2 className="subtitulo">{titulo}</h2>
+      <p>{texto}</p>
+      {acao}
+    </section>
+  );
+}
+
+function Carregando() {
+  return (
+    <div className="carregando" aria-busy="true" aria-label="Carregando questões">
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
+const svg = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+const IconPen = () => <svg {...svg}><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M14 6l4 4" /></svg>;
+const IconClock = () => <svg {...svg}><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2.5M9 2h6" /></svg>;
+const IconChart = () => <svg {...svg}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>;
+const IconFlag = () => <svg {...svg}><path d="M5 21V4h11l-2 4 2 4H5" /></svg>;
+const IconFilter = () => <svg {...svg}><path d="M3 5h18M6 12h12M10 19h4" /></svg>;
+const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;
