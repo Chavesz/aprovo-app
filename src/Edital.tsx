@@ -71,7 +71,7 @@ const EQUIVALENCIAS: [RegExp, (q: Questao) => boolean][] = [
   [/conhecimentos gerais|atualidades/, (q) => q.disciplina === 'Conhecimentos Gerais'],
   [/matematica|raciocinio|logic/, (q) => q.disciplina === 'Matemática'],
   [/historia|geografia|atualidades|conhecimentos gerais|realidade|sociologia|filosofia(?! do direito)/, (q) => q.disciplina === 'Ciências Humanas'],
-  [/ciencias|biologia|quimica|fisica|saude|meio ambiente/, (q) => q.disciplina === 'Ciências da Natureza'],
+  [/ciencias|biologia|quimica|fisica/, (q) => q.disciplina === 'Ciências da Natureza'],
   [/ingles|espanhol|lingua estrangeira/, (q) => q.assunto === 'Língua estrangeira'],
   [/constitucional/, (q) => q.disciplina === 'Direito Constitucional'],
   [/administrativ/, (q) => q.disciplina === 'Direito Administrativo'],

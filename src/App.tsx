@@ -185,7 +185,9 @@ function ordemInteligente(lista: Questao[], historico: Resposta[]) {
     const g = assunto.get(q.assunto);
     const taxaErro = g ? g.e / g.t : 0.6;
     const u = ultima.get(q.id);
-    return taxaErro * 2 + (u === false ? 1.5 : u === undefined ? 0.5 : -2);
+    // Questões comentadas (autorais) e da EDUCA vêm antes das de outras bancas.
+    const fonte = q.comentario ? 0.8 : /educa/i.test(q.banca) ? 0.5 : 0;
+    return taxaErro * 2 + (u === false ? 1.5 : u === undefined ? 0.5 : -2) + fonte;
   };
   // Desempate aleatório para não repetir sempre a mesma sequência.
   return lista
