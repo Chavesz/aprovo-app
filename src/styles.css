@@ -530,3 +530,17 @@ textarea {
 .feedback-extra .rotulo { color: var(--tinta-2); }
 .bloco-botoes { display: flex; flex-wrap: wrap; gap: 8px; }
 .marca + .abas + .icone-btn, .topo > a.icone-btn { color: var(--tinta-2); }
+
+/* ---------- Prova no estilo da banca ---------- */
+.prova-estilo { margin: 0 0 28px; padding: 18px; border: 1px solid var(--tinta); border-radius: var(--raio); display: grid; gap: 8px; }
+.prova-estilo p { margin: 0; }
+.prova-estilo-titulo { font: 500 1.5rem/1.15 var(--serif); }
+.prova-estilo .btn { margin-top: 8px; }
+.simulado-livre { margin: 0 0 12px; }
+.tabela-nota { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 0.9375rem; }
+.tabela-nota th { text-align: left; font: 500 0.6875rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--tinta-2); padding: 8px 0; border-bottom: 1px solid var(--tinta); }
+.tabela-nota td { padding: 10px 0; border-bottom: 1px solid var(--linha); }
+.tabela-nota tr.zerou td { color: var(--nok); }
+.aviso-nota { padding: 12px 14px; border-radius: var(--raio); margin: 0 0 20px; }
+.aviso-nota.ok { background: var(--ok-fundo); color: var(--ok); }
+.aviso-nota.nok { background: var(--nok-fundo); color: var(--nok); }

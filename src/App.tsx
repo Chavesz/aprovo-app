@@ -125,7 +125,7 @@ export default function App() {
           />
         )}
         {questoes && aba === 'simulado' && (
-          <Simulado questoes={questoes} onResponder={registrar} revisar={revisar} onRevisar={alternarRevisar} />
+          <Simulado questoes={questoes} historico={historico} onResponder={registrar} revisar={revisar} onRevisar={alternarRevisar} />
         )}
         {questoes && aba === 'edital' && (
           <Edital
@@ -433,7 +433,26 @@ function QuestaoCard(props: {
 
 /* ---------- Simulado ---------- */
 
+/** Formato da prova de ACE de Cuité (EDUCA PB): 40 questões, 3 horas, nota de 0 a 100. */
+const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao) => boolean }[] = [
+  { nome: 'Português', n: 15, peso: 2, filtro: (q) => q.disciplina === 'Português' || q.disciplina === 'Língua Portuguesa' },
+  { nome: 'Informática', n: 5, peso: 1, filtro: (q) => q.disciplina === 'Informática' },
+  { nome: 'Conhecimentos Gerais', n: 5, peso: 1, filtro: (q) => q.disciplina === 'Conhecimentos Gerais' },
+  { nome: 'Específicos', n: 15, peso: 4, filtro: (q) => q.disciplina === 'Específicos ACE' || q.disciplina === 'Saúde Pública' },
+];
+
+/** Monta a prova no formato da banca: só questões no estilo da prova (autorais comentadas e EDUCA), priorizando os erros. */
+function montarProvaEstilo(questoes: Questao[], historico: Resposta[]) {
+  const estilo = questoes.filter((q) => q.comentario || /educa/i.test(q.banca));
+  return FORMATO_ACE.flatMap((b) => ordemInteligente(estilo.filter(b.filtro), historico).slice(0, b.n));
+}
+
+function blocoDe(q: Questao) {
+  return FORMATO_ACE.find((b) => b.filtro(q));
+}
+
 function Simulado(props: {
+  historico: Resposta[];
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
   revisar: string[];
@@ -446,6 +465,7 @@ function Simulado(props: {
   const [fim, setFim] = useState<number>(0);
   const [agora, setAgora] = useState(Date.now());
   const [encerrado, setEncerrado] = useState(false);
+  const [estiloProva, setEstiloProva] = useState(false);
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -470,6 +490,16 @@ function Simulado(props: {
     setAgora(Date.now());
   };
 
+  const iniciarProva = () => {
+    setProva(montarProvaEstilo(props.questoes, props.historico));
+    setEstiloProva(true);
+    setRespostas({});
+    setI(0);
+    setEncerrado(false);
+    setFim(Date.now() + 180 * 60000);
+    setAgora(Date.now());
+  };
+
   function encerrar() {
     if (!prova) return;
     const em = Date.now();
@@ -486,6 +516,18 @@ function Simulado(props: {
         <p className="sobretitulo">Simulado</p>
         <h1 className="titulo">Treine com o relógio correndo.</h1>
         <p className="lead">Questões sorteadas, sem gabarito até o fim. O resultado entra no seu desempenho.</p>
+        <div className="prova-estilo">
+          <p className="rotulo">Prova no estilo da banca</p>
+          <p className="prova-estilo-titulo">ACE Cuité · EDUCA PB</p>
+          <p className="nota">
+            40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
+            Nota de 0 a 100, começando pelos assuntos em que você mais erra.
+          </p>
+          <button className="btn btn-grande" onClick={iniciarProva}>
+            Gerar prova no estilo da banca
+          </button>
+        </div>
+        <p className="rotulo simulado-livre">Ou monte um simulado livre</p>
         <div className="form-simulado">
           <Select
             rotulo="Disciplina"
@@ -496,7 +538,7 @@ function Simulado(props: {
           />
           <Segmentado rotulo="Questões" valores={[5, 10, 20, 45]} valor={config.total} onChange={(v) => setConfig({ ...config, total: v })} />
           <Segmentado rotulo="Tempo (min)" valores={[10, 30, 60, 90]} valor={config.minutos} onChange={(v) => setConfig({ ...config, minutos: v })} />
-          <button className="btn btn-grande" onClick={iniciar}>
+          <button className="btn btn-sec btn-grande" onClick={() => { setEstiloProva(false); iniciar(); }}>
             Começar simulado
           </button>
         </div>
@@ -506,12 +548,48 @@ function Simulado(props: {
 
   if (encerrado) {
     const acertos = prova.filter((q) => respostas[q.id] === q.gabarito).length;
+    const notas = FORMATO_ACE.map((b) => {
+      const qs = prova.filter((q) => blocoDe(q) === b);
+      const a = qs.filter((q) => respostas[q.id] === q.gabarito).length;
+      return { ...b, total: qs.length, a, pontos: a * b.peso, max: qs.length * b.peso };
+    });
+    const nota = notas.reduce((s, b) => s + b.pontos, 0);
+    const zerou = notas.filter((b) => b.total > 0 && b.a === 0);
     return (
       <section className="coluna estreita">
         <p className="sobretitulo">Resultado</p>
-        <h1 className="titulo">
-          {acertos} de {prova.length} <span className="titulo-sub">({pct(acertos, prova.length)}%)</span>
-        </h1>
+        {estiloProva ? (
+          <>
+            <h1 className="titulo">
+              {nota} <span className="titulo-sub">de 100 pontos · {acertos}/{prova.length} acertos</span>
+            </h1>
+            <table className="tabela-nota">
+              <thead>
+                <tr><th>Matéria</th><th>Acertos</th><th>Pontos</th></tr>
+              </thead>
+              <tbody>
+                {notas.map((b) => (
+                  <tr key={b.nome} className={b.a === 0 ? 'zerou' : ''}>
+                    <td>{b.nome} <span className="nota">×{b.peso}</span></td>
+                    <td className="mono">{b.a}/{b.total}</td>
+                    <td className="mono">{b.pontos}/{b.max}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className={`aviso-nota ${nota >= 50 && !zerou.length ? 'ok' : 'nok'}`}>
+              {zerou.length
+                ? `Zerou ${zerou.map((b) => b.nome).join(', ')}: na prova real, nota zero em uma matéria elimina.`
+                : nota >= 50
+                ? 'Acima da nota mínima (50). Meta: 90+ para brigar pelas 3 vagas.'
+                : 'Abaixo da nota mínima de 50 pontos.'}
+            </p>
+          </>
+        ) : (
+          <h1 className="titulo">
+            {acertos} de {prova.length} <span className="titulo-sub">({pct(acertos, prova.length)}%)</span>
+          </h1>
+        )}
         <p className="lead">
           {Object.keys(respostas).length < prova.length
             ? `${prova.length - Object.keys(respostas).length} em branco. `
