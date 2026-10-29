@@ -3,7 +3,9 @@ import type { Edital as TEdital, Filtros, Questao } from './types';
 import { usePersist } from './store';
 
 interface Props {
+  questoes: Questao[];
   geradas: Questao[];
+  onBloco: (ids: string[]) => void;
   onNovas: (qs: Questao[]) => void;
   onPraticar: (f: Partial<Filtros>) => void;
 }
@@ -57,9 +59,93 @@ function useDitado(onTexto: (t: string) => void) {
   return { suportado: !!Classe, ouvindo, alternar };
 }
 
+/* ---------- Bloco de estudos ---------- */
+
+const sem = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+// Liga o nome da disciplina no edital às disciplinas (e assuntos) dos bancos abertos.
+const EQUIVALENCIAS: [RegExp, (q: Questao) => boolean][] = [
+  [/portugues|lingua materna|interpretacao|redacao/, (q) => q.disciplina === 'Linguagens' && q.assunto !== 'Língua estrangeira'],
+  [/matematica|raciocinio|logic/, (q) => q.disciplina === 'Matemática'],
+  [/historia|geografia|atualidades|conhecimentos gerais|realidade|sociologia|filosofia(?! do direito)/, (q) => q.disciplina === 'Ciências Humanas'],
+  [/ciencias|biologia|quimica|fisica|saude|meio ambiente/, (q) => q.disciplina === 'Ciências da Natureza'],
+  [/ingles|espanhol|lingua estrangeira/, (q) => q.assunto === 'Língua estrangeira'],
+  [/constitucional/, (q) => q.disciplina === 'Direito Constitucional'],
+  [/administrativ/, (q) => q.disciplina === 'Direito Administrativo'],
+  [/processual penal|processo penal/, (q) => q.disciplina === 'Direito Processual Penal'],
+  [/penal/, (q) => q.disciplina === 'Direito Penal'],
+  [/processual civil|processo civil/, (q) => q.disciplina === 'Direito Processual Civil'],
+  [/civil/, (q) => q.disciplina === 'Direito Civil'],
+  [/tributari/, (q) => q.disciplina === 'Direito Tributário'],
+  [/processual do trabalho|processo do trabalho/, (q) => q.disciplina === 'Direito Processual do Trabalho'],
+  [/trabalh/, (q) => q.disciplina === 'Direito do Trabalho'],
+  [/ambiental/, (q) => q.disciplina === 'Direito Ambiental'],
+  [/consumidor/, (q) => q.disciplina === 'Direito do Consumidor'],
+  [/crianca|adolescente|eca/, (q) => q.disciplina === 'Direito da Criança e do Adolescente'],
+  [/direitos humanos/, (q) => q.disciplina === 'Direitos Humanos'],
+  [/etica/, (q) => q.disciplina === 'Ética Profissional'],
+  [/empresarial|comercial/, (q) => q.disciplina === 'Direito Empresarial'],
+];
+
+function montarBloco(edital: TEdital, questoes: Questao[]) {
+  const banca = sem(edital.banca);
+  const porDisciplina = edital.disciplinas.map((d) => {
+    const nome = sem(d.nome);
+    const regra = EQUIVALENCIAS.find(([re]) => re.test(nome));
+    const qs = questoes.filter(
+      (q) => (q.ia && q.orgao === edital.orgao && q.disciplina === d.nome) || (!q.ia && regra !== undefined && regra[1](q))
+    );
+    // Primeiro as da mesma banca do edital, depois as geradas para ele, depois as demais.
+    const peso = (q: Questao) => (sem(q.banca) === banca ? 0 : q.ia ? 1 : 2);
+    qs.sort((x, y) => peso(x) - peso(y));
+    return { nome: d.nome, qs, daBanca: qs.filter((q) => sem(q.banca) === banca).length, ia: qs.filter((q) => q.ia).length };
+  });
+  // Intercala as disciplinas para o bloco não virar uma sequência de uma matéria só.
+  const ids: string[] = [];
+  const max = Math.max(0, ...porDisciplina.map((d) => d.qs.length));
+  for (let i = 0; i < max; i++) for (const d of porDisciplina) if (d.qs[i]) ids.push(d.qs[i].id);
+  return { porDisciplina, ids };
+}
+
+function Bloco({ edital, questoes, onBloco }: { edital: TEdital; questoes: Questao[]; onBloco: (ids: string[]) => void }) {
+  const { porDisciplina, ids } = montarBloco(edital, questoes);
+  const semQuestoes = porDisciplina.filter((d) => d.qs.length === 0);
+  return (
+    <div className="bloco">
+      <div className="bloco-topo">
+        <div>
+          <p className="rotulo">Bloco de estudos</p>
+          <p className="bloco-total">
+            {ids.length} <span>questões ligadas a este edital</span>
+          </p>
+        </div>
+        <button className="btn" onClick={() => onBloco(ids)} disabled={!ids.length}>
+          Estudar o bloco
+        </button>
+      </div>
+      <ul className="bloco-lista">
+        {porDisciplina.map((d) => (
+          <li key={d.nome}>
+            <span>{d.nome}</span>
+            <span className="mono nota">
+              {d.qs.length ? `${d.qs.length}${d.daBanca ? ` · ${d.daBanca} ${edital.banca}` : ''}${d.ia ? ` · ${d.ia} IA` : ''}` : 'gere com IA'}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {semQuestoes.length > 0 && (
+        <p className="nota">
+          Sem questões abertas para {semQuestoes.map((d) => d.nome).join(', ')}. Toque nos assuntos abaixo para gerar
+          questões no estilo da {edital.banca}.
+        </p>
+      )}
+    </div>
+  );
+}
+
 /* ---------- Tela ---------- */
 
-export default function Edital({ geradas, onNovas, onPraticar }: Props) {
+export default function Edital({ questoes, geradas, onNovas, onPraticar, onBloco }: Props) {
   const [editais, setEditais] = usePersist<TEdital[]>('cq:editais', []);
   const [ativoId, setAtivoId] = usePersist<string>('cq:edital-ativo', '');
   const [novo, setNovo] = useState(false);
@@ -106,6 +192,8 @@ export default function Edital({ geradas, onNovas, onPraticar }: Props) {
         <div><dt className="rotulo">Órgão</dt><dd>{ativo.orgao}</dd></div>
         <div><dt className="rotulo">Cargo</dt><dd>{ativo.cargo}</dd></div>
       </dl>
+
+      <Bloco edital={ativo} questoes={questoes} onBloco={onBloco} />
 
       <Gerador edital={ativo} geradas={geradas} onNovas={onNovas} onPraticar={onPraticar} onSalvar={salvar} />
 

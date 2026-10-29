@@ -30,6 +30,7 @@ export default function App() {
   const [tema, setTema] = usePersist<'claro' | 'escuro' | ''>('cq:tema-pref', '');
   const [historico, setHistorico] = usePersist<Resposta[]>('cq:historico', []);
   const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
+  const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function App() {
             setFiltros={setFiltros}
             historico={historico}
             revisar={revisar}
+            bloco={bloco}
             onResponder={registrar}
             onRevisar={alternarRevisar}
           />
@@ -119,7 +121,13 @@ export default function App() {
         )}
         {questoes && aba === 'edital' && (
           <Edital
+            questoes={questoes}
             geradas={geradas}
+            onBloco={(ids) => {
+              setBloco(ids);
+              setFiltros({ ...FILTROS_VAZIOS, status: 'bloco' });
+              setAba('praticar');
+            }}
             onNovas={(qs) => setGeradas((g) => [...qs, ...g])}
             onPraticar={(f) => {
               setFiltros({ ...FILTROS_VAZIOS, ...f });
@@ -148,11 +156,11 @@ export default function App() {
 
 /* ---------- Praticar ---------- */
 
-function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[]) {
+function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[], bloco: string[]) {
   const respondidas = new Set(historico.map((h) => h.id));
   const ultimas = new Map<string, boolean>();
   historico.forEach((h) => ultimas.set(h.id, h.certa));
-  return qs.filter(
+  const lista = qs.filter(
     (q) =>
       (!f.banca || q.banca === f.banca) &&
       (!f.orgao || q.orgao === f.orgao) &&
@@ -162,8 +170,12 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
       (f.status === 'todas' ||
         (f.status === 'ineditas' && !respondidas.has(q.id)) ||
         (f.status === 'erradas' && ultimas.get(q.id) === false) ||
-        (f.status === 'revisar' && revisar.includes(q.id)))
+        (f.status === 'revisar' && revisar.includes(q.id)) ||
+        (f.status === 'bloco' && bloco.includes(q.id)))
   );
+  if (f.status !== 'bloco') return lista;
+  const ordem = new Map(bloco.map((id, i) => [id, i]));
+  return lista.sort((x, y) => (ordem.get(x.id) ?? 0) - (ordem.get(y.id) ?? 0));
 }
 
 function Praticar(props: {
@@ -172,10 +184,11 @@ function Praticar(props: {
   setFiltros: (f: Filtros) => void;
   historico: Resposta[];
   revisar: string[];
+  bloco: string[];
   onResponder: (r: Resposta) => void;
   onRevisar: (id: string) => void;
 }) {
-  const { questoes, filtros, setFiltros, historico, revisar } = props;
+  const { questoes, filtros, setFiltros, historico, revisar, bloco } = props;
   // A lista é congelada ao mudar filtros, para a questão atual não sumir ao ser respondida.
   const [lista, setLista] = useState<Questao[]>([]);
   const [i, setI] = useState(0);
@@ -183,7 +196,7 @@ function Praticar(props: {
   const [abrirFiltros, setAbrirFiltros] = useState(false);
 
   useEffect(() => {
-    setLista(aplicarFiltros(questoes, filtros, historico, revisar));
+    setLista(aplicarFiltros(questoes, filtros, historico, revisar, bloco));
     setI(0);
     setMarcada(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,6 +239,7 @@ function Praticar(props: {
                 ['ineditas', 'Não feitas'],
                 ['erradas', 'Errei'],
                 ['revisar', 'Marcadas'],
+                ['bloco', 'Meu bloco'],
               ] as const
             ).map(([v, r]) => (
               <label key={v} className="chip">

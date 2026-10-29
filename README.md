@@ -20,6 +20,7 @@ App web para estudar para concursos: questões oficiais com filtros, simulado cr
 - **Resposta com feedback** imediato: alternativa certa em verde, a sua em vermelho quando erra, e o gabarito oficial. O campo `comentario` do banco aparece como gabarito comentado quando existir.
 - **Simulado cronometrado**: 5 a 45 questões sorteadas, 10 a 90 minutos, mapa de navegação, entrega automática quando o tempo acaba e correção questão por questão.
 - **Meu edital com IA**: cole o conteúdo programático ou fale o que vai prestar (ditado por voz no Chrome/Edge). A IA identifica banca, órgão e cargo, separa disciplinas e assuntos, e cria questões inéditas no estilo da banca (A a E ou certo/errado, três níveis de dificuldade), cada uma com gabarito comentado. Dá para editar os assuntos, ter vários editais e praticar só as questões de um edital ou assunto.
+- **Bloco de estudos do edital**: junta, para cada disciplina do seu edital, as questões dos bancos abertos que tratam dela (ex.: Língua Portuguesa usa as questões de interpretação e gramática do ENEM; Direito Constitucional usa as da OAB) e as geradas pela IA. As da mesma banca do edital vêm primeiro e as disciplinas são intercaladas. Disciplinas sem questão aberta aparecem com o aviso para gerar com IA.
 - **Painel de desempenho**: acerto geral, resolvidas, acertos, dias seguidos de estudo, gráfico dos últimos 14 dias, acerto por disciplina e por assunto (do mais fraco ao mais forte), filtro de 7 dias, 30 dias ou tudo, e histórico recente. Tudo em `localStorage`.
 - **Marcar para revisar** com a bandeira de cada questão e refazer só as marcadas.
 - **Modo escuro** automático (segue o sistema) com botão para alternar.
@@ -64,6 +65,7 @@ São 3.102 questões reais de duas fontes abertas. Nenhuma vem de scraping de si
 - **Disciplina da OAB:** 925 questões (provas de 2014 em diante) vieram sem rótulo no dataset. O script infere a disciplina pela posição da questão na prova (a OAB segue a mesma ordem de matérias) e desempata por palavras-chave. Testado contra as questões rotuladas, acerta 97% (418 de 429).
 - **Assunto:** nenhuma das fontes informa o assunto. Ele é classificado por palavras-chave; o que não se encaixa fica como "Geral".
 - **Gabarito comentado:** as provas oficiais não têm comentário publicado. As questões geradas pela IA vêm comentadas.
+- **Educa PB e outras bancas regionais:** não há API nem banco aberto com licença. As provas circulam só em PDF em sites de terceiros, então não foram importadas. Para estudar para a Educa, crie o edital com a banca "Educa" e gere as questões com a IA, que segue o estilo da banca.
 - **Mais bancas:** o formato do JSON aceita qualquer prova pública. Basta incluir questões com `banca`, `orgao`, `prova`, `ano`, `disciplina`, `assunto`, `alternativas`, `gabarito` e, se houver, `comentario`.
 
 ## Deploy na Netlify

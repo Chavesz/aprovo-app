@@ -514,3 +514,12 @@ textarea {
 @media (min-width: 900px) {
   .abas { display: flex; }
 }
+
+/* ---------- Bloco de estudos ---------- */
+.bloco { margin: 24px 0 8px; padding: 18px; border: 1px solid var(--tinta); border-radius: var(--raio); }
+.bloco-topo { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px; }
+.bloco-total { margin: 4px 0 0; font: 500 2.25rem/1 var(--serif); letter-spacing: -0.02em; }
+.bloco-total span { font: 400 0.9375rem var(--sans); color: var(--tinta-2); letter-spacing: 0; }
+.bloco-lista { list-style: none; margin: 16px 0 8px; padding: 0; border-top: 1px solid var(--linha); }
+.bloco-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--linha); font-size: 0.9375rem; }
+.bloco-lista .mono { text-align: right; white-space: nowrap; }

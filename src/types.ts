@@ -37,7 +37,7 @@ export interface Filtros {
   disciplina: string;
   assunto: string;
   ano: string;
-  status: 'todas' | 'ineditas' | 'erradas' | 'revisar';
+  status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco';
 }
 
 export interface Edital {
