@@ -83,18 +83,49 @@ def questoes_da_prova(texto):
     atual = None
     esperado = 1
     saida = []
+    textos = []  # textos-base: {'de', 'ate', 'linhas'}
+    capturando = None
     for linha in linhas:
         cabeca = linha.strip().upper()
         for chave, nome in SECOES:
             if cabeca.startswith(chave) and len(cabeca) < 60:
                 disciplina = nome
+        marca = re.search(r'quest[õo]es\s+(?:de\s+)?(\d{1,2})\s+(?:a|ao|à|e)\s+(\d{1,2})', linha, re.I)
+        if marca and not re.match(r'^\s*\d{1,2}\s*[.)-]', linha):
+            capturando = {'de': int(marca.group(1)), 'ate': int(marca.group(2)), 'linhas': [linha[marca.end():]]}
+            textos.append(capturando)
+            continue
         m = re.match(r'^\s*(\d{1,2})\s*[.)-]\s*(.*)', linha)
         if m and int(m.group(1)) == esperado:
             atual = {'numero': esperado, 'disciplina': disciplina, 'linhas': [m.group(2)]}
             saida.append(atual)
             esperado += 1
+            capturando = None
+        elif capturando is not None:
+            capturando['linhas'].append(linha)
         elif atual is not None:
             atual['linhas'].append(linha)
+
+    por_numero = {q['numero']: q for q in saida}
+    for t in textos:
+        primeira = por_numero.get(t['de'])
+        if primeira:
+            # O PDF intercala o texto-base com a 1ª questão: parágrafos longos antes da alternativa A são do texto.
+            resto = []
+            antes_de_a = True
+            for linha in primeira['linhas']:
+                if re.search(r'(?:^|\s)A\s?[.)]\s', linha):
+                    antes_de_a = False
+                if antes_de_a and len(linha.strip()) > 200:
+                    t['linhas'].append(linha)
+                else:
+                    resto.append(linha)
+            primeira['linhas'] = resto
+        corpo = '\n\n'.join(' '.join(p.split()) for p in '\n'.join(t['linhas']).split('\n\n') if p.strip())
+        corpo = re.sub(r'\n\n\d{1,2}\n\n', '\n\n', corpo).replace('\x0c', '').lstrip('.:; ')
+        for n in range(t['de'], t['ate'] + 1):
+            if n in por_numero and len(corpo) > 80:
+                por_numero[n]['texto'] = corpo
     return saida
 
 
@@ -168,7 +199,7 @@ def main(pasta):
                 'numero': n,
                 'disciplina': q['disciplina'],
                 'assunto': cargo if q['disciplina'] == 'Conhecimentos Específicos' else assunto(q['disciplina'], comando),
-                'enunciado': '',
+                'enunciado': q.get('texto', ''),
                 'comando': comando,
                 'alternativas': alternativas,
                 'gabarito': gab[n - 1],
@@ -178,7 +209,7 @@ def main(pasta):
     # Várias provas de cargos diferentes repetem a mesma questão (ex.: Português comum); fica uma de cada.
     vistos, unicos = set(), []
     for q in banco:
-        chave = sem_acento(q['comando'] + q['alternativas'][0]['texto'])[:300]
+        chave = sem_acento(q['comando'] + q['alternativas'][0]['texto'] + q['alternativas'][4]['texto'])[:400]
         if chave not in vistos:
             vistos.add(chave)
             unicos.append(q)
