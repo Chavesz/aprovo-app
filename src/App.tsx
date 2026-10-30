@@ -116,7 +116,35 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     return () => document.removeEventListener('visibilitychange', aoSair);
   }, [conta]);
 
-  const registrar = (r: Resposta) => setHistorico((h) => [...h, r]);
+  // Provas entregues antes de o app guardar o resultado: refaz a nota a partir das respostas do histórico.
+  useEffect(() => {
+    if (!questoes) return;
+    const porId = new Map(questoes.map((q) => [q.id, q]));
+    const sessoes = new Map<number, Resposta[]>();
+    historico.filter((h) => h.simulado).forEach((h) => sessoes.set(h.em, [...(sessoes.get(h.em) ?? []), h]));
+    const novas: ProvaFeita[] = [];
+    sessoes.forEach((rs, em) => {
+      if (provas.some((p) => p.em === em)) return;
+      const qs = rs.map((r) => porId.get(r.id)).filter((q): q is Questao => !!q);
+      const respostas = Object.fromEntries(rs.map((r) => [r.id, r.marcada]));
+      const estilo = rs.length >= 30 && qs.every((q) => blocoDe(q));
+      const r = resultado(qs, respostas);
+      novas.push({
+        em,
+        estilo,
+        acertos: r.acertos,
+        total: estilo ? 40 : rs.length,
+        respondidas: rs.length,
+        nota: estilo ? r.nota : r.acertos,
+        max: estilo ? 100 : rs.length,
+        materias: estilo ? r.notas.map(({ nome, a, n, pontos, peso }) => ({ nome, a, total: n, pontos, max: n * peso })) : undefined,
+      });
+    });
+    if (novas.length) setProvas((l) => [...l, ...novas].sort((x, y) => x.em - y.em));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questoes, historico]);
+
+  const registrar = (r: Resposta) =>setHistorico((h) => [...h, r]);
   const alternarRevisar = (id: string) =>
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
 
