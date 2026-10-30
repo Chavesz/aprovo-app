@@ -637,3 +637,19 @@ textarea {
 .meta-editar { justify-self: start; font-size: 0.8125rem; }
 .meta-progresso .mono { white-space: nowrap; }
 .meta-progresso .assunto-linha { flex-wrap: wrap; gap: 2px 12px; }
+
+/* Pizza refinada e anéis por matéria */
+.pizza { background: var(--papel-2); }
+.pizza svg circle { transition: stroke-dasharray 0.8s var(--ease); }
+.pizza-centro { font-size: 8px; }
+.pizza-sub { font-size: 3.2px; fill: currentColor; opacity: 0.65; letter-spacing: 0.05em; text-transform: uppercase; font-family: inherit; }
+.pizza-legenda .legenda-cor { flex: none; border-radius: 50%; }
+.pizza-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pizza-legenda .mono { flex: none; }
+.aneis { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 12px 0 8px; }
+.anel { margin: 0; padding: 14px 10px 12px; border: 1px solid var(--linha); border-radius: 14px; background: var(--papel-2); text-align: center; min-width: 0; }
+.anel svg { display: block; width: 92px; height: 92px; margin: 0 auto 8px; }
+.anel-pct { font-size: 9px; font-weight: 700; fill: currentColor; font-family: inherit; }
+.anel figcaption { display: grid; gap: 2px; }
+.anel-nome { font-weight: 600; font-size: 0.875rem; overflow-wrap: anywhere; }
+@media (max-width: 420px) { .aneis { grid-template-columns: 1fr 1fr; } }

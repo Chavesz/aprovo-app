@@ -1015,13 +1015,24 @@ function Desempenho({
             { nome: 'Erradas', valor: hist.length - acertos, cor: 'var(--nok)' },
           ]}
           centro={`${pct(acertos, hist.length)}%`}
+          sub="de acerto"
         />
         <Pizza
           titulo="Onde você estudou"
           fatias={disciplinas.slice(0, 5).map((g, i) => ({ nome: g.nome, valor: g.t, cor: CORES_PIZZA[i] }))
             .concat(disciplinas.length > 5 ? [{ nome: 'Outras', valor: disciplinas.slice(5).reduce((s, g) => s + g.t, 0), cor: CORES_PIZZA[5] }] : [])}
           centro={String(hist.length)}
+          sub="questões"
         />
+      </div>
+
+      <h2 className="subtitulo">
+        Acerto por matéria <span className="nota">verde 70%+, amarelo 50–69%, vermelho abaixo de 50%</span>
+      </h2>
+      <div className="aneis">
+        {disciplinas.map((g) => (
+          <Anel key={g.nome} nome={g.nome} a={g.a} t={g.t} />
+        ))}
       </div>
 
       {provas.length > 0 && (
@@ -1113,7 +1124,17 @@ function Desempenho({
 const CORES_PIZZA = ['#2f7d5b', '#c9822b', '#3b6ea8', '#b04a4a', '#7a5ba8', '#8a8478'];
 
 /** Gráfico de pizza (rosca) em SVG, com legenda. */
-function Pizza({ titulo, fatias, centro }: { titulo: string; fatias: { nome: string; valor: number; cor: string }[]; centro: string }) {
+function Pizza({
+  titulo,
+  fatias,
+  centro,
+  sub,
+}: {
+  titulo: string;
+  fatias: { nome: string; valor: number; cor: string }[];
+  centro: string;
+  sub: string;
+}) {
   const total = fatias.reduce((s, f) => s + f.valor, 0) || 1;
   const r = 15.9155; // circunferência 100
   let acumulado = 0;
@@ -1121,7 +1142,7 @@ function Pizza({ titulo, fatias, centro }: { titulo: string; fatias: { nome: str
     <figure className="pizza">
       <figcaption className="rotulo">{titulo}</figcaption>
       <svg viewBox="0 0 42 42" role="img" aria-label={fatias.map((f) => `${f.nome}: ${pct(f.valor, total)}%`).join(', ')}>
-        <circle cx="21" cy="21" r={r} fill="none" stroke="var(--papel-2)" strokeWidth="6" />
+        <circle cx="21" cy="21" r={r} fill="none" stroke="var(--linha)" strokeWidth="7" />
         {fatias.map((f) => {
           const p = (f.valor / total) * 100;
           const el = (
@@ -1132,25 +1153,65 @@ function Pizza({ titulo, fatias, centro }: { titulo: string; fatias: { nome: str
               r={r}
               fill="none"
               stroke={f.cor}
-              strokeWidth="6"
-              strokeDasharray={`${p} ${100 - p}`}
+              strokeWidth="7"
+              strokeDasharray={`${Math.max(0, p - (fatias.filter((x) => x.valor).length > 1 ? 1 : 0))} ${100 - p + (fatias.filter((x) => x.valor).length > 1 ? 1 : 0)}`}
               strokeDashoffset={25 - acumulado}
             />
           );
           acumulado += p;
           return el;
         })}
-        <text x="21" y="23.5" textAnchor="middle" className="pizza-centro">
+        <text x="21" y="22" textAnchor="middle" className="pizza-centro">
           {centro}
+        </text>
+        <text x="21" y="27" textAnchor="middle" className="pizza-sub">
+          {sub}
         </text>
       </svg>
       <ul className="pizza-legenda">
         {fatias.map((f) => (
           <li key={f.nome}>
-            <span className="legenda-cor" style={{ background: f.cor }} /> {f.nome} <span className="mono nota">{pct(f.valor, total)}%</span>
+            <span className="legenda-cor" style={{ background: f.cor }} />
+            <span className="pizza-nome">{f.nome}</span>
+            <span className="mono nota">{f.valor} · {pct(f.valor, total)}%</span>
           </li>
         ))}
       </ul>
+    </figure>
+  );
+}
+
+const corTaxa = (p: number) => (p >= 70 ? 'var(--ok)' : p >= 50 ? '#d19a2a' : 'var(--nok)');
+
+/** Anel de porcentagem de acerto de uma matéria. */
+function Anel({ nome, a, t }: { nome: string; a: number; t: number }) {
+  const p = pct(a, t);
+  return (
+    <figure className="anel">
+      <svg viewBox="0 0 42 42" role="img" aria-label={`${nome}: ${p}% de acerto`}>
+        <circle cx="21" cy="21" r="15.9155" fill="none" stroke="var(--linha)" strokeWidth="4" />
+        <circle
+          cx="21"
+          cy="21"
+          r="15.9155"
+          fill="none"
+          stroke={corTaxa(p)}
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={`${p} ${100 - p}`}
+          strokeDashoffset="25"
+          className="anel-arco"
+        />
+        <text x="21" y="23.6" textAnchor="middle" className="anel-pct">
+          {p}%
+        </text>
+      </svg>
+      <figcaption>
+        <span className="anel-nome">{nome}</span>
+        <span className="nota mono">
+          {a}/{t} certas
+        </span>
+      </figcaption>
     </figure>
   );
 }
