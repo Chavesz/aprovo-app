@@ -1,0 +1,309 @@
+[
+  {
+    "d": "Português",
+    "a": "Interpretação de texto",
+    "e": true,
+    "t": "TEXTO I\n\nQuem anda pelas ruas de Cuité de Mamanguape no fim da tarde reconhece a cena: o agente de endemias bate palmas no portão, cumprimenta pelo nome a dona da casa e, antes mesmo de entrar, já pergunta pelas plantas do quintal. Não se trata de curiosidade. Trata-se de método. O pratinho do vaso, a calha entupida, a garrafa esquecida no canto do muro são, para ele, endereços prováveis de larvas.\n\nHá quem veja nesse trabalho apenas uma rotina burocrática, feita de fichas e carimbos. Engana-se. A visita domiciliar é, sobretudo, um encontro. É nela que a informação técnica se transforma em conversa, e a conversa, em mudança de hábito. Um morador que entende por que deve virar a garrafa de boca para baixo dificilmente voltará a deixá-la acumulando água.\n\nNo entanto, nenhuma visita, por mais cuidadosa que seja, substitui a responsabilidade de cada família. O mosquito não respeita muros: o criadouro esquecido no quintal do vizinho ameaça a rua inteira. Por isso, o combate às arboviroses não é tarefa exclusiva do poder público, mas um compromisso coletivo.\n\n(Texto elaborado para fins didáticos.)",
+    "c": "De acordo com o Texto I, analise as afirmativas a seguir.\n\nI. O autor defende que a visita domiciliar é apenas uma rotina burocrática, feita de fichas e carimbos.\nII. Para o autor, a conversa durante a visita pode levar à mudança de hábitos do morador.\nIII. O texto afirma que o combate às arboviroses é responsabilidade exclusiva do poder público.\nIV. Em \"O mosquito não respeita muros\", há uma personificação.\n\nEstá(ão) CORRETA(S):",
+    "o": [
+      "I e III, apenas.",
+      "II e IV, apenas.",
+      "II, III e IV, apenas.",
+      "I, II, III e IV."
+    ],
+    "g": "B",
+    "x": "I é FALSA: o autor cita essa visão (\"Há quem veja...\") para rebatê-la (\"Engana-se\"). II é VERDADEIRA: \"a conversa, em mudança de hábito\". III é FALSA: o texto diz o contrário, \"não é tarefa exclusiva do poder público, mas um compromisso coletivo\". IV é VERDADEIRA: atribuir ao mosquito a ação humana de \"respeitar\" é personificação (prosopopeia).",
+    "r": "Na EDUCA, a alternativa errada costuma repetir a opinião que o autor CITA para depois negar. Procure o conector de oposição (\"Engana-se\", \"No entanto\").",
+    "m": "Palavra absoluta (apenas, exclusiva, sempre) na afirmativa = sinal de alerta: confira no texto."
+  },
+  {
+    "d": "Português",
+    "a": "Interpretação de texto",
+    "e": true,
+    "t": "Releia o trecho do Texto I: \"No entanto, nenhuma visita, por mais cuidadosa que seja, substitui a responsabilidade de cada família.\"",
+    "c": "Sobre o trecho, assinale a alternativa FALSA.",
+    "o": [
+      "\"No entanto\" estabelece relação de oposição com o parágrafo anterior.",
+      "\"por mais cuidadosa que seja\" expressa ideia de concessão.",
+      "\"No entanto\" poderia ser substituído por \"Contudo\" sem alterar o sentido.",
+      "\"por mais cuidadosa que seja\" expressa ideia de causa."
+    ],
+    "g": "D",
+    "x": "O comando pede a FALSA. \"Por mais... que\" introduz oração subordinada adverbial CONCESSIVA (admite um fato que não impede o outro), não causal. As demais estão corretas: \"No entanto\" = adversativa, equivalente a \"contudo\", \"todavia\", \"entretanto\".",
+    "r": "Leia o comando duas vezes: CORRETA, FALSA ou EXCETO. Já custou 6 questões.",
+    "m": "POR MAIS QUE / EMBORA / AINDA QUE / MESMO QUE = CONCESSÃO (\"apesar disso, acontece\")."
+  },
+  {
+    "d": "Português",
+    "a": "Subordinação",
+    "e": true,
+    "c": "Considere as orações destacadas.\n\nI. \"O agente percebeu QUE A CALHA ESTAVA ENTUPIDA.\"\nII. \"QUANDO A CHUVA CHEGAR, os focos vão aumentar.\"\nIII. \"O morador QUE GUARDOU OS PNEUS foi orientado.\"\n\nClassificam-se, respectivamente, como subordinadas:",
+    "o": [
+      "substantiva objetiva direta, adverbial temporal e adjetiva restritiva.",
+      "adjetiva restritiva, adverbial condicional e substantiva subjetiva.",
+      "substantiva subjetiva, adverbial causal e adjetiva explicativa.",
+      "adverbial consecutiva, adverbial temporal e substantiva objetiva direta."
+    ],
+    "g": "A",
+    "x": "I: \"percebeu O QUÊ?\" → \"isso\" (que a calha estava entupida) = objeto direto → substantiva objetiva direta. II: \"quando\" = tempo → adverbial temporal. III: \"que\" retoma \"morador\" e pode ser trocado por \"o qual\"; sem vírgulas, restringe (só aquele morador) → adjetiva restritiva.",
+    "r": "Teste do ISSO: se a oração pode virar \"isso\", é SUBSTANTIVA. Se o \"que\" vira \"o qual\", é ADJETIVA. Se indica tempo, causa, condição..., é ADVERBIAL.",
+    "m": "Substantiva = ISSO. Adjetiva = O QUAL. Adverbial = circunstância (quando, porque, se, embora)."
+  },
+  {
+    "d": "Português",
+    "a": "Concordância nominal",
+    "e": true,
+    "c": "Em relação à norma-padrão da língua portuguesa, assinale a alternativa em que a concordância está CORRETA.",
+    "o": [
+      "A equipe de agentes realizaram a visita em todos os imóveis.",
+      "Seguem anexo as fichas de visita do mês de outubro.",
+      "As moradoras ficaram meio preocupadas com os focos encontrados.",
+      "Faziam dois meses que o bairro não recebia visita."
+    ],
+    "g": "C",
+    "x": "C está correta: \"meio\" = advérbio (um pouco) e não varia. A: núcleo do sujeito é \"equipe\" → \"realizou\". B: \"anexo\" é adjetivo e concorda → \"Seguem anexas as fichas\". D: \"fazer\" indicando tempo é impessoal → \"Fazia dois meses\".",
+    "r": "Ache o NÚCLEO do sujeito e ignore o \"de + plural\". ANEXO, MESMO, OBRIGADO concordam. MEIO (= um pouco) não varia.",
+    "m": "MEIA cansada? Não! Ela está MEIO cansada, mas comeu MEIA pizza."
+  },
+  {
+    "d": "Português",
+    "a": "Colocação pronominal",
+    "e": true,
+    "c": "Assinale a alternativa em que a colocação do pronome oblíquo está de acordo com a norma-padrão.",
+    "o": [
+      "Ninguém avisou-me sobre a visita do agente.",
+      "Não far-se-á a borrifação sem autorização do morador.",
+      "Aqui se faz a vistoria de todos os depósitos.",
+      "Me disseram que o bairro está com alto índice."
+    ],
+    "g": "C",
+    "x": "C: o advérbio \"Aqui\" atrai o pronome (próclise). A: \"Ninguém\" (pronome indefinido) atrai → \"Ninguém me avisou\". B: \"Não\" atrai → \"Não se fará\" (a mesóclise só ocorre sem palavra atrativa). D: não se inicia frase com pronome oblíquo na norma-padrão → \"Disseram-me\".",
+    "r": "Palavras atrativas: NÃO, NUNCA, NINGUÉM, advérbios (aqui, já), pronomes relativos (que) e conjunções subordinativas. Com elas, use PRÓCLISE.",
+    "m": "Palavra negativa ou advérbio = ímã: puxa o pronome para antes do verbo."
+  },
+  {
+    "d": "Português",
+    "a": "Regência",
+    "e": true,
+    "c": "Analise as frases quanto à regência verbal.\n\nI. Os moradores assistiram ao treinamento sobre o Aedes.\nII. Prefiro mais prevenir do que remediar.\nIII. O agente aspira ao cargo de supervisor.\nIV. Todos obedeceram as orientações da vigilância.\n\nEstão de acordo com a norma-padrão:",
+    "o": [
+      "I e III, apenas.",
+      "II e IV, apenas.",
+      "I, II e III, apenas.",
+      "III e IV, apenas."
+    ],
+    "g": "A",
+    "x": "I: assistir (= ver) é transitivo indireto → \"assistiram AO\". III: aspirar (= desejar) pede \"a\" → \"aspira AO cargo\". II está errada: \"preferir\" não aceita \"mais\" nem \"do que\" → \"Prefiro prevenir A remediar\". IV está errada: obedecer pede \"a\" → \"obedeceram ÀS orientações\".",
+    "r": "PREFERIR algo A outra coisa. ASSISTIR A (ver). ASPIRAR A (desejar). OBEDECER A.",
+    "m": "Quem PREFERE não precisa de MAIS: \"prefiro A\", nunca \"prefiro mais... do que\"."
+  },
+  {
+    "d": "Português",
+    "a": "Tempos e modos verbais",
+    "e": true,
+    "c": "Assinale a alternativa em que a flexão verbal está CORRETA.",
+    "o": [
+      "Se o morador eliminar os recipientes, os focos diminuiriam.",
+      "Quando você ver um foco, avise o agente.",
+      "Se o morador eliminasse os recipientes, os focos diminuiriam.",
+      "Quando eu ver o resultado do LIRAa, aviso a equipe."
+    ],
+    "g": "C",
+    "x": "C: imperfeito do subjuntivo (eliminASSE) combina com futuro do pretérito (diminuiRIA). A mistura \"eliminar\" (futuro do subjuntivo) com \"diminuiriam\". B e D: o futuro do subjuntivo de VER é VIR → \"Quando você VIR\", \"Quando eu VIR\".",
+    "r": "SE + -SSE → -RIA. SE/QUANDO + -R → futuro (-rá). VER → quando eu VIR; VIR → quando eu VIER.",
+    "m": "Se eu VISSE, quando eu VIR."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "Focal, perifocal e UBV",
+    "e": true,
+    "t": "Durante uma ação no bairro, a supervisora explicou aos novos agentes as três formas de tratamento químico usadas contra o Aedes aegypti: o tratamento aplicado diretamente nos depósitos com água que não podem ser eliminados; a aplicação de inseticida de efeito residual nas paredes externas dos depósitos em pontos estratégicos; e a aplicação espacial, por equipamento costal ou acoplado a veículo, em gotículas muito pequenas, durante surtos.",
+    "c": "As três formas descritas correspondem, respectivamente, a:",
+    "o": [
+      "perifocal, focal e UBV.",
+      "focal, perifocal e UBV.",
+      "UBV, focal e perifocal.",
+      "focal, UBV e perifocal."
+    ],
+    "g": "B",
+    "x": "FOCAL = larvicida dentro do depósito com água (mata larva). PERIFOCAL = adulticida RESIDUAL nas paredes externas dos depósitos, em pontos estratégicos. UBV (ultrabaixo volume, \"fumacê\") = adulticida espacial, SEM efeito residual, só para bloquear transmissão em surtos.",
+    "r": "Você já errou 4x: Focal × Perifocal × UBV. UBV age NO AR e não deixa resíduo.",
+    "m": "FOCAL = no FOCO (água). PERIfocal = na PERIferia (parede de fora). UBV = Ultra no ar, Bloqueio, Vai embora (sem residual)."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "LIRAa, IIP e Breteau",
+    "e": true,
+    "c": "Após o LIRAa, um município obteve Índice de Infestação Predial (IIP) de 2,5%. De acordo com a classificação do Ministério da Saúde, esse resultado indica situação de:",
+    "o": [
+      "satisfatória.",
+      "alerta.",
+      "risco de surto.",
+      "epidemia declarada."
+    ],
+    "g": "B",
+    "x": "Faixas do IIP no LIRAa: menor que 1% = satisfatório; de 1% a 3,9% = alerta; 4% ou mais = risco de surto. 2,5% está na faixa de ALERTA.",
+    "r": "Você já marcou 2,5% como satisfatório. Decore as faixas: <1 / 1–3,9 / ≥4.",
+    "m": "Abaixo de 1 = tranquilo. De 1 a 3,9 = amarelo. A partir de 4 = vermelho."
+  },
+  {
+    "d": "Saúde Pública",
+    "a": "Indicadores",
+    "e": true,
+    "c": "Em um município com 20.000 habitantes, foram confirmados 100 casos de leptospirose em um ano, dos quais 10 evoluíram para óbito. Sobre esses dados, é CORRETO afirmar que:",
+    "o": [
+      "a letalidade foi de 10% e expressa a gravidade da doença entre os doentes.",
+      "a mortalidade foi de 10% e expressa a gravidade da doença entre os doentes.",
+      "a letalidade foi de 50 por 100.000 habitantes.",
+      "letalidade e mortalidade são sinônimos e têm o mesmo cálculo."
+    ],
+    "g": "A",
+    "x": "LETALIDADE = óbitos ÷ CASOS da doença × 100 = 10 ÷ 100 = 10% (mede a gravidade entre os doentes). MORTALIDADE = óbitos ÷ POPULAÇÃO = 10 ÷ 20.000 = 50 por 100.000 habitantes (mede o impacto na população).",
+    "r": "Você já errou 3x Letalidade × Mortalidade. O denominador decide.",
+    "m": "LETALIDADE = entre os doentes (L de Leito). MORTALIDADE = na população toda."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "Ponto estratégico",
+    "e": true,
+    "c": "Analise os imóveis a seguir.\n\nI. Borracharia.\nII. Escola municipal.\nIII. Ferro-velho.\nIV. Hospital.\nV. Cemitério.\n\nSão classificados como PONTOS ESTRATÉGICOS:",
+    "o": [
+      "I, III e V, apenas.",
+      "II e IV, apenas.",
+      "I, II, III e IV, apenas.",
+      "I, II, III, IV e V."
+    ],
+    "g": "A",
+    "x": "PONTO ESTRATÉGICO = local com grande concentração de depósitos que favorecem o Aedes: borracharias, ferros-velhos, cemitérios, depósitos de reciclagem. Recebe visita quinzenal. IMÓVEL ESPECIAL = local de grande circulação de pessoas: escolas, hospitais, igrejas, presídios.",
+    "r": "Você já confundiu borracharia, ferro-velho e cemitério com imóvel especial.",
+    "m": "Ponto ESTRATÉGICO = muito CRIADOURO (pneu, sucata, vaso). Imóvel ESPECIAL = muita GENTE."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "Animais peçonhentos",
+    "e": true,
+    "c": "Um trabalhador rural foi picado no pé por uma serpente que tinha um chocalho na ponta da cauda. Relatou pouca dor no local, visão embaçada, pálpebras caídas e, horas depois, urina escura. O quadro é compatível com acidente:",
+    "o": [
+      "botrópico (jararaca).",
+      "crotálico (cascavel).",
+      "elapídico (coral-verdadeira).",
+      "laquético (surucucu)."
+    ],
+    "g": "B",
+    "x": "Acidente CROTÁLICO (cascavel, tem chocalho/guizo): pouca dor e pouco edema local, efeito neurotóxico (pálpebras caídas, \"fácies miastênica\", visão turva) e miotóxico (urina escura pela mioglobina). O botrópico (jararaca) causa muita dor, edema e sangramento local.",
+    "r": "Você marcou jararaca para o caso com chocalho.",
+    "m": "CHOCALHO = CASCAVEL. Pouca dor, urina escura."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "Calendário vacinal",
+    "e": true,
+    "c": "Segundo o Calendário Nacional de Vacinação da criança, a primeira dose da vacina tríplice viral (sarampo, caxumba e rubéola) deve ser aplicada aos:",
+    "o": [
+      "2 meses.",
+      "6 meses.",
+      "12 meses.",
+      "4 anos."
+    ],
+    "g": "C",
+    "x": "A 1ª dose da tríplice viral é aos 12 MESES. Aos 15 meses aplica-se a tetra viral (tríplice + varicela) ou a 2ª dose.",
+    "r": "Você já errou 2x (marcou 1 mês e 2 meses).",
+    "m": "Tríplice = 1 ANO de vida (12 meses)."
+  },
+  {
+    "d": "Saúde Pública",
+    "a": "Princípios do SUS",
+    "e": true,
+    "c": "Sobre o Sistema Único de Saúde, analise as afirmativas e marque V (verdadeira) ou F (falsa).\n\n( ) Universalidade, integralidade e equidade são princípios doutrinários do SUS.\n( ) A NOB 96 teve como objetivo centralizar a gestão da saúde no governo federal.\n( ) A descentralização, com direção única em cada esfera de governo, é diretriz organizativa do SUS.\n( ) O paciente com hanseníase em tratamento deve ser isolado da família.\n\nA sequência CORRETA é:",
+    "o": [
+      "V, V, F, F.",
+      "V, F, V, F.",
+      "F, F, V, V.",
+      "V, F, V, V."
+    ],
+    "g": "B",
+    "x": "1ª V: princípios doutrinários = Universalidade, Integralidade, Equidade (UIE). 2ª F: a NOB 96 fortaleceu a MUNICIPALIZAÇÃO (gestão plena do sistema municipal), o oposto de centralizar. 3ª V: descentralização é diretriz organizativa. 4ª F: hanseníase NÃO exige isolamento; após o início do tratamento o paciente deixa de transmitir.",
+    "r": "Você já errou NOB 96 e isolamento na hanseníase.",
+    "m": "NOB 96 = MUNICÍPIO assume. Doutrinários = UIE."
+  },
+  {
+    "d": "Específicos ACE",
+    "a": "Flebotomíneo",
+    "e": true,
+    "c": "Sobre os vetores de doenças, assinale a alternativa INCORRETA.",
+    "o": [
+      "O flebotomíneo (mosquito-palha) se cria em matéria orgânica úmida no solo, e não em água parada.",
+      "O flebotomíneo tem hábito crepuscular e noturno.",
+      "O controle da malária é focado exclusivamente no uso de larvicidas.",
+      "O Anopheles costuma se criar em águas limpas, paradas ou de pouca correnteza."
+    ],
+    "g": "C",
+    "x": "A INCORRETA é a C: o controle da malária combina diagnóstico e tratamento rápidos, mosquiteiros impregnados, borrifação residual intradomiciliar e manejo ambiental. Não é \"exclusivamente\" larvicida. As demais estão corretas.",
+    "r": "Palavras absolutas (exclusivamente, apenas, sempre) costumam indicar afirmativa falsa.",
+    "m": "Flebotomíneo = folha úmida e noite. Anopheles = água limpa."
+  },
+  {
+    "d": "Informática",
+    "a": "Topologias de rede",
+    "e": true,
+    "c": "Em uma unidade de saúde, todos os computadores estão ligados por cabos a um switch central; se um dos cabos se romper, apenas aquele computador fica sem rede. Essa topologia é a:",
+    "o": [
+      "barramento.",
+      "anel.",
+      "estrela.",
+      "malha."
+    ],
+    "g": "C",
+    "x": "ESTRELA: cada máquina se liga a um equipamento central (switch/hub); a falha de um cabo afeta só aquela máquina. Barramento = um cabo único compartilhado. Anel = ligação em círculo. Malha = vários caminhos entre os nós.",
+    "r": "Você já errou topologias 3 vezes.",
+    "m": "Switch no MEIO, com raios saindo = ESTRELA."
+  },
+  {
+    "d": "Informática",
+    "a": "LGPD",
+    "e": true,
+    "c": "A Lei Geral de Proteção de Dados Pessoais (LGPD) determina que o tratamento de dados se limite ao mínimo necessário para atingir sua finalidade. Essa lei e esse princípio são, respectivamente:",
+    "o": [
+      "Lei 12.965/2014 e princípio da eficiência.",
+      "Lei 13.709/2018 e princípio da necessidade.",
+      "Lei 13.709/2018 e princípio da publicidade.",
+      "Lei 12.527/2011 e princípio da finalidade."
+    ],
+    "g": "B",
+    "x": "LGPD = Lei 13.709/2018. Usar só o mínimo de dados = princípio da NECESSIDADE. A 12.965/2014 é o Marco Civil da Internet, e a 12.527/2011 é a Lei de Acesso à Informação.",
+    "r": "Você confundiu a LGPD com o Marco Civil e marcou eficiência.",
+    "m": "LGPD = 13.709 (o 13 da proteção). Mínimo NECESSÁRIO = NECESSIDADE."
+  },
+  {
+    "d": "Conhecimentos Gerais",
+    "a": "Autores paraibanos",
+    "e": true,
+    "c": "Associe corretamente o autor paraibano à obra.\n\n1. José Lins do Rego\n2. José Américo de Almeida\n3. Augusto dos Anjos\n4. Ariano Suassuna\n\n( ) Eu\n( ) A Bagaceira\n( ) Auto da Compadecida\n( ) Menino de Engenho\n\nA sequência CORRETA é:",
+    "o": [
+      "3, 2, 4, 1.",
+      "2, 3, 4, 1.",
+      "3, 1, 4, 2.",
+      "1, 2, 3, 4."
+    ],
+    "g": "A",
+    "x": "Augusto dos Anjos = \"Eu\" (1912). José Américo = \"A Bagaceira\" (1928, marco do romance regionalista de 30). Ariano Suassuna = \"Auto da Compadecida\". José Lins do Rego = \"Menino de Engenho\" e \"Fogo Morto\".",
+    "r": "Você já errou autores 3 vezes.",
+    "m": "Augusto = EU (poeta da morte). Américo = BAGACEIRA. Lins = ENGENHO e Fogo Morto. Ariano = COMPADECIDA."
+  },
+  {
+    "d": "Conhecimentos Gerais",
+    "a": "História da Paraíba",
+    "e": true,
+    "c": "No período colonial, a principal atividade econômica que impulsionou a ocupação do litoral e da zona da mata paraibana foi:",
+    "o": [
+      "a extração de pau-brasil.",
+      "a mineração de ouro.",
+      "o cultivo da cana-de-açúcar.",
+      "a produção de café."
+    ],
+    "g": "C",
+    "x": "A ocupação da Paraíba colonial se apoiou nos engenhos de CANA-DE-AÇÚCAR. O pau-brasil foi explorado no início, mas não sustentou a colonização. Ouro (Minas Gerais) e café (Sudeste, século XIX) não se aplicam.",
+    "r": "Você marcou pau-brasil 2 vezes.",
+    "m": "Paraíba colonial = ENGENHO = CANA (e é daí o \"Menino de Engenho\")."
+  }
+]

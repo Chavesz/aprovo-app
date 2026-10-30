@@ -1,6 +1,6 @@
 // Junta conteudo/ace-cuite/*.json (questões autorais, formato compacto) em public/data/ace-cuite.json.
 // Formato de cada item: { d: disciplina, a: assunto, t?: texto-base, c: comando, o: [4 alternativas], g: 'A'..'D',
-//   x: explicação, r?: o que revisar, m?: macete }
+//   x: explicação, r?: o que revisar, m?: macete, e?: true = questão elaborada no estilo EDUCA }
 // Uso: node scripts/build-ace.cjs
 const fs = require('fs');
 const path = require('path');
@@ -18,9 +18,9 @@ for (const arquivo of fs.readdirSync(pasta).filter((f) => f.endsWith('.json')).s
     if (!'ABCD'.includes(q.g) || q.g.length !== 1) erro('gabarito inválido');
     saida.push({
       id: `ace-${arquivo.replace('.json', '')}-${i + 1}`,
-      banca: 'Autoral · estilo EDUCA',
+      banca: q.e ? 'Estilo EDUCA · elaborada' : 'Autoral · estilo EDUCA',
       orgao: 'Prefeitura de Cuité de Mamanguape (PB)',
-      prova: 'Treino ACE Cuité',
+      prova: q.e ? 'Treino ACE Cuité · elaboradas' : 'Treino ACE Cuité',
       ano: 2026,
       numero: saida.length + 1,
       disciplina: q.d,

@@ -620,7 +620,9 @@ const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao)
 /** Monta a prova no formato da banca: só questões no estilo da prova (autorais comentadas e EDUCA), priorizando os erros. */
 type Origem = 'misturado' | 'feitas' | 'ineditas';
 
-function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: Origem = 'misturado') {
+const eEduca = (q: Questao) => /educa/i.test(q.banca) && !/^Autoral/.test(q.banca);
+
+function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: Origem = 'misturado', soEduca = false) {
   const feitas = new Set(historico.map((h) => h.id));
   const vistos = new Set<string>();
   // Sem repetir: nem o mesmo id, nem o mesmo enunciado vindo de fontes diferentes.
@@ -634,13 +636,54 @@ function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: O
   };
   const estilo = questoes.filter((q) => q.comentario || /educa/i.test(q.banca));
   const preferida = (q: Questao) =>
-    origem === 'misturado' || (origem === 'feitas' ? feitas.has(q.id) : !feitas.has(q.id));
+    (!soEduca || eEduca(q)) && (origem === 'misturado' || (origem === 'feitas' ? feitas.has(q.id) : !feitas.has(q.id)));
   return FORMATO_ACE.flatMap((b) => {
     const doBloco = ordemInteligente(estilo.filter(b.filtro), historico);
     // Primeiro as da origem escolhida; se faltar questão, completa com as outras para fechar as 40.
     const ordem = [...doBloco.filter(preferida), ...doBloco.filter((q) => !preferida(q))];
     return ordem.filter(unica).slice(0, b.n);
   });
+}
+
+/** Provas aplicadas pela EDUCA já usadas no treino. Os links buscam o PDF original (site da banca ou da prefeitura). */
+const PROVAS_EDUCA = [
+  { nome: 'Ibiara (PB) 2025', cargo: 'Agente de Combate às Endemias' },
+  { nome: 'Brejo do Cruz (PB) 2025', cargo: 'Agente de Combate às Endemias' },
+  { nome: 'Juripiranga (PB) 2024', cargo: 'Agente de Combate às Endemias' },
+  { nome: 'Alhandra (PB) 2024', cargo: 'nível médio' },
+  { nome: 'Santa Cecília (PB) 2025', cargo: 'nível médio' },
+  { nome: 'Umbuzeiro (PB) 2025', cargo: 'nível médio' },
+];
+
+function ProvasEduca() {
+  return (
+    <details className="provas-educa">
+      <summary>
+        <span className="rotulo">Provas EDUCA</span> <span className="nota">provas reais da banca para baixar</span>
+      </summary>
+      <p className="nota">
+        Os PDFs oficiais ficam no site da EDUCA e no Diário Oficial de cada prefeitura. Cada link busca a prova e o gabarito:
+        prefira o arquivo da banca ou da prefeitura.
+      </p>
+      <ul>
+        {PROVAS_EDUCA.map((p) => (
+          <li key={p.nome}>
+            <span>
+              {p.nome} <span className="nota">· {p.cargo}</span>
+            </span>
+            <a
+              className="link"
+              target="_blank"
+              rel="noopener"
+              href={`https://www.google.com/search?q=${encodeURIComponent(`EDUCA prova ${p.cargo} ${p.nome} pdf gabarito`)}`}
+            >
+              Buscar PDF
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
 }
 
 function blocoDe(q: Questao) {
@@ -680,6 +723,7 @@ function Simulado(props: {
   const [encerrado, setEncerrado] = usePersist('cq:sim-encerrado', false);
   const [estiloProva, setEstiloProva] = usePersist('cq:sim-estilo', false);
   const [origem, setOrigem] = usePersist<Origem>('cq:sim-origem', 'misturado');
+  const [soEduca, setSoEduca] = usePersist('cq:sim-so-educa', false);
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -705,7 +749,7 @@ function Simulado(props: {
   };
 
   const iniciarProva = () => {
-    setProva(montarProvaEstilo(props.questoes, props.historico, origem));
+    setProva(montarProvaEstilo(props.questoes, props.historico, origem, soEduca));
     setEstiloProva(true);
     setRespostas({});
     setI(0);
@@ -762,10 +806,18 @@ function Simulado(props: {
               </label>
             ))}
           </div>
+          <label className="check-educa">
+            <input type="checkbox" checked={soEduca} onChange={(e) => setSoEduca(e.target.checked)} />
+            <span>
+              <strong>Estilo EDUCA</strong>: priorizar as questões elaboradas (textos longos, V ou F, EXCETO) e as das provas reais
+              da banca
+            </span>
+          </label>
           <button className="btn btn-grande" onClick={iniciarProva}>
             Gerar prova no estilo da banca
           </button>
         </div>
+        <ProvasEduca />
         <p className="rotulo simulado-livre">Ou monte um simulado livre</p>
         <div className="form-simulado">
           <Select
@@ -1272,6 +1324,25 @@ function LinhaBarra({ titulo, sub, a, t }: { titulo: string; sub?: string; a: nu
 
 /* ---------- Revisar ---------- */
 
+/** Só a conta do Kauã (dono das anotações no Trello) vê essas dúvidas. */
+const duvidasDaConta = () => (/^kaua/.test(contaSalva()?.usuario ?? '') ? DUVIDAS_TRELLO : []);
+
+/** Pontos marcados como dúvida no Trello "Aulas: Planejamento ace" (lista REVISÃO DIÁRIA), lidos em 30/10/2026. */
+const DUVIDAS_TRELLO = [
+  { assunto: 'Focal, perifocal e UBV', disciplina: 'Específicos ACE', nota: 'errou 4x. UBV fica no ar, sem efeito residual.' },
+  { assunto: 'Indicadores', disciplina: 'Saúde Pública', nota: 'letalidade × mortalidade, coorte × caso-controle (errou 3x).' },
+  { assunto: 'LIRAa, IIP e Breteau', disciplina: 'Específicos ACE', nota: 'faixas do IIP: <1 satisfatório, 1–3,9 alerta, ≥4 risco.' },
+  { assunto: 'Subordinação', disciplina: 'Português', nota: 'pendente: deixou as subordinadas em branco no Bloco 3.' },
+  { assunto: 'Concordância nominal', disciplina: 'Português', nota: 'ANEXO / MEIO / MEIA / MESMO (errou 4x).' },
+  { assunto: 'Concordância verbal', disciplina: 'Português', nota: 'núcleo do sujeito: "A equipe de agentes REALIZOU" (errou 3x).' },
+  { assunto: 'Colocação pronominal', disciplina: 'Português', nota: 'palavra atrativa puxa o pronome (errou 3x).' },
+  { assunto: 'Regência', disciplina: 'Português', nota: 'assistir, preferir, aspirar, chegar, obedecer (errou 3x).' },
+  { assunto: 'Interpretação de texto', disciplina: 'Português', nota: 'LER O COMANDO: correta × falsa × EXCETO (custou 6 questões).' },
+  { assunto: 'Topologias de rede', disciplina: 'Informática', nota: 'estrela = switch no centro (errou 3x).' },
+  { assunto: 'Autores paraibanos', disciplina: 'Conhecimentos Gerais', nota: 'Lins, Américo, Augusto, Ariano (errou 3x).' },
+  { assunto: 'Dados de Cuité', disciplina: 'Conhecimentos Gerais', nota: 'cerca de 3 das 5 questões de Gerais caem sobre o município (IBGE).' },
+];
+
 function Revisar(props: {
   questoes: Questao[];
   historico: Resposta[];
@@ -1301,9 +1372,16 @@ function Revisar(props: {
       }
       m.set(q.assunto, g);
     });
+    const duvida = (a: string) => duvidasDaConta().some((d) => d.assunto === a);
+    duvidasDaConta().forEach((d) => {
+      if (!m.has(d.assunto)) m.set(d.assunto, { assunto: d.assunto, disciplina: d.disciplina, t: 0, e: 0, dicas: new Set<string>(), resumo: '' });
+      m.get(d.assunto)!.dicas.add(`Do seu Trello: ${d.nota}`);
+    });
+    // Dúvidas do Trello valem como 2 erros a mais na ordem.
+    const peso = (g: { assunto: string; e: number }) => g.e + (duvida(g.assunto) ? 2 : 0);
     return Array.from(m.values())
-      .filter((g) => g.e > 0)
-      .sort((x, y) => y.e - x.e || y.e / y.t - x.e / x.t);
+      .filter((g) => g.e > 0 || duvida(g.assunto))
+      .sort((x, y) => peso(y) - peso(x) || y.e / (y.t || 1) - x.e / (x.t || 1));
   }, [props.historico, porId]);
 
   if (!lista.length && !fracos.length) {
@@ -1330,7 +1408,8 @@ function Revisar(props: {
                       <span className="lista-titulo">{g.assunto}</span> <span className="nota">{g.disciplina}</span>
                     </span>
                     <span className="mono nota">
-                      {g.e} {g.e === 1 ? 'erro' : 'erros'} · {pct(g.t - g.e, g.t)}%
+                      {duvidasDaConta().some((d) => d.assunto === g.assunto) && <span className="tag tag-fraca">dúvida</span>}{' '}
+                      {g.t ? `${g.e} ${g.e === 1 ? 'erro' : 'erros'} · ${pct(g.t - g.e, g.t)}%` : 'ainda sem questões'}
                     </span>
                   </summary>
                   {g.dicas.size > 0 && (

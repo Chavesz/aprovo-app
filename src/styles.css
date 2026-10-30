@@ -660,3 +660,11 @@ textarea {
 .links-estudo { display: flex; flex-wrap: wrap; gap: 8px; }
 .links-estudo .btn { text-decoration: none; font-size: 0.875rem; }
 .prova-estilo .origem { flex-wrap: wrap; margin: 12px 0; }
+
+/* Estilo EDUCA e provas reais */
+.check-educa { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 14px; font-size: 0.9375rem; line-height: 1.45; cursor: pointer; }
+.check-educa input { margin-top: 4px; accent-color: var(--acento); }
+.provas-educa { margin: 8px 0 24px; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 12px; }
+.provas-educa summary { cursor: pointer; }
+.provas-educa ul { list-style: none; padding: 0; margin: 10px 0 0; }
+.provas-educa li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--linha); }
