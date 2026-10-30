@@ -17,6 +17,7 @@ const CHAVES = [
   'cq:edital-ativo',
   'cq:provas',
   'cq:anotacoes',
+  'cq:meta',
 ] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {

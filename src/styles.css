@@ -625,3 +625,15 @@ textarea {
 .pizza-legenda li { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .pizza-legenda .mono { margin-left: auto; }
 @media (max-width: 420px) { .pizzas { grid-template-columns: 1fr; } }
+
+/* Contagem regressiva e meta do dia */
+.meta-dia { display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: center; padding: 16px; margin-bottom: 20px; border: 1px solid var(--linha); border-radius: 14px; background: var(--papel-2); }
+.meta-contagem { display: flex; flex-direction: column; align-items: center; min-width: 4.5rem; text-align: center; }
+.meta-numero { font-size: 2.25rem; font-weight: 700; line-height: 1; color: var(--acento); }
+.meta-hoje { font-size: 1.125rem; }
+.meta-progresso .assunto-linha { font-size: 0.9375rem; }
+.meta-form, .meta-editar { grid-column: 1 / -1; }
+.meta-form { display: grid; gap: 12px; }
+.meta-editar { justify-self: start; font-size: 0.8125rem; }
+.meta-progresso .mono { white-space: nowrap; }
+.meta-progresso .assunto-linha { flex-wrap: wrap; gap: 2px 12px; }

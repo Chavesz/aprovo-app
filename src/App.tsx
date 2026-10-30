@@ -67,6 +67,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
   const [provas, setProvas] = usePersist<ProvaFeita[]>('cq:provas', []);
+  const [meta, setMeta] = usePersist<{ data: string; porDia: number }>('cq:meta', { data: '', porDia: 40 });
   const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
 
   useEffect(() => {
@@ -109,7 +110,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         .catch(() => setSync('offline'));
     }, 1500);
     return () => clearTimeout(t);
-  }, [conta, historico, revisar, bloco, geradas, provas, anotacoes, aba]);
+  }, [conta, historico, revisar, bloco, geradas, provas, anotacoes, meta, aba]);
   useEffect(() => {
     const aoSair = () => document.visibilityState === 'hidden' && enviar(conta).catch(() => undefined);
     document.addEventListener('visibilitychange', aoSair);
@@ -200,6 +201,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       <main className="conteudo">
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
+        {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
         {questoes && aba === 'praticar' && (
           <Praticar
             questoes={questoes}
@@ -264,6 +266,75 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
       </main>
     </div>
+  );
+}
+
+/* ---------- Contagem e meta do dia ---------- */
+
+function Meta({
+  meta,
+  onMeta,
+  historico,
+}: {
+  meta: { data: string; porDia: number };
+  onMeta: (m: { data: string; porDia: number }) => void;
+  historico: Resposta[];
+}) {
+  const [editando, setEditando] = useState(!meta.data);
+  const hojeK = diaChave(Date.now());
+  const doDia = historico.filter((h) => diaChave(h.em) === hojeK);
+  const feitas = doDia.length;
+  const certas = doDia.filter((h) => h.certa).length;
+  const hoje0 = new Date();
+  hoje0.setHours(0, 0, 0, 0);
+  const dias = meta.data ? Math.round((new Date(`${meta.data}T00:00:00`).getTime() - hoje0.getTime()) / 86400000) : null;
+  const batida = feitas >= meta.porDia;
+
+  return (
+    <section className="coluna meta-dia">
+      <div className="meta-contagem">
+        {dias === null ? (
+          <span className="nota">Coloque a data da sua prova</span>
+        ) : dias > 0 ? (
+          <>
+            <span className="meta-numero">{dias}</span>
+            <span className="nota">{dias === 1 ? 'dia para a prova' : 'dias para a prova'}</span>
+          </>
+        ) : dias === 0 ? (
+          <span className="meta-numero meta-hoje">É hoje! Boa prova 🍀</span>
+        ) : (
+          <span className="nota">A prova já passou. Atualize a data.</span>
+        )}
+      </div>
+      <div className="meta-progresso">
+        <div className="assunto-linha">
+          <span>{batida ? 'Meta de hoje batida! 🔥' : `Meta de hoje: ${meta.porDia} questões`}</span>
+          <span className="mono">
+            {feitas}/{meta.porDia}
+            {feitas > 0 && ` · ${pct(certas, feitas)}%`}
+          </span>
+        </div>
+        <div className="barra" aria-hidden>
+          <span style={{ width: `${Math.min(100, pct(feitas, meta.porDia))}%` }} />
+        </div>
+      </div>
+      {editando ? (
+        <div className="meta-form">
+          <label className="campo">
+            <span className="rotulo">Data da prova</span>
+            <input type="date" value={meta.data} onChange={(e) => onMeta({ ...meta, data: e.target.value })} />
+          </label>
+          <Segmentado rotulo="Questões por dia" valores={[20, 40, 60, 100]} valor={meta.porDia} onChange={(v) => onMeta({ ...meta, porDia: v })} />
+          <button className="btn btn-sec" onClick={() => setEditando(false)}>
+            Pronto
+          </button>
+        </div>
+      ) : (
+        <button className="link meta-editar" onClick={() => setEditando(true)}>
+          Mudar data ou meta
+        </button>
+      )}
+    </section>
   );
 }
 
