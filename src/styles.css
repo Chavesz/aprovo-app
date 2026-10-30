@@ -615,3 +615,13 @@ textarea {
 .ranking-detalhe { display: block; font-weight: 400; font-size: 0.8125rem; }
 .ranking-valor { font-size: 1.125rem; font-weight: 700; }
 .ranking-convite { width: 100%; margin-top: 16px; }
+
+/* Gráficos de pizza do desempenho */
+.pizzas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0 8px; }
+.pizza { margin: 0; padding: 14px; border: 1px solid var(--linha); border-radius: 14px; min-width: 0; }
+.pizza svg { display: block; width: 100%; max-width: 150px; margin: 8px auto; }
+.pizza-centro { font-size: 7px; font-weight: 700; fill: currentColor; font-family: inherit; }
+.pizza-legenda { list-style: none; padding: 0; margin: 0; font-size: 0.8125rem; display: grid; gap: 4px; }
+.pizza-legenda li { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.pizza-legenda .mono { margin-left: auto; }
+@media (max-width: 420px) { .pizzas { grid-template-columns: 1fr; } }

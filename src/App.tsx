@@ -936,6 +936,23 @@ function Desempenho({
         {hoje.t > 0 && `, ${pct(hoje.a, hoje.t)}% de acerto`}
       </p>
 
+      <div className="pizzas">
+        <Pizza
+          titulo="Acertos x erros"
+          fatias={[
+            { nome: 'Certas', valor: acertos, cor: 'var(--ok)' },
+            { nome: 'Erradas', valor: hist.length - acertos, cor: 'var(--nok)' },
+          ]}
+          centro={`${pct(acertos, hist.length)}%`}
+        />
+        <Pizza
+          titulo="Onde você estudou"
+          fatias={disciplinas.slice(0, 5).map((g, i) => ({ nome: g.nome, valor: g.t, cor: CORES_PIZZA[i] }))
+            .concat(disciplinas.length > 5 ? [{ nome: 'Outras', valor: disciplinas.slice(5).reduce((s, g) => s + g.t, 0), cor: CORES_PIZZA[5] }] : [])}
+          centro={String(hist.length)}
+        />
+      </div>
+
       {provas.length > 0 && (
         <>
           <h2 className="subtitulo">
@@ -1019,6 +1036,51 @@ function Desempenho({
         Apagar histórico
       </button>
     </section>
+  );
+}
+
+const CORES_PIZZA = ['#2f7d5b', '#c9822b', '#3b6ea8', '#b04a4a', '#7a5ba8', '#8a8478'];
+
+/** Gráfico de pizza (rosca) em SVG, com legenda. */
+function Pizza({ titulo, fatias, centro }: { titulo: string; fatias: { nome: string; valor: number; cor: string }[]; centro: string }) {
+  const total = fatias.reduce((s, f) => s + f.valor, 0) || 1;
+  const r = 15.9155; // circunferência 100
+  let acumulado = 0;
+  return (
+    <figure className="pizza">
+      <figcaption className="rotulo">{titulo}</figcaption>
+      <svg viewBox="0 0 42 42" role="img" aria-label={fatias.map((f) => `${f.nome}: ${pct(f.valor, total)}%`).join(', ')}>
+        <circle cx="21" cy="21" r={r} fill="none" stroke="var(--papel-2)" strokeWidth="6" />
+        {fatias.map((f) => {
+          const p = (f.valor / total) * 100;
+          const el = (
+            <circle
+              key={f.nome}
+              cx="21"
+              cy="21"
+              r={r}
+              fill="none"
+              stroke={f.cor}
+              strokeWidth="6"
+              strokeDasharray={`${p} ${100 - p}`}
+              strokeDashoffset={25 - acumulado}
+            />
+          );
+          acumulado += p;
+          return el;
+        })}
+        <text x="21" y="23.5" textAnchor="middle" className="pizza-centro">
+          {centro}
+        </text>
+      </svg>
+      <ul className="pizza-legenda">
+        {fatias.map((f) => (
+          <li key={f.nome}>
+            <span className="legenda-cor" style={{ background: f.cor }} /> {f.nome} <span className="mono nota">{pct(f.valor, total)}%</span>
+          </li>
+        ))}
+      </ul>
+    </figure>
   );
 }
 
