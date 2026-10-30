@@ -20,7 +20,7 @@ for (const arquivo of fs.readdirSync(pasta).filter((f) => f.endsWith('.json')).s
       id: `ace-${arquivo.replace('.json', '')}-${i + 1}`,
       banca: q.e ? 'Estilo EDUCA · elaborada' : 'Autoral · estilo EDUCA',
       orgao: 'Prefeitura de Cuité de Mamanguape (PB)',
-      prova: q.e ? 'Treino ACE Cuité · elaboradas' : 'Treino ACE Cuité',
+      prova: q.e ? 'Treino ACE Cuité de Mamanguape · elaboradas' : 'Treino ACE Cuité de Mamanguape',
       ano: 2026,
       numero: saida.length + 1,
       disciplina: q.d,

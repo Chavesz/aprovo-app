@@ -71,12 +71,14 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
 
   useEffect(() => {
-    // privado/educa.json só existe na máquina de quem importou as provas (fica fora do Git).
-    const opcional = fetch('/data/privado/educa.json')
-      .then((r) => (r.ok && r.headers.get('content-type')?.includes('json') ? (r.json() as Promise<Questao[]>) : []))
-      .catch(() => [] as Questao[]);
+    // Os arquivos de privado/ só existem na máquina de quem importou as provas (ficam fora do Git).
+    const opcional = (u: string) =>
+      fetch(u)
+        .then((r) => (r.ok && r.headers.get('content-type')?.includes('json') ? (r.json() as Promise<Questao[]>) : []))
+        .catch(() => [] as Questao[]);
     Promise.all([
-      opcional,
+      opcional('/data/privado/educa-ace.json'),
+      opcional('/data/privado/educa.json'),
       ...['/data/ace-cuite.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])
       .then((partes) => setOficiais(partes.flat()))
@@ -609,7 +611,7 @@ function QuestaoCard(props: {
 
 /* ---------- Simulado ---------- */
 
-/** Formato da prova de ACE de Cuité (EDUCA PB): 40 questões, 3 horas, nota de 0 a 100. */
+/** Formato da prova de ACE de Cuité de Mamanguape (EDUCA PB): 40 questões, 3 horas, nota de 0 a 100. */
 const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao) => boolean }[] = [
   { nome: 'Português', n: 15, peso: 2, filtro: (q) => q.disciplina === 'Português' || q.disciplina === 'Língua Portuguesa' },
   { nome: 'Informática', n: 5, peso: 1, filtro: (q) => q.disciplina === 'Informática' },
@@ -787,7 +789,7 @@ function Simulado(props: {
         <p className="lead">Questões sorteadas, sem gabarito até o fim. O resultado entra no seu desempenho.</p>
         <div className="prova-estilo">
           <p className="rotulo">Prova no estilo da banca</p>
-          <p className="prova-estilo-titulo">ACE Cuité · EDUCA PB</p>
+          <p className="prova-estilo-titulo">ACE Cuité de Mamanguape · EDUCA PB</p>
           <p className="nota">
             40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
             Nota de 0 a 100, começando pelos assuntos em que você mais erra.
