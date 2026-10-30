@@ -563,3 +563,17 @@ textarea {
 .ranking-pos { font-size: 1rem; }
 .ranking-lista li:first-child .ranking-pos { color: var(--acento); font-weight: 600; }
 .ranking-nome { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+
+/* Revisão por assunto */
+.lista-fracos { list-style: none; padding: 0; margin: 16px 0 32px; border-top: 1px solid var(--linha); }
+.lista-fracos > li { border-bottom: 1px solid var(--linha); }
+.lista-fracos summary {
+  display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+  padding: 14px 0; cursor: pointer; list-style: none;
+}
+.lista-fracos summary::-webkit-details-marker { display: none; }
+.lista-fracos details[open] { padding-bottom: 16px; }
+.lista-fracos details > * + * { margin-top: 12px; }
+.lista-fracos .dicas { margin: 0; padding-left: 18px; line-height: 1.5; }
+.lista-fracos textarea { width: 100%; }
+.prova-materias { display: block; margin-top: 2px; }

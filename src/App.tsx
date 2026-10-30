@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { Filtros, Questao, Resposta } from './types';
+import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
 import { md } from './md';
 import Edital from './Edital';
@@ -66,6 +66,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
   const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
+  const [provas, setProvas] = usePersist<ProvaFeita[]>('cq:provas', []);
+  const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
 
   useEffect(() => {
     // privado/educa.json só existe na máquina de quem importou as provas (fica fora do Git).
@@ -107,7 +109,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         .catch(() => setSync('offline'));
     }, 1500);
     return () => clearTimeout(t);
-  }, [conta, historico, revisar, bloco, geradas, aba]);
+  }, [conta, historico, revisar, bloco, geradas, provas, anotacoes, aba]);
   useEffect(() => {
     const aoSair = () => document.visibilityState === 'hidden' && enviar(conta).catch(() => undefined);
     document.addEventListener('visibilitychange', aoSair);
@@ -183,7 +185,14 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
           />
         )}
         {questoes && aba === 'simulado' && (
-          <Simulado questoes={questoes} historico={historico} onResponder={registrar} revisar={revisar} onRevisar={alternarRevisar} />
+          <Simulado
+            questoes={questoes}
+            historico={historico}
+            onResponder={registrar}
+            onProva={(p) => setProvas((l) => [...l, p])}
+            revisar={revisar}
+            onRevisar={alternarRevisar}
+          />
         )}
         {questoes && aba === 'edital' && (
           <Edital
@@ -204,12 +213,19 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'desempenho' && (
           <>
             <Ranking conta={conta} />
-            <Desempenho questoes={questoes} historico={historico} onLimpar={() => setHistorico([])} />
+            <Desempenho questoes={questoes} historico={historico} provas={provas} onLimpar={() => setHistorico([])} />
           </>
         )}
         {questoes && aba === 'revisar' && (
           <Revisar
             questoes={questoes}
+            historico={historico}
+            anotacoes={anotacoes}
+            onAnotar={(assunto, texto) => setAnotacoes((a) => ({ ...a, [assunto]: texto }))}
+            onTreinar={(assunto) => {
+              setFiltros({ ...FILTROS_VAZIOS, assunto });
+              setAba('praticar');
+            }}
             revisar={revisar}
             onRevisar={alternarRevisar}
             onPraticar={() => {
@@ -512,21 +528,38 @@ function blocoDe(q: Questao) {
   return FORMATO_ACE.find((b) => b.filtro(q));
 }
 
+function resultado(prova: Questao[], respostas: Record<string, string>) {
+  const acertos = prova.filter((q) => respostas[q.id] === q.gabarito).length;
+  const notas = FORMATO_ACE.map((b) => {
+    const qs = prova.filter((q) => blocoDe(q) === b);
+    const a = qs.filter((q) => respostas[q.id] === q.gabarito).length;
+    return { ...b, total: qs.length, a, pontos: a * b.peso, max: qs.length * b.peso };
+  });
+  return {
+    acertos,
+    notas,
+    nota: notas.reduce((s, b) => s + b.pontos, 0),
+    max: notas.reduce((s, b) => s + b.max, 0),
+  };
+}
+
 function Simulado(props: {
   historico: Resposta[];
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
+  onProva: (p: ProvaFeita) => void;
   revisar: string[];
   onRevisar: (id: string) => void;
 }) {
   const [config, setConfig] = useState({ total: 10, minutos: 30, disciplina: '' });
-  const [prova, setProva] = useState<Questao[] | null>(null);
-  const [respostas, setRespostas] = useState<Record<string, string>>({});
-  const [i, setI] = useState(0);
-  const [fim, setFim] = useState<number>(0);
+  // A prova em andamento fica salva no aparelho: se o celular recarregar a página, nada se perde.
+  const [prova, setProva] = usePersist<Questao[] | null>('cq:sim-prova', null);
+  const [respostas, setRespostas] = usePersist<Record<string, string>>('cq:sim-respostas', {});
+  const [i, setI] = usePersist('cq:sim-i', 0);
+  const [fim, setFim] = usePersist<number>('cq:sim-fim', 0);
   const [agora, setAgora] = useState(Date.now());
-  const [encerrado, setEncerrado] = useState(false);
-  const [estiloProva, setEstiloProva] = useState(false);
+  const [encerrado, setEncerrado] = usePersist('cq:sim-encerrado', false);
+  const [estiloProva, setEstiloProva] = usePersist('cq:sim-estilo', false);
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -568,6 +601,17 @@ function Simulado(props: {
       const m = respostas[q.id];
       if (m) props.onResponder({ id: q.id, marcada: m, certa: m === q.gabarito, em, simulado: true });
     });
+    const r = resultado(prova, respostas);
+    props.onProva({
+      em,
+      estilo: estiloProva,
+      acertos: r.acertos,
+      total: prova.length,
+      respondidas: prova.filter((q) => respostas[q.id]).length,
+      nota: estiloProva ? r.nota : r.acertos,
+      max: estiloProva ? r.max : prova.length,
+      materias: estiloProva ? r.notas.map(({ nome, a, total, pontos, max }) => ({ nome, a, total, pontos, max })) : undefined,
+    });
     setEncerrado(true);
   }
 
@@ -608,13 +652,7 @@ function Simulado(props: {
   }
 
   if (encerrado) {
-    const acertos = prova.filter((q) => respostas[q.id] === q.gabarito).length;
-    const notas = FORMATO_ACE.map((b) => {
-      const qs = prova.filter((q) => blocoDe(q) === b);
-      const a = qs.filter((q) => respostas[q.id] === q.gabarito).length;
-      return { ...b, total: qs.length, a, pontos: a * b.peso, max: qs.length * b.peso };
-    });
-    const nota = notas.reduce((s, b) => s + b.pontos, 0);
+    const { acertos, notas, nota } = resultado(prova, respostas);
     const zerou = notas.filter((b) => b.total > 0 && b.a === 0);
     return (
       <section className="coluna estreita">
@@ -778,7 +816,17 @@ function agrupar(historico: Resposta[], porId: Map<string, Questao>, chave: (q: 
   return Array.from(m.values());
 }
 
-function Desempenho({ questoes, historico, onLimpar }: { questoes: Questao[]; historico: Resposta[]; onLimpar: () => void }) {
+function Desempenho({
+  questoes,
+  historico,
+  provas,
+  onLimpar,
+}: {
+  questoes: Questao[];
+  historico: Resposta[];
+  provas: ProvaFeita[];
+  onLimpar: () => void;
+}) {
   const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
   const [periodo, setPeriodo] = useState<7 | 30 | 0>(0);
   const hist = useMemo(() => {
@@ -860,6 +908,34 @@ function Desempenho({ questoes, historico, onLimpar }: { questoes: Questao[]; hi
         {hoje.t > 0 && `, ${pct(hoje.a, hoje.t)}% de acerto`}
       </p>
 
+      {provas.length > 0 && (
+        <>
+          <h2 className="subtitulo">
+            Provas e simulados <span className="nota">{provas.length} entregues</span>
+          </h2>
+          <ol className="historico">
+            {provas
+              .slice()
+              .reverse()
+              .map((p) => (
+                <li key={p.em} className={p.nota * 2 >= p.max ? 'ok' : 'nok'}>
+                  <span className="mono">{p.estilo ? `${p.nota} pts` : `${pct(p.acertos, p.total)}%`}</span>
+                  <span className="historico-texto">
+                    {p.estilo ? 'Prova no estilo da banca' : 'Simulado livre'} · {p.acertos}/{p.total} acertos
+                    {p.respondidas < p.total && ` · ${p.total - p.respondidas} em branco`}
+                    {p.materias && (
+                      <span className="nota prova-materias">
+                        {p.materias.map((m) => `${m.nome} ${m.a}/${m.total}`).join(' · ')}
+                      </span>
+                    )}
+                  </span>
+                  <time className="nota">{new Date(p.em).toLocaleDateString('pt-BR')}</time>
+                </li>
+              ))}
+          </ol>
+        </>
+      )}
+
       <h2 className="subtitulo">Últimos 14 dias</h2>
       <div className="grafico" role="img" aria-label={`Questões por dia: ${dias.map((d) => d.t).join(', ')}`}>
         {dias.map((d, i) => (
@@ -939,23 +1015,103 @@ function LinhaBarra({ titulo, sub, a, t }: { titulo: string; sub?: string; a: nu
 
 /* ---------- Revisar ---------- */
 
-function Revisar(props: { questoes: Questao[]; revisar: string[]; onRevisar: (id: string) => void; onPraticar: () => void }) {
+function Revisar(props: {
+  questoes: Questao[];
+  historico: Resposta[];
+  anotacoes: Record<string, string>;
+  onAnotar: (assunto: string, texto: string) => void;
+  onTreinar: (assunto: string) => void;
+  revisar: string[];
+  onRevisar: (id: string) => void;
+  onPraticar: () => void;
+}) {
   const lista = props.questoes.filter((q) => props.revisar.includes(q.id));
-  if (!lista.length) {
+  const porId = useMemo(() => new Map(props.questoes.map((q) => [q.id, q])), [props.questoes]);
+
+  // Assuntos com erro, do pior para o melhor, com o "o que revisar" e o macete das questões erradas.
+  const fracos = useMemo(() => {
+    const m = new Map<string, { assunto: string; disciplina: string; t: number; e: number; dicas: Set<string> }>();
+    props.historico.forEach((h) => {
+      const q = porId.get(h.id);
+      if (!q) return;
+      const g = m.get(q.assunto) ?? { assunto: q.assunto, disciplina: q.disciplina, t: 0, e: 0, dicas: new Set<string>() };
+      g.t++;
+      if (!h.certa) {
+        g.e++;
+        if (q.revisar) g.dicas.add(q.revisar);
+        if (q.macete) g.dicas.add(`Macete: ${q.macete}`);
+      }
+      m.set(q.assunto, g);
+    });
+    return Array.from(m.values())
+      .filter((g) => g.e > 0)
+      .sort((x, y) => y.e / y.t - x.e / x.t || y.e - x.e);
+  }, [props.historico, porId]);
+
+  if (!lista.length && !fracos.length) {
     return (
       <Vazio
-        titulo="Nada marcado para revisar"
-        texto="Use a bandeira no canto da questão para guardar as que você quer refazer depois."
+        titulo="Nada para revisar ainda"
+        texto="Os assuntos em que você errar aparecem aqui, com o que revisar e espaço para suas anotações. Use também a bandeira da questão para guardá-la."
       />
     );
   }
   return (
     <section className="coluna estreita">
       <p className="sobretitulo">Revisar</p>
-      <h1 className="titulo">{lista.length} {lista.length === 1 ? 'questão marcada' : 'questões marcadas'}</h1>
-      <button className="btn" onClick={props.onPraticar}>
-        Refazer as marcadas
-      </button>
+      {fracos.length > 0 && (
+        <>
+          <h1 className="titulo">Assuntos que você está errando</h1>
+          <p className="lead">Do pior para o melhor. Anote o que aprendeu: fica salvo na sua conta.</p>
+          <ul className="lista-fracos">
+            {fracos.map((g) => (
+              <li key={g.assunto}>
+                <details>
+                  <summary>
+                    <span>
+                      <span className="lista-titulo">{g.assunto}</span> <span className="nota">{g.disciplina}</span>
+                    </span>
+                    <span className="mono nota">
+                      {g.e} {g.e === 1 ? 'erro' : 'erros'} · {pct(g.t - g.e, g.t)}%
+                    </span>
+                  </summary>
+                  {g.dicas.size > 0 && (
+                    <ul className="dicas">
+                      {Array.from(g.dicas)
+                        .slice(0, 6)
+                        .map((d) => (
+                          <li key={d}>{d}</li>
+                        ))}
+                    </ul>
+                  )}
+                  <label className="campo">
+                    <span className="rotulo">Minhas anotações</span>
+                    <textarea
+                      rows={3}
+                      value={props.anotacoes[g.assunto] ?? ''}
+                      onChange={(e) => props.onAnotar(g.assunto, e.target.value)}
+                      placeholder="O que você não pode esquecer deste assunto…"
+                    />
+                  </label>
+                  <button className="btn btn-sec" onClick={() => props.onTreinar(g.assunto)}>
+                    Treinar este assunto
+                  </button>
+                </details>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {lista.length > 0 && (
+        <>
+          <h2 className="subtitulo">
+            {lista.length} {lista.length === 1 ? 'questão marcada' : 'questões marcadas'}
+          </h2>
+          <button className="btn" onClick={props.onPraticar}>
+            Refazer as marcadas
+          </button>
+        </>
+      )}
       <ul className="lista-revisar">
         {lista.map((q) => (
           <li key={q.id}>

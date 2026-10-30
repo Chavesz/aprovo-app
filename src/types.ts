@@ -35,6 +35,19 @@ export interface Resposta {
   simulado?: boolean;
 }
 
+/** Resultado de um simulado entregue. */
+export interface ProvaFeita {
+  em: number;
+  /** Prova no estilo da banca (nota de 0 a 100) ou simulado livre. */
+  estilo: boolean;
+  acertos: number;
+  total: number;
+  respondidas: number;
+  nota: number;
+  max: number;
+  materias?: { nome: string; a: number; total: number; pontos: number; max: number }[];
+}
+
 export interface Filtros {
   banca: string;
   orgao: string;

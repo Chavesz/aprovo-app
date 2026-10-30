@@ -11,13 +11,26 @@ interface Linha {
   acertosHoje: number;
   provas: number;
   provasHoje: number;
+  melhorNota?: number;
+  ultimaNota?: number;
 }
 
-type Criterio = 'hoje' | 'acertos' | 'taxa' | 'provas';
+type Criterio = 'geral' | 'hoje' | 'nota' | 'taxa' | 'provas';
 
 const CRITERIOS: { id: Criterio; rotulo: string; valor: (l: Linha) => number; texto: (l: Linha) => string }[] = [
+  {
+    id: 'geral',
+    rotulo: 'Geral',
+    valor: (l) => l.acertos,
+    texto: (l) => `${l.acertos} acertos em ${l.total}${l.melhorNota ? ` · prova ${l.melhorNota} pts` : ''}`,
+  },
   { id: 'hoje', rotulo: 'Hoje', valor: (l) => l.hoje, texto: (l) => `${l.hoje} questões · ${l.acertosHoje} certas` },
-  { id: 'acertos', rotulo: 'Acertos', valor: (l) => l.acertos, texto: (l) => `${l.acertos} de ${l.total}` },
+  {
+    id: 'nota',
+    rotulo: 'Nota da prova',
+    valor: (l) => l.melhorNota ?? 0,
+    texto: (l) => (l.melhorNota ? `melhor ${l.melhorNota} · última ${l.ultimaNota} pts` : 'sem prova no estilo'),
+  },
   {
     id: 'taxa',
     rotulo: '% de acerto',
@@ -31,7 +44,7 @@ const CRITERIOS: { id: Criterio; rotulo: string; valor: (l: Linha) => number; te
 export default function Ranking({ conta }: { conta: Conta }) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [erro, setErro] = useState(false);
-  const [criterio, setCriterio] = useState<Criterio>('hoje');
+  const [criterio, setCriterio] = useState<Criterio>('geral');
 
   useEffect(() => {
     // Espera o envio do progresso mais recente antes de buscar.

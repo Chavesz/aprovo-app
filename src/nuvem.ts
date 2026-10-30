@@ -1,5 +1,5 @@
 // Conta e sincronização do progresso com o servidor (/api/conta e /api/progresso).
-import type { Questao, Resposta, Edital } from './types';
+import type { Questao, Resposta, Edital, ProvaFeita } from './types';
 
 export interface Conta {
   usuario: string;
@@ -8,7 +8,16 @@ export interface Conta {
 }
 
 /** Chaves do localStorage que pertencem ao progresso da pessoa e vão para a nuvem. */
-const CHAVES = ['cq:historico', 'cq:revisar', 'cq:bloco', 'cq:geradas', 'cq:editais', 'cq:edital-ativo'] as const;
+const CHAVES = [
+  'cq:historico',
+  'cq:revisar',
+  'cq:bloco',
+  'cq:geradas',
+  'cq:editais',
+  'cq:edital-ativo',
+  'cq:provas',
+  'cq:anotacoes',
+] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {
   try {
@@ -89,7 +98,13 @@ export async function baixar(conta: Conta) {
       (x, y) => x.em - y.em
     )
   );
-  gravar('cq:revisar', Array.from(new Set([...ler<string[]>('cq:revisar', []), ...remoto<string[]>('cq:revisar', [])])));
+  gravar(
+    'cq:provas',
+    unirPor(ler<ProvaFeita[]>('cq:provas', []), remoto<ProvaFeita[]>('cq:provas', []), (p) => String(p.em)).sort((x, y) => x.em - y.em)
+  );
+  // Anotações: vale a deste aparelho quando as duas existem.
+  gravar('cq:anotacoes', { ...remoto<Record<string, string>>('cq:anotacoes', {}), ...ler<Record<string, string>>('cq:anotacoes', {}) });
+  gravar('cq:revisar',Array.from(new Set([...ler<string[]>('cq:revisar', []), ...remoto<string[]>('cq:revisar', [])])));
   gravar('cq:geradas', unirPor(remoto<Questao[]>('cq:geradas', []), ler<Questao[]>('cq:geradas', []), (q) => q.id));
   const editais = unirPor(remoto<Edital[]>('cq:editais', []), ler<Edital[]>('cq:editais', []), (e) => e.id);
   if (editais.length) gravar('cq:editais', editais);

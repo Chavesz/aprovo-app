@@ -11,12 +11,19 @@ interface Resp {
   simulado?: boolean;
 }
 
+interface Prova {
+  em: number;
+  estilo: boolean;
+  nota: number;
+}
+
 /** Data (AAAA-MM-DD) no horário de Brasília. */
 const diaBR = (t: number) => new Date(t - 3 * 3600_000).toISOString().slice(0, 10);
 
 /** Guarda o resumo usado no ranking: totais, o dia de hoje e as provas completas (simulados com 30+ questões). */
-async function atualizarRanking(usuario: string, historico: Resp[]) {
+async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prova[]) {
   if (!Array.isArray(historico)) return;
+  if (!Array.isArray(feitas)) feitas = [];
   const conta = (await getStore({ name: 'usuarios', consistency: 'strong' }).get(usuario, { type: 'json' })) as {
     nome?: string;
   } | null;
@@ -24,7 +31,10 @@ async function atualizarRanking(usuario: string, historico: Resp[]) {
   const deHoje = historico.filter((h) => diaBR(h.em) === hoje);
   const sessoes = new Map<number, Resp[]>();
   historico.filter((h) => h.simulado).forEach((h) => sessoes.set(h.em, [...(sessoes.get(h.em) ?? []), h]));
-  const provas = Array.from(sessoes.values()).filter((s) => s.length >= 30);
+  const antigas = Array.from(sessoes.values()).filter((s) => s.length >= 30);
+  // Provas entregues desde que o app passou a guardar o resultado; antes disso, conta pelos simulados de 30+ questões.
+  const provas = feitas.length ? feitas.map((p) => [{ em: p.em }]) : antigas;
+  const estilo = feitas.filter((p) => p.estilo);
   await getStore({ name: 'ranking', consistency: 'strong' }).setJSON(usuario, {
     nome: conta?.nome ?? usuario,
     total: historico.length,
@@ -34,6 +44,8 @@ async function atualizarRanking(usuario: string, historico: Resp[]) {
     acertosHoje: deHoje.filter((h) => h.certa).length,
     provas: provas.length,
     provasHoje: provas.filter((s) => diaBR(s[0].em) === hoje).length,
+    melhorNota: Math.max(0, ...estilo.map((p) => p.nota)),
+    ultimaNota: estilo.length ? estilo[estilo.length - 1].nota : 0,
     atualizadoEm: Date.now(),
   });
 }
@@ -55,7 +67,8 @@ export default async (req: Request) => {
       return json({ erro: 'Pedido inválido.' }, 400);
     }
     await store.set(usuario, texto);
-    await atualizarRanking(usuario, JSON.parse(texto)['cq:historico'] ?? []);
+    const dados = JSON.parse(texto);
+    await atualizarRanking(usuario, dados['cq:historico'] ?? [], dados['cq:provas'] ?? []);
     return json({ ok: true, salvoEm: Date.now() });
   }
   return json({ erro: 'Método não permitido.' }, 405);

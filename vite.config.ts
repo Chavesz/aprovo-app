@@ -39,9 +39,15 @@ function iaDeExemplo(): Plugin {
         const eu = sessoes.get(String(req.headers.authorization ?? '').replace('Bearer ', ''));
         res.setHeader('content-type', 'application/json');
         const linhas = Array.from(contas.entries()).map(([u, c]) => {
-          const h: { certa: boolean }[] = JSON.parse(progresso.get(u) ?? '{}')['cq:historico'] ?? [];
+          const d = JSON.parse(progresso.get(u) ?? '{}');
+          const h: { certa: boolean }[] = d['cq:historico'] ?? [];
+          const p: { estilo: boolean; nota: number }[] = d['cq:provas'] ?? [];
+          const notas = p.filter((x) => x.estilo).map((x) => x.nota);
           const a = h.filter((x) => x.certa).length;
-          return { usuario: u, eu: u === eu, nome: c.nome, total: h.length, acertos: a, hoje: h.length, acertosHoje: a, provas: 0, provasHoje: 0 };
+          return {
+            usuario: u, eu: u === eu, nome: c.nome, total: h.length, acertos: a, hoje: h.length, acertosHoje: a,
+            provas: p.length, provasHoje: p.length, melhorNota: Math.max(0, ...notas), ultimaNota: notas[notas.length - 1] ?? 0,
+          };
         });
         res.end(JSON.stringify(linhas));
       });
