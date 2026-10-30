@@ -653,3 +653,10 @@ textarea {
 .anel figcaption { display: grid; gap: 2px; }
 .anel-nome { font-weight: 600; font-size: 0.875rem; overflow-wrap: anywhere; }
 @media (max-width: 420px) { .aneis { grid-template-columns: 1fr 1fr; } }
+
+/* Estudar meus erros e origem do simulado */
+.resumo-assunto { margin: 0; line-height: 1.55; font-size: 0.9375rem; }
+.resumo-assunto .rotulo { display: block; margin-bottom: 2px; }
+.links-estudo { display: flex; flex-wrap: wrap; gap: 8px; }
+.links-estudo .btn { text-decoration: none; font-size: 0.875rem; }
+.prova-estilo .origem { flex-wrap: wrap; margin: 12px 0; }

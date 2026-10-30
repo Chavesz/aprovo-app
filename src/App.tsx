@@ -618,9 +618,29 @@ const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao)
 ];
 
 /** Monta a prova no formato da banca: só questões no estilo da prova (autorais comentadas e EDUCA), priorizando os erros. */
-function montarProvaEstilo(questoes: Questao[], historico: Resposta[]) {
+type Origem = 'misturado' | 'feitas' | 'ineditas';
+
+function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: Origem = 'misturado') {
+  const feitas = new Set(historico.map((h) => h.id));
+  const vistos = new Set<string>();
+  // Sem repetir: nem o mesmo id, nem o mesmo enunciado vindo de fontes diferentes.
+  const unica = (q: Questao) => {
+    // Questões de Português dividem o mesmo texto base: compara o fim do enunciado, o comando e as alternativas.
+    const k = `${q.enunciado.slice(-160)}|${q.comando}|${q.alternativas.map((x) => x.texto).join('|')}`;
+    if (vistos.has(q.id) || vistos.has(k)) return false;
+    vistos.add(q.id);
+    vistos.add(k);
+    return true;
+  };
   const estilo = questoes.filter((q) => q.comentario || /educa/i.test(q.banca));
-  return FORMATO_ACE.flatMap((b) => ordemInteligente(estilo.filter(b.filtro), historico).slice(0, b.n));
+  const preferida = (q: Questao) =>
+    origem === 'misturado' || (origem === 'feitas' ? feitas.has(q.id) : !feitas.has(q.id));
+  return FORMATO_ACE.flatMap((b) => {
+    const doBloco = ordemInteligente(estilo.filter(b.filtro), historico);
+    // Primeiro as da origem escolhida; se faltar questão, completa com as outras para fechar as 40.
+    const ordem = [...doBloco.filter(preferida), ...doBloco.filter((q) => !preferida(q))];
+    return ordem.filter(unica).slice(0, b.n);
+  });
 }
 
 function blocoDe(q: Questao) {
@@ -659,6 +679,7 @@ function Simulado(props: {
   const [agora, setAgora] = useState(Date.now());
   const [encerrado, setEncerrado] = usePersist('cq:sim-encerrado', false);
   const [estiloProva, setEstiloProva] = usePersist('cq:sim-estilo', false);
+  const [origem, setOrigem] = usePersist<Origem>('cq:sim-origem', 'misturado');
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -684,7 +705,7 @@ function Simulado(props: {
   };
 
   const iniciarProva = () => {
-    setProva(montarProvaEstilo(props.questoes, props.historico));
+    setProva(montarProvaEstilo(props.questoes, props.historico, origem));
     setEstiloProva(true);
     setRespostas({});
     setI(0);
@@ -727,6 +748,20 @@ function Simulado(props: {
             40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
             Nota de 0 a 100, começando pelos assuntos em que você mais erra.
           </p>
+          <div className="segmentado origem" role="radiogroup" aria-label="Quais questões">
+            {(
+              [
+                ['misturado', 'Misturado'],
+                ['feitas', 'Só as que já fiz'],
+                ['ineditas', 'Só inéditas'],
+              ] as const
+            ).map(([v, r]) => (
+              <label key={v} className="chip">
+                <input type="radio" name="origem" checked={origem === v} onChange={() => setOrigem(v)} />
+                {r}
+              </label>
+            ))}
+          </div>
           <button className="btn btn-grande" onClick={iniciarProva}>
             Gerar prova no estilo da banca
           </button>
@@ -1252,22 +1287,23 @@ function Revisar(props: {
 
   // Assuntos com erro, do pior para o melhor, com o "o que revisar" e o macete das questões erradas.
   const fracos = useMemo(() => {
-    const m = new Map<string, { assunto: string; disciplina: string; t: number; e: number; dicas: Set<string> }>();
+    const m = new Map<string, { assunto: string; disciplina: string; t: number; e: number; dicas: Set<string>; resumo: string }>();
     props.historico.forEach((h) => {
       const q = porId.get(h.id);
       if (!q) return;
-      const g = m.get(q.assunto) ?? { assunto: q.assunto, disciplina: q.disciplina, t: 0, e: 0, dicas: new Set<string>() };
+      const g = m.get(q.assunto) ?? { assunto: q.assunto, disciplina: q.disciplina, t: 0, e: 0, dicas: new Set<string>(), resumo: '' };
       g.t++;
       if (!h.certa) {
         g.e++;
         if (q.revisar) g.dicas.add(q.revisar);
         if (q.macete) g.dicas.add(`Macete: ${q.macete}`);
+        if (!g.resumo && q.comentario) g.resumo = q.comentario.replace(/[*_#>`]/g, '').slice(0, 320);
       }
       m.set(q.assunto, g);
     });
     return Array.from(m.values())
       .filter((g) => g.e > 0)
-      .sort((x, y) => y.e / y.t - x.e / x.t || y.e - x.e);
+      .sort((x, y) => y.e - x.e || y.e / y.t - x.e / x.t);
   }, [props.historico, porId]);
 
   if (!lista.length && !fracos.length) {
@@ -1283,8 +1319,8 @@ function Revisar(props: {
       <p className="sobretitulo">Revisar</p>
       {fracos.length > 0 && (
         <>
-          <h1 className="titulo">Assuntos que você está errando</h1>
-          <p className="lead">Do pior para o melhor. Anote o que aprendeu: fica salvo na sua conta.</p>
+          <h1 className="titulo">Estudar meus erros</h1>
+          <p className="lead">Do assunto que você mais erra para o que menos erra. Leia o resumo, veja uma aula e anote: fica salvo na sua conta.</p>
           <ul className="lista-fracos">
             {fracos.map((g) => (
               <li key={g.assunto}>
@@ -1306,6 +1342,30 @@ function Revisar(props: {
                         ))}
                     </ul>
                   )}
+                  {g.resumo && (
+                    <p className="resumo-assunto">
+                      <span className="rotulo">Resumo</span> {g.resumo}
+                      {g.resumo.length >= 320 && '…'}
+                    </p>
+                  )}
+                  <div className="links-estudo">
+                    <a
+                      className="btn btn-sec"
+                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${g.assunto} ${g.disciplina} concurso aula`)}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      ▶ Aulas no YouTube
+                    </a>
+                    <a
+                      className="btn btn-sec"
+                      href={`https://www.google.com/search?q=${encodeURIComponent(`${g.assunto} ${/Específicos|Saúde/.test(g.disciplina) ? 'site:gov.br' : 'resumo'}`)}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {/Específicos|Saúde/.test(g.disciplina) ? 'Fontes oficiais (gov.br)' : 'Resumos para ler'}
+                    </a>
+                  </div>
                   <label className="campo">
                     <span className="rotulo">Minhas anotações</span>
                     <textarea
