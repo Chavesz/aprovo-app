@@ -77,7 +77,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         .then((r) => (r.ok && r.headers.get('content-type')?.includes('json') ? (r.json() as Promise<Questao[]>) : []))
         .catch(() => [] as Questao[]);
     Promise.all([
-      opcional('/data/privado/educa-ace.json'),
+      opcional('/data/educa-ace.json'),
+      opcional('/data/educa-site.json'),
       opcional('/data/privado/educa.json'),
       ...['/data/ace-cuite.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])

@@ -1,6 +1,6 @@
 """Importa as provas de ACE da EDUCA (PDFs + arquivo de gabaritos oficiais) para uso pessoal.
 
-Saída: public/data/privado/educa-ace.json (fora do Git, como o educa.json).
+Saída: public/data/privado/educa-ace.json; a cópia publicada fica em public/data/educa-ace.json.
 Uso: python scripts/importar-ace-educa.py "<pasta provas-reais>"
 Requer pdftotext e pdfinfo (poppler) no PATH.
 """
@@ -33,8 +33,10 @@ DISCIPLINAS = [
 ]
 
 LIXO = re.compile(r'ESTADO DA PARA[IÍ]BA|PREFEITURA MUNICIPAL|CONCURSO P[UÚ]BLICO|PROCESSO SELETIVO|EDITAL N|^\d{1,3}$')
-ALT = re.compile(r'(?:^|\s)([A-E])[.)]\s+')
-QUESTAO = re.compile(r'(?m)^(\d{1,2})\.\s')
+ALT = re.compile(r'(?:^|\s)([A-E])[.)]\s*(?=\S)')
+# "10.Em ..." às vezes vem sem espaço depois do ponto.
+QUESTAO = re.compile(r'(?m)^(\d{1,2})\.(?!\d)\s*')
+SECAO = re.compile(r'(?m)^(L[IÍ]NGUA PORTUGUESA|PORTUGU[EÊ]S|INFORM[AÁ]TICA|NO[CÇ][OÕ]ES DE INFORM[AÁ]TICA|CONHECIMENTOS GERAIS|ATUALIDADES|CONHECIMENTOS ESPEC[IÍ]FICOS|CONHECIMENTO ESPEC[IÍ]FICO)\b', re.I)
 TEXTO_BASE = re.compile(r'(?m)^(Leia o texto|Leia a |Leia os|Leia o |TEXTO [IVX]+)')
 
 
@@ -83,7 +85,11 @@ def texto_pdf(pdf):
 
 
 def limpar(t):
-    return re.sub(r'\s+', ' ', t).strip()
+    t = re.sub(r'\s+', ' ', t)
+    # Sobras da página coladas na última alternativa: link da fonte, título da próxima seção, traços.
+    t = re.sub(r'\s*https?://\S.*$', '', t)
+    t = re.sub(r'\s*(L[IÍ]NGUA PORTUGUESA|INFORM[AÁ]TICA|CONHECIMENTOS (GERAIS|ESPEC[IÍ]FICOS)|ATUALIDADES)\b.*$', '', t)
+    return re.sub(r'\s*_{3,}.*$', '', t).strip()
 
 
 def questoes(texto):
@@ -117,7 +123,9 @@ def questoes(texto):
                 seq, esperado = [(l, m.start(), m.end())], 'B'
         if len(seq) >= 4:
             alts = [[l, bloco[b: (seq[j + 1][1] if j + 1 < len(seq) else len(bloco))]] for j, (l, a, b) in enumerate(seq)]
-            qs[n] = {'cmd': bloco[: seq[0][1]], 'alt': alts, 'base': base_atual}
+            secoes = list(SECAO.finditer(corpo[:fim_cab]))
+            qs[n] = {'cmd': bloco[: seq[0][1]], 'alt': alts, 'base': base_atual,
+                     'secao': secoes[-1].group(1).upper() if secoes else ''}
         if proxima_base is not None:
             base_atual = proxima_base
     return qs
