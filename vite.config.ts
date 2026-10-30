@@ -46,6 +46,7 @@ function iaDeExemplo(): Plugin {
           const a = h.filter((x) => x.certa).length;
           return {
             usuario: u, eu: u === eu, nome: c.nome, total: h.length, acertos: a, hoje: h.length, acertosHoje: a,
+            avulsas: h.length, acertosAvulsas: a, provasEstilo: notas.length,
             provas: p.length, provasHoje: p.length, melhorNota: Math.max(0, ...notas), ultimaNota: notas[notas.length - 1] ?? 0,
           };
         });

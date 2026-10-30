@@ -26,6 +26,9 @@ export default async (req: Request) => {
         acertosHoje: outroDia ? 0 : Number(r.acertosHoje),
         provas: Number(r.provas),
         provasHoje: outroDia ? 0 : Number(r.provasHoje),
+        avulsas: Number(r.avulsas ?? r.total),
+        acertosAvulsas: Number(r.acertosAvulsas ?? r.acertos),
+        provasEstilo: Number(r.provasEstilo ?? 0),
         melhorNota: Number(r.melhorNota ?? 0),
         ultimaNota: Number(r.ultimaNota ?? 0),
       };
