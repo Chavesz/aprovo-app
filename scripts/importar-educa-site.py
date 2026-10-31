@@ -117,7 +117,7 @@ def main(pasta):
             })
             ok += 1
         print(f'{prova}: {ok} questões (gabarito {fonte})')
-    saida = list({q['id']: q for q in saida}.values())  # o site às vezes publica o mesmo caderno duas vezes
+    saida = [q for q in {q['id']: q for q in saida}.values() if not ace.de_outro_municipio(q)]  # o site às vezes publica o mesmo caderno duas vezes
     SAIDA.write_text(json.dumps(saida, ensure_ascii=False), encoding='utf8')
     print(f'Total: {len(saida)}')
 

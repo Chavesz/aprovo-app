@@ -40,6 +40,15 @@ SECAO = re.compile(r'(?m)^(L[IÍ]NGUA PORTUGUESA|PORTUGU[EÊ]S|INFORM[AÁ]TICA|N
 TEXTO_BASE = re.compile(r'(?m)^(Leia o texto|Leia a |Leia os|Leia o |TEXTO [IVX]+)')
 
 
+# Questões sobre o município de outra prova (população, história, Lei Orgânica): não servem para Cuité de Mamanguape.
+OUTRO_MUNICIPIO = re.compile(r'Ibiara|Brejo d[oe] Cruz|Alhandra|Juripiranga|Santa Cec[ií]lia|S[ãa]o Bento|Umbuzeiro|\bJuru\b|Pil[õo]es|Lei Org[âa]nica do Munic', re.I)
+
+
+def de_outro_municipio(q):
+    juntos = ' '.join([q['enunciado'] if q['disciplina'] != 'Português' else '', q['comando'], *(a['texto'] for a in q['alternativas'])])
+    return q['disciplina'] != 'Português' and bool(OUTRO_MUNICIPIO.search(juntos))
+
+
 def gabaritos(texto):
     """{'Prova 1': {numero: (letra ou None se anulada, disciplina)}}."""
     res = {}
@@ -163,6 +172,7 @@ def main(pasta):
                 'gabarito': letra,
                 'comentario': f'Gabarito oficial da EDUCA: {letra}. Fonte: prova de {nome}, {orgao}.',
             })
+    saida = [q for q in saida if not de_outro_municipio(q)]
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     SAIDA.write_text(json.dumps(saida, ensure_ascii=False), encoding='utf8')
     print(f'{len(saida)} questões importadas; {len(falhas)} puladas: {", ".join(falhas)}')
