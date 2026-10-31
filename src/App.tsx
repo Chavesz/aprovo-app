@@ -67,6 +67,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
   const [provas, setProvas] = usePersist<ProvaFeita[]>('cq:provas', []);
+  // Provas apagadas (pelo horário de entrega): não voltam pela nuvem nem pela reconstrução a partir do histórico.
+  const [excluidas, setExcluidas] = usePersist<number[]>('cq:provas-excluidas', []);
+  const excluirProva = (em: number) => {
+    setExcluidas((l) => [...l, em]);
+    setProvas((l) => l.filter((p) => p.em !== em));
+    setHistorico((l) => l.filter((h) => !(h.simulado && h.em === em)));
+  };
   const [meta, setMeta] = usePersist<{ data: string; porDia: number }>('cq:meta', { data: '', porDia: 40 });
   const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
 
@@ -128,7 +135,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     historico.filter((h) => h.simulado).forEach((h) => sessoes.set(h.em, [...(sessoes.get(h.em) ?? []), h]));
     const novas: ProvaFeita[] = [];
     sessoes.forEach((rs, em) => {
-      if (provas.some((p) => p.em === em)) return;
+      if (provas.some((p) => p.em === em) || excluidas.includes(em)) return;
       const qs = rs.map((r) => porId.get(r.id)).filter((q): q is Questao => !!q);
       const respostas = Object.fromEntries(rs.map((r) => [r.id, r.marcada]));
       const estilo = rs.length >= 30 && qs.every((q) => blocoDe(q));
@@ -246,7 +253,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'desempenho' && (
           <>
             <Ranking conta={conta} />
-            <Desempenho questoes={questoes} historico={historico} provas={provas} onLimpar={() => setHistorico([])} />
+            <Desempenho questoes={questoes} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
         )}
         {questoes && aba === 'revisar' && (
@@ -943,6 +950,12 @@ function Simulado(props: {
         <button className="btn btn-sec" onClick={() => confirm('Entregar o simulado agora?') && encerrar()}>
           Entregar
         </button>
+        <button
+          className="link perigo"
+          onClick={() => confirm('Descartar esta prova? Nada dela vai para o desempenho nem para o ranking.') && setProva(null)}
+        >
+          Descartar
+        </button>
       </div>
       <QuestaoCard
         q={q}
@@ -1010,11 +1023,13 @@ function Desempenho({
   historico,
   provas,
   onLimpar,
+  onExcluir,
 }: {
   questoes: Questao[];
   historico: Resposta[];
   provas: ProvaFeita[];
   onLimpar: () => void;
+  onExcluir: (em: number) => void;
 }) {
   const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
   const [periodo, setPeriodo] = useState<7 | 30 | 0>(0);
@@ -1147,6 +1162,14 @@ function Desempenho({
                     )}
                   </span>
                   <time className="nota">{new Date(p.em).toLocaleDateString('pt-BR')}</time>
+                  <button
+                    className="link perigo"
+                    onClick={() =>
+                      confirm('Excluir esta prova? A nota e as respostas dela saem do desempenho e do ranking.') && onExcluir(p.em)
+                    }
+                  >
+                    Excluir
+                  </button>
                 </li>
               ))}
           </ol>

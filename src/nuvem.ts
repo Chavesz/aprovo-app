@@ -18,6 +18,7 @@ const CHAVES = [
   'cq:provas',
   'cq:anotacoes',
   'cq:meta',
+  'cq:provas-excluidas',
 ] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {
@@ -93,15 +94,21 @@ const unirPor = <T,>(a: T[], b: T[], chave: (x: T) => string) => {
 export async function baixar(conta: Conta) {
   const r = await pedir<Record<string, unknown>>('/api/progresso', { headers: { authorization: `Bearer ${conta.token}` } });
   const remoto = <T,>(k: string, padrao: T) => (r[k] as T) ?? padrao;
+  const excluidas = Array.from(new Set([...ler<number[]>('cq:provas-excluidas', []), ...remoto<number[]>('cq:provas-excluidas', [])]));
+  gravar('cq:provas-excluidas', excluidas);
   gravar(
     'cq:historico',
-    unirPor(ler<Resposta[]>('cq:historico', []), remoto<Resposta[]>('cq:historico', []), (h) => `${h.id}|${h.em}`).sort(
+    unirPor(ler<Resposta[]>('cq:historico', []), remoto<Resposta[]>('cq:historico', []), (h) => `${h.id}|${h.em}`)
+      .filter((h) => !(h.simulado && excluidas.includes(h.em)))
+      .sort(
       (x, y) => x.em - y.em
     )
   );
   gravar(
     'cq:provas',
-    unirPor(ler<ProvaFeita[]>('cq:provas', []), remoto<ProvaFeita[]>('cq:provas', []), (p) => String(p.em)).sort((x, y) => x.em - y.em)
+    unirPor(ler<ProvaFeita[]>('cq:provas', []), remoto<ProvaFeita[]>('cq:provas', []), (p) => String(p.em))
+      .filter((p) => !excluidas.includes(p.em))
+      .sort((x, y) => x.em - y.em)
   );
   // Anotações: vale a deste aparelho quando as duas existem.
   gravar('cq:anotacoes', { ...remoto<Record<string, string>>('cq:anotacoes', {}), ...ler<Record<string, string>>('cq:anotacoes', {}) });
