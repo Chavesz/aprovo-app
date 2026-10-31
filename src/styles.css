@@ -668,3 +668,6 @@ textarea {
 .provas-educa summary { cursor: pointer; }
 .provas-educa ul { list-style: none; padding: 0; margin: 10px 0 0; }
 .provas-educa li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--linha); }
+
+/* Escolha do cargo no primeiro acesso */
+.escolha-cargo { display: grid; gap: 10px; max-width: 520px; margin: 0 auto 24px; padding: 18px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel-2); }

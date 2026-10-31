@@ -54,7 +54,7 @@ def disciplina(secao):
         return 'Informática'
     if 'GERA' in s or 'ATUALID' in s:
         return 'Conhecimentos Gerais'
-    return 'Saúde Pública'
+    return 'Específicos ACS'
 
 
 def main(pasta):
@@ -97,7 +97,7 @@ def main(pasta):
             disc = disciplina(q['secao'])
             # O título da seção nem sempre cai na coluna certa: confere pelo assunto da questão.
             if re.search(r'SAUDE|SUS|VIGILANCIA|DOENCA|VACIN|EPIDEMI|ENDEMI|AGENTE COMUNITARIO|ACS|ATENCAO BASICA|HIPERTENS|DIABET|GESTANTE', sem_acento(q['cmd'])):
-                disc = 'Saúde Pública'
+                disc = 'Específicos ACS'
             elif re.search(r'WINDOWS|EXCEL|WORD|TECLADO|NAVEGADOR|COMPUTADOR|PLANILHA|E-MAIL|HARDWARE|SOFTWARE|INTERNET', sem_acento(q['cmd'])):
                 disc = 'Informática'
             saida.append({

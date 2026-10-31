@@ -76,6 +76,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   };
   const [meta, setMeta] = usePersist<{ data: string; porDia: number }>('cq:meta', { data: '', porDia: 40 });
   const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
+  // Cargo da prova: muda só os conhecimentos específicos (Português, Informática e Gerais valem para os dois).
+  const [cargo, setCargo] = usePersist<Cargo | ''>('cq:cargo', /^kaua/.test(conta.usuario) ? 'ACE' : '');
 
   useEffect(() => {
     // Os arquivos de privado/ só existem na máquina de quem importou as provas (ficam fora do Git).
@@ -108,7 +110,11 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const escuroAgora = () =>
     tema ? tema === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  const questoes = useMemo(() => (oficiais ? [...geradas, ...oficiais] : null), [oficiais, geradas]);
+  const questoes = useMemo(() => {
+    if (!oficiais) return null;
+    const deOutroCargo = cargo === 'ACS' ? 'Específicos ACE' : cargo === 'ACE' ? 'Específicos ACS' : '';
+    return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo);
+  }, [oficiais, geradas, cargo]);
 
   // Envia o progresso para a conta pouco depois de cada mudança e quando o app vai para segundo plano.
   const [sync, setSync] = useState<'ok' | 'salvando' | 'offline'>('ok');
@@ -188,6 +194,15 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             </button>
           ))}
         </nav>
+        {cargo && (
+          <button
+            className="conta-btn"
+            onClick={() => confirm(`Trocar o cargo de ${cargo} para ${cargo === 'ACE' ? 'ACS' : 'ACE'}?`) && setCargo(cargo === 'ACE' ? 'ACS' : 'ACE')}
+            title={CARGOS[cargo]}
+          >
+            {cargo}
+          </button>
+        )}
         <button
           className="conta-btn"
           onClick={() => confirm(`Sair da conta ${conta.usuario}? Seu progresso fica salvo.`) && onSair()}
@@ -209,6 +224,17 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       </header>
 
       <main className="conteudo">
+        {!cargo && (
+          <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
+            <p className="rotulo">Para qual cargo você vai fazer a prova?</p>
+            <p className="nota">As questões de conhecimentos específicos mudam conforme o cargo. Dá para trocar depois no topo.</p>
+            {(Object.keys(CARGOS) as Cargo[]).map((c) => (
+              <button key={c} className="btn" onClick={() => setCargo(c)}>
+                {c} · {CARGOS[c]}
+              </button>
+            ))}
+          </div>
+        )}
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
         {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
@@ -226,6 +252,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {questoes && aba === 'simulado' && (
           <Simulado
+            cargo={cargo || 'ACE'}
             questoes={questoes}
             historico={historico}
             onResponder={registrar}
@@ -620,11 +647,14 @@ function QuestaoCard(props: {
 /* ---------- Simulado ---------- */
 
 /** Formato da prova de ACE de Cuité de Mamanguape (EDUCA PB): 40 questões, 3 horas, nota de 0 a 100. */
+type Cargo = 'ACE' | 'ACS';
+const CARGOS: Record<Cargo, string> = { ACE: 'Agente de Combate às Endemias', ACS: 'Agente Comunitário de Saúde' };
+
 const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao) => boolean }[] = [
   { nome: 'Português', n: 15, peso: 2, filtro: (q) => q.disciplina === 'Português' || q.disciplina === 'Língua Portuguesa' },
   { nome: 'Informática', n: 5, peso: 1, filtro: (q) => q.disciplina === 'Informática' },
   { nome: 'Conhecimentos Gerais', n: 5, peso: 1, filtro: (q) => q.disciplina === 'Conhecimentos Gerais' },
-  { nome: 'Específicos', n: 15, peso: 4, filtro: (q) => q.disciplina === 'Específicos ACE' || q.disciplina === 'Saúde Pública' },
+  { nome: 'Específicos', n: 15, peso: 4, filtro: (q) => /^Específicos AC[ES]$/.test(q.disciplina) || q.disciplina === 'Saúde Pública' },
 ];
 
 /** Monta a prova no formato da banca: só questões no estilo da prova (autorais comentadas e EDUCA), priorizando os erros. */
@@ -716,6 +746,7 @@ function resultado(prova: Questao[], respostas: Record<string, string>) {
 }
 
 function Simulado(props: {
+  cargo: Cargo;
   historico: Resposta[];
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
@@ -797,7 +828,7 @@ function Simulado(props: {
         <p className="lead">Questões sorteadas, sem gabarito até o fim. O resultado entra no seu desempenho.</p>
         <div className="prova-estilo">
           <p className="rotulo">Prova no estilo da banca</p>
-          <p className="prova-estilo-titulo">ACE Cuité de Mamanguape · EDUCA PB</p>
+          <p className="prova-estilo-titulo">{props.cargo} Cuité de Mamanguape · EDUCA PB</p>
           <p className="nota">
             40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
             Nota de 0 a 100, começando pelos assuntos em que você mais erra.
