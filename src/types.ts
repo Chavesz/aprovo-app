@@ -38,6 +38,8 @@ export interface Resposta {
 /** Resultado de um simulado entregue. */
 export interface ProvaFeita {
   em: number;
+  /** Questões anuladas (enunciado incompleto) que já valeram ponto nesta prova. */
+  anuladas?: string[];
   /** Prova no estilo da banca (nota de 0 a 100) ou simulado livre. */
   estilo: boolean;
   acertos: number;

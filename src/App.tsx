@@ -113,7 +113,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const questoes = useMemo(() => {
     if (!oficiais) return null;
     const deOutroCargo = cargo === 'ACS' ? 'Específicos ACE' : cargo === 'ACE' ? 'Específicos ACS' : '';
-    return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo);
+    return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo && !ANULADAS.has(q.id));
   }, [oficiais, geradas, cargo]);
 
   // Envia o progresso para a conta pouco depois de cada mudança e quando o app vai para segundo plano.
@@ -132,6 +132,37 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     document.addEventListener('visibilitychange', aoSair);
     return () => document.removeEventListener('visibilitychange', aoSair);
   }, [conta]);
+
+  // Anuladas: quem errou ganha o ponto, no histórico e na nota da prova (uma vez só por prova).
+  useEffect(() => {
+    if (!oficiais) return;
+    const porId = new Map(oficiais.map((q) => [q.id, q]));
+    const erradas = historico.filter((h) => ANULADAS.has(h.id) && !h.certa);
+    if (!erradas.length) return;
+    setProvas((l) =>
+      l.map((p) => {
+        const novas = erradas.filter((h) => h.simulado && h.em === p.em && !p.anuladas?.includes(h.id));
+        if (!novas.length) return p;
+        const r = { ...p, anuladas: [...(p.anuladas ?? []), ...novas.map((h) => h.id)], materias: p.materias?.map((m) => ({ ...m })) };
+        novas.forEach((h) => {
+          const b = porId.get(h.id) && blocoDe(porId.get(h.id)!);
+          r.acertos += 1;
+          if (!p.estilo) r.nota += 1;
+          else if (b) {
+            r.nota += b.peso;
+            const m = r.materias?.find((x) => x.nome === b.nome);
+            if (m) {
+              m.a += 1;
+              m.pontos += b.peso;
+            }
+          }
+        });
+        return r;
+      })
+    );
+    setHistorico((l) => l.map((h) => (ANULADAS.has(h.id) && !h.certa ? { ...h, certa: true } : h)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oficiais, historico]);
 
   // Provas entregues antes de o app guardar o resultado: refaz a nota a partir das respostas do histórico.
   useEffect(() => {
@@ -647,6 +678,29 @@ function QuestaoCard(props: {
 /* ---------- Simulado ---------- */
 
 /** Formato da prova de ACE de Cuité de Mamanguape (EDUCA PB): 40 questões, 3 horas, nota de 0 a 100. */
+// Questões cujo enunciado chegou incompleto (imagem, texto cortado, itens que não vieram): saem do banco
+// e, nas provas já feitas, valem ponto para todos, como a banca faz com questão anulada.
+const ANULADAS = new Set([
+  'educa-ace-1-15',
+  'educa-ace-1-16',
+  'educa-ace-7-16',
+  'educa-site-alhandra-2025-ps-16',
+  'educa-ace-1-21',
+  'educa-ace-7-21',
+  'educa-site-alhandra-2025-ps-21',
+  'educa-ace-3-37',
+  'educa-ace-6-12',
+  'educa-site-sao-bento-2024-12',
+  'educa-ace-6-17',
+  'educa-site-sao-bento-2024-17',
+  'educa-site-juru-2024-19',
+  'educa-site-piloes-2023-18',
+  'educa-site-piloes-2023-28',
+  'educa-site-piloes-2023-29',
+  'educa-ace-4-10',
+  'educa-site-juripiranga-2024-10',
+]);
+
 type Cargo = 'ACE' | 'ACS';
 const CARGOS: Record<Cargo, string> = { ACE: 'Agente de Combate às Endemias', ACS: 'Agente Comunitário de Saúde' };
 
@@ -1186,6 +1240,7 @@ function Desempenho({
                   <span className="historico-texto">
                     {p.estilo ? 'Prova no estilo da banca' : 'Simulado livre'} · {p.acertos}/{p.total} acertos
                     {p.respondidas < p.total && ` · ${p.total - p.respondidas} em branco`}
+                    {p.anuladas?.length ? ` · ${p.anuladas.length} anulada${p.anuladas.length > 1 ? 's' : ''} (ponto devolvido)` : ''}
                     {p.materias && (
                       <span className="nota prova-materias">
                         {p.materias.map((m) => `${m.nome} ${m.a}/${m.total}`).join(' · ')}
