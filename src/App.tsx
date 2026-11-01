@@ -76,6 +76,12 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   };
   const [meta, setMeta] = usePersist<{ data: string; porDia: number }>('cq:meta', { data: '', porDia: 40 });
   const [anotacoes, setAnotacoes] = usePersist<Record<string, string>>('cq:anotacoes', {});
+  // Questões que a própria pessoa anulou por enunciado incompleto (somam com a lista fixa ANULADAS).
+  const [minhasAnuladas, setMinhasAnuladas] = usePersist<string[]>('cq:anuladas', []);
+  const anuladas = useMemo(() => new Set([...ANULADAS, ...minhasAnuladas]), [minhasAnuladas]);
+  const anular = (id: string) =>
+    confirm('Anular esta questão? Ela sai do banco e, se você errou, o ponto volta para a sua nota.') &&
+    setMinhasAnuladas((l) => (l.includes(id) ? l : [...l, id]));
   // Cargo da prova: muda só os conhecimentos específicos (Português, Informática e Gerais valem para os dois).
   const [cargo, setCargo] = usePersist<Cargo | ''>('cq:cargo', /^kaua/.test(conta.usuario) ? 'ACE' : '');
 
@@ -113,8 +119,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const questoes = useMemo(() => {
     if (!oficiais) return null;
     const deOutroCargo = cargo === 'ACS' ? 'Específicos ACE' : cargo === 'ACE' ? 'Específicos ACS' : '';
-    return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo && !ANULADAS.has(q.id));
-  }, [oficiais, geradas, cargo]);
+    return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo && !anuladas.has(q.id));
+  }, [oficiais, geradas, cargo, anuladas]);
 
   // Envia o progresso para a conta pouco depois de cada mudança e quando o app vai para segundo plano.
   const [sync, setSync] = useState<'ok' | 'salvando' | 'offline'>('ok');
@@ -137,7 +143,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   useEffect(() => {
     if (!oficiais) return;
     const porId = new Map(oficiais.map((q) => [q.id, q]));
-    const erradas = historico.filter((h) => ANULADAS.has(h.id) && !h.certa);
+    const erradas = historico.filter((h) => anuladas.has(h.id) && !h.certa);
     if (!erradas.length) return;
     setProvas((l) =>
       l.map((p) => {
@@ -160,9 +166,9 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         return r;
       })
     );
-    setHistorico((l) => l.map((h) => (ANULADAS.has(h.id) && !h.certa ? { ...h, certa: true } : h)));
+    setHistorico((l) => l.map((h) => (anuladas.has(h.id) && !h.certa ? { ...h, certa: true } : h)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [oficiais, historico]);
+  }, [oficiais, historico, anuladas]);
 
   // Provas entregues antes de o app guardar o resultado: refaz a nota a partir das respostas do histórico.
   useEffect(() => {
@@ -288,6 +294,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             historico={historico}
             onResponder={registrar}
             onProva={(p) => setProvas((l) => [...l, p])}
+            onAnular={anular}
             revisar={revisar}
             onRevisar={alternarRevisar}
           />
@@ -311,7 +318,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'desempenho' && (
           <>
             <Ranking conta={conta} />
-            <Desempenho questoes={questoes} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
+            <Desempenho questoes={oficiais ?? questoes} onAnular={anular} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
         )}
         {questoes && aba === 'revisar' && (
@@ -590,6 +597,7 @@ function QuestaoCard(props: {
   onMarcar: (letra: string) => void;
   marcadaRevisar: boolean;
   onRevisar: () => void;
+  onAnular?: () => void;
 }) {
   const { q, marcada, revelar } = props;
   const certa = marcada === q.gabarito;
@@ -617,6 +625,14 @@ function QuestaoCard(props: {
         <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
       </div>
 
+      {props.onAnular && revelar && marcada && marcada !== q.gabarito && (
+        <p className="nota">
+          Faltou informação no enunciado (imagem, texto cortado, itens que não vieram)?{' '}
+          <button className="link" onClick={props.onAnular}>
+            Anular e recuperar o ponto
+          </button>
+        </p>
+      )}
       {q.enunciado && <div className="enunciado" dangerouslySetInnerHTML={{ __html: md(q.enunciado) }} />}
       {q.comando && <div className="comando" dangerouslySetInnerHTML={{ __html: md(q.comando) }} />}
 
@@ -805,6 +821,7 @@ function Simulado(props: {
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
   onProva: (p: ProvaFeita) => void;
+  onAnular: (id: string) => void;
   revisar: string[];
   onRevisar: (id: string) => void;
 }) {
@@ -998,6 +1015,7 @@ function Simulado(props: {
                     onMarcar={() => undefined}
                     marcadaRevisar={props.revisar.includes(q.id)}
                     onRevisar={() => props.onRevisar(q.id)}
+                    onAnular={() => props.onAnular(q.id)}
                   />
                 </details>
               </li>
@@ -1109,12 +1127,18 @@ function Desempenho({
   provas,
   onLimpar,
   onExcluir,
+  onAnular,
+  revisar,
+  onRevisar,
 }: {
   questoes: Questao[];
   historico: Resposta[];
   provas: ProvaFeita[];
   onLimpar: () => void;
   onExcluir: (em: number) => void;
+  onAnular: (id: string) => void;
+  revisar: string[];
+  onRevisar: (id: string) => void;
 }) {
   const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
   const [periodo, setPeriodo] = useState<7 | 30 | 0>(0);
@@ -1248,6 +1272,28 @@ function Desempenho({
                     )}
                   </span>
                   <time className="nota">{new Date(p.em).toLocaleDateString('pt-BR')}</time>
+                  {historico.some((h) => h.simulado && h.em === p.em && !h.certa) && (
+                    <details className="prova-erros">
+                      <summary className="link">Ver erros</summary>
+                      {historico
+                        .filter((h) => h.simulado && h.em === p.em && !h.certa)
+                        .map((h) => porId.get(h.id))
+                        .filter((q): q is Questao => !!q)
+                        .map((q) => (
+                          <QuestaoCard
+                            key={q.id}
+                            q={q}
+                            posicao={q.disciplina}
+                            marcada={historico.find((h) => h.em === p.em && h.id === q.id)?.marcada ?? null}
+                            revelar
+                            onMarcar={() => undefined}
+                            marcadaRevisar={revisar.includes(q.id)}
+                            onRevisar={() => onRevisar(q.id)}
+                            onAnular={() => onAnular(q.id)}
+                          />
+                        ))}
+                    </details>
+                  )}
                   <button
                     className="link perigo"
                     onClick={() =>

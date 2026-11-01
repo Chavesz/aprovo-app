@@ -20,6 +20,7 @@ const CHAVES = [
   'cq:meta',
   'cq:provas-excluidas',
   'cq:cargo',
+  'cq:anuladas',
 ] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {
@@ -119,6 +120,7 @@ export async function baixar(conta: Conta) {
   if (editais.length) gravar('cq:editais', editais);
   const bloco = remoto<string[]>('cq:bloco', []);
   if (bloco.length && !ler<string[]>('cq:bloco', []).length) gravar('cq:bloco', bloco);
+  gravar('cq:anuladas', Array.from(new Set([...ler<string[]>('cq:anuladas', []), ...remoto<string[]>('cq:anuladas', [])])));
   const cargo = remoto<string>('cq:cargo', '');
   if (cargo && !ler<string>('cq:cargo', '')) gravar('cq:cargo', cargo);
   const ativo = remoto<string>('cq:edital-ativo', '');

@@ -671,3 +671,6 @@ textarea {
 
 /* Escolha do cargo no primeiro acesso */
 .escolha-cargo { display: grid; gap: 10px; max-width: 520px; margin: 0 auto 24px; padding: 18px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel-2); }
+
+.prova-erros { grid-column: 1 / -1; width: 100%; }
+.prova-erros .questao { margin-top: 12px; }
