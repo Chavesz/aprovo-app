@@ -714,6 +714,8 @@ const ANULADAS = new Set([
   'educa-site-piloes-2023-28',
   'educa-site-piloes-2023-29',
   'educa-ace-4-10',
+  'educa-ace-7-26',
+  'educa-site-alhandra-2025-ps-26',
   'educa-site-juripiranga-2024-10',
 ]);
 
