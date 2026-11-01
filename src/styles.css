@@ -672,5 +672,18 @@ textarea {
 /* Escolha do cargo no primeiro acesso */
 .escolha-cargo { display: grid; gap: 10px; max-width: 520px; margin: 0 auto 24px; padding: 18px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel-2); }
 
-.prova-erros { grid-column: 1 / -1; width: 100%; }
-.prova-erros .questao { margin-top: 12px; }
+/* Provas: ações na linha e questões abertas abaixo da lista */
+.historico li:has(.prova-acoes) { grid-template-columns: 4.5rem 1fr auto auto; }
+.prova-acoes { display: flex; gap: 14px; }
+.prova-aberta { margin-top: 20px; padding: 16px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel-2); }
+.prova-aberta-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.prova-aberta-topo .subtitulo { margin: 0; }
+.prova-aberta-item { border-bottom: 1px solid var(--linha); }
+.prova-aberta-item > summary { cursor: pointer; list-style: none; }
+.prova-aberta-item[open] > summary { font-weight: 600; }
+.prova-aberta-item .questao { margin: 8px 0 16px; }
+.resultado-linha.anulada .mono:last-child { color: var(--tinta-2); text-decoration: line-through; }
+@media (max-width: 600px) {
+  .historico li:has(.prova-acoes) { grid-template-columns: 3.5rem 1fr; }
+  .historico li:has(.prova-acoes) time, .prova-acoes { grid-column: 2; }
+}

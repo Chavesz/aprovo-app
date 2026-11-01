@@ -40,6 +40,8 @@ export interface ProvaFeita {
   em: number;
   /** Questões anuladas (enunciado incompleto) que já valeram ponto nesta prova. */
   anuladas?: string[];
+  /** Questões que caíram na prova, na ordem (inclui as deixadas em branco). */
+  ids?: string[];
   /** Prova no estilo da banca (nota de 0 a 100) ou simulado livre. */
   estilo: boolean;
   acertos: number;

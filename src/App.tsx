@@ -144,6 +144,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     if (!oficiais) return;
     const porId = new Map(oficiais.map((q) => [q.id, q]));
     const erradas = historico.filter((h) => anuladas.has(h.id) && !h.certa);
+    // Em branco numa prova que guardou as questões: entra como resposta "anulada" daquela prova.
+    provas.forEach((p) =>
+      p.ids?.forEach((id) => {
+        if (anuladas.has(id) && !p.anuladas?.includes(id) && !historico.some((h) => h.em === p.em && h.id === id))
+          erradas.push({ id, marcada: '', certa: false, em: p.em, simulado: true });
+      })
+    );
     if (!erradas.length) return;
     setProvas((l) =>
       l.map((p) => {
@@ -318,7 +325,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'desempenho' && (
           <>
             <Ranking conta={conta} />
-            <Desempenho questoes={oficiais ?? questoes} onAnular={anular} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
+            <Desempenho questoes={oficiais ?? questoes} onAnular={anular} anuladas={anuladas} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
         )}
         {questoes && aba === 'revisar' && (
@@ -625,7 +632,7 @@ function QuestaoCard(props: {
         <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
       </div>
 
-      {props.onAnular && revelar && marcada && marcada !== q.gabarito && (
+      {props.onAnular && revelar && marcada !== q.gabarito && (
         <p className="nota">
           Faltou informação no enunciado (imagem, texto cortado, itens que não vieram)?{' '}
           <button className="link" onClick={props.onAnular}>
@@ -886,6 +893,7 @@ function Simulado(props: {
       acertos: r.acertos,
       total: prova.length,
       respondidas: prova.filter((q) => respostas[q.id]).length,
+      ids: prova.map((q) => q.id),
       nota: estiloProva ? r.nota : r.acertos,
       max: estiloProva ? r.max : prova.length,
       materias: estiloProva ? r.notas.map(({ nome, a, total, pontos, max }) => ({ nome, a, total, pontos, max })) : undefined,
@@ -1130,6 +1138,7 @@ function Desempenho({
   onLimpar,
   onExcluir,
   onAnular,
+  anuladas,
   revisar,
   onRevisar,
 }: {
@@ -1139,11 +1148,20 @@ function Desempenho({
   onLimpar: () => void;
   onExcluir: (em: number) => void;
   onAnular: (id: string) => void;
+  anuladas: Set<string>;
   revisar: string[];
   onRevisar: (id: string) => void;
 }) {
   const porId = useMemo(() => new Map(questoes.map((q) => [q.id, q])), [questoes]);
   const [periodo, setPeriodo] = useState<7 | 30 | 0>(0);
+  const [aberta, setAberta] = useState<number | null>(null);
+  const provaAberta = provas.find((p) => p.em === aberta);
+  // Questões da prova aberta: todas as que caíram (provas novas guardam a lista) ou, nas antigas, as respondidas.
+  const questoesAbertas = provaAberta
+    ? (provaAberta.ids ?? historico.filter((h) => h.simulado && h.em === provaAberta.em).map((h) => h.id))
+        .map((id) => porId.get(id))
+        .filter((q): q is Questao => !!q)
+    : [];
   const hist = useMemo(() => {
     const desde = periodo ? Date.now() - periodo * 86400000 : 0;
     return historico.filter((h) => h.em >= desde);
@@ -1274,28 +1292,10 @@ function Desempenho({
                     )}
                   </span>
                   <time className="nota">{new Date(p.em).toLocaleDateString('pt-BR')}</time>
-                  {historico.some((h) => h.simulado && h.em === p.em && !h.certa) && (
-                    <details className="prova-erros">
-                      <summary className="link">Ver erros</summary>
-                      {historico
-                        .filter((h) => h.simulado && h.em === p.em && !h.certa)
-                        .map((h) => porId.get(h.id))
-                        .filter((q): q is Questao => !!q)
-                        .map((q) => (
-                          <QuestaoCard
-                            key={q.id}
-                            q={q}
-                            posicao={q.disciplina}
-                            marcada={historico.find((h) => h.em === p.em && h.id === q.id)?.marcada ?? null}
-                            revelar
-                            onMarcar={() => undefined}
-                            marcadaRevisar={revisar.includes(q.id)}
-                            onRevisar={() => onRevisar(q.id)}
-                            onAnular={() => onAnular(q.id)}
-                          />
-                        ))}
-                    </details>
-                  )}
+                  <span className="prova-acoes">
+                    <button className="link" onClick={() => setAberta(aberta === p.em ? null : p.em)}>
+                      {aberta === p.em ? 'Fechar' : 'Ver questões'}
+                    </button>
                   <button
                     className="link perigo"
                     onClick={() =>
@@ -1304,9 +1304,53 @@ function Desempenho({
                   >
                     Excluir
                   </button>
+                  </span>
                 </li>
               ))}
           </ol>
+          {provaAberta && (
+            <section className="prova-aberta" aria-label="Questões da prova">
+              <div className="prova-aberta-topo">
+                <h3 className="subtitulo">
+                  Prova de {new Date(provaAberta.em).toLocaleDateString('pt-BR')}{' '}
+                  <span className="nota">
+                    {provaAberta.ids ? `${questoesAbertas.length} questões` : 'só as respondidas (as em branco não ficaram guardadas nesta prova)'}
+                  </span>
+                </h3>
+                <button className="btn btn-sec" onClick={() => setAberta(null)}>
+                  Fechar
+                </button>
+              </div>
+              {questoesAbertas.map((q, n) => {
+                const m = historico.find((h) => h.em === provaAberta.em && h.id === q.id)?.marcada || null;
+                const anulada = anuladas.has(q.id);
+                return (
+                  <details key={q.id} className="prova-aberta-item">
+                    <summary className={`resultado-linha ${anulada ? 'anulada' : !m ? 'branco' : m === q.gabarito ? 'ok' : 'nok'}`}>
+                      <span className="mono">{String(n + 1).padStart(2, '0')}</span>
+                      <span className="resultado-assunto">
+                        {q.disciplina} · {q.assunto}
+                        {anulada && <span className="tag tag-fraca">anulada</span>}
+                      </span>
+                      <span className="mono">
+                        {m ?? '—'} / {q.gabarito}
+                      </span>
+                    </summary>
+                    <QuestaoCard
+                      q={q}
+                      posicao={q.disciplina}
+                      marcada={m}
+                      revelar
+                      onMarcar={() => undefined}
+                      marcadaRevisar={revisar.includes(q.id)}
+                      onRevisar={() => onRevisar(q.id)}
+                      onAnular={anulada ? undefined : () => onAnular(q.id)}
+                    />
+                  </details>
+                );
+              })}
+            </section>
+          )}
         </>
       )}
 
