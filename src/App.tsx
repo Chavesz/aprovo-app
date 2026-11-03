@@ -1,3 +1,4 @@
+import Mentor from './Mentor';
 import { useEffect, useMemo, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
@@ -7,7 +8,7 @@ import Login from './Login';
 import Ranking from './Ranking';
 import { baixar, contaSalva, enviar, sairDaConta, type Conta } from './nuvem';
 
-type Aba = 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
+type Aba = 'mentor' | 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
 
 const FILTROS_VAZIOS: Filtros = { banca: '', orgao: '', disciplina: '', assunto: '', ano: '', status: 'todas' };
 
@@ -210,6 +211,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
 
   const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
+    { id: 'mentor', rotulo: 'Mentor', icone: <IconSpark /> },
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
     { id: 'edital', rotulo: 'Edital', icone: <IconSpark /> },
@@ -304,6 +306,17 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             onAnular={anular}
             revisar={revisar}
             onRevisar={alternarRevisar}
+          />
+        )}
+        {questoes && aba === 'mentor' && (
+          <Mentor
+            questoes={questoes}
+            historico={historico}
+            onPraticar={(disciplina, assunto) => {
+              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
+              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+              setAba('praticar');
+            }}
           />
         )}
         {questoes && aba === 'edital' && (

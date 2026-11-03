@@ -66,6 +66,16 @@ function iaDeExemplo(): Plugin {
         res.end(progresso.get(u) ?? '{}');
       });
 
+      // Mentor de exemplo: sem chave da IA no `npm run dev`.
+      server.middlewares.use('/api/mentor', async (req, res) => {
+        const p = JSON.parse((await lerCorpo(req)) || '{}');
+        res.setHeader('content-type', 'application/json');
+        const uso = { plano: 'gratis', usadas: 1, limite: 15, configurada: true };
+        if (p.acao === 'uso') return res.end(JSON.stringify(uso));
+        if (p.acao === 'edital')
+          return res.end(JSON.stringify({ ...uso, edital: { concurso: 'Exemplo 2026', cargo: 'Agente', banca: 'EDUCA PB', dataProva: '', disciplinas: [{ nome: 'Português', questoes: 15, peso: 2, assuntos: ['Crase', 'Concordância'] }] } }));
+        res.end(JSON.stringify({ ...uso, texto: 'Resposta de exemplo do **Mentor** (modo de teste).' }));
+      });
       server.middlewares.use('/api/ia', (req, res) => {
         let corpo = '';
         req.on('data', (c) => (corpo += c));
