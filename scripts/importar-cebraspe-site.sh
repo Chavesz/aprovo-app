@@ -4,9 +4,9 @@
 P=$1; CAD=$2; GAB=$3; SLUG=$4; NOME=$5; INI=$6; FAIX=$7; ANO=$8
 mkdir -p "$TEMP/site-$SLUG"; cd "$TEMP/site-$SLUG"
 B=https://cdn.cebraspe.org.br/concursos/$P/arquivos
-R="/c/Users/Kaua Chaves/Desktop/projetos-freelancer/concurso-questoes"
+R=$(cygpath -m "/c/Users/Kaua Chaves/Desktop/projetos-freelancer/concurso-questoes")
 curl -sL -m 60 -o c.pdf "$B/$CAD"; curl -sL -m 60 -o g.pdf "$B/$GAB"
-pdftotext -raw -enc UTF-8 c.pdf c.txt; pdftotext -raw g.pdf g.txt
+pdftotext -raw -enc UTF-8 c.pdf c.txt; pdftotext -raw -enc UTF-8 g.pdf g.txt
 G=$(python -I "$R/scripts/gabarito-cebraspe.py" g.txt)
 INICIO=$INI python -I "$R/scripts/importar-cebraspe-ce.py" c.txt "$G" "$SLUG" "$NOME" "cebraspe.org.br/concursos/$P" "$FAIX" "$ANO"
 python -I "$R/scripts/limpar-cabecalhos.py" >/dev/null

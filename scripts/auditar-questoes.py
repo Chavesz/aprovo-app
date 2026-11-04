@@ -3,7 +3,7 @@
 # Uso: python auditar-questoes.py [--corrigir]  (com --corrigir, remove os casos graves e grava os arquivos)
 import json, pathlib, re, sys, collections
 DATA = pathlib.Path(__file__).resolve().parent.parent / "public/data"
-ARQS = ["ace-cuite", "comuns", "estilo", "cebraspe", "fgv", "oab", "questoes"]
+ARQS = ["ace-cuite", "comuns", "estilo", "cebraspe", "fgv", "consulplan", "oab", "questoes"]
 corrigir = "--corrigir" in sys.argv
 QUEBRA = re.compile(r"�||UnB/CESPE|CEBRASPE –|Caderno [A-Z] –|–\s?\d+\s?–$")
 todas, problemas = {}, collections.Counter()

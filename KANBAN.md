@@ -8,9 +8,9 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P2] Mais provas oficiais da Cebraspe pelo site novo (PF 2021, STJ 2018, PC PB 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
+- [P2] Mais provas oficiais da Cebraspe pelo site novo (PC PB 2021, demais cargos do STJ 2018 e da PF 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
-- [P2] Importar provas da Consulplan: caderno e gabarito definitivo são públicos no CDN (`cdnsite.institutoconsulplan.org.br/concursos/...`), links na página de cada concurso (montada por JS, usar o navegador). Ex.: TJ CE Juiz Leigo 2019
+- [P2] Mais provas da Consulplan (importador pronto: `scripts/importar-consulplan.py`): caderno e gabarito definitivo são públicos no CDN (`cdnsite.institutoconsulplan.org.br/concursos/...`), links na página de cada concurso (montada por JS, usar o navegador). Ex.: TJ CE Juiz Leigo 2019
 - [P3] Provas de outras bancas. Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
@@ -24,6 +24,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026: **+36 questões da Consulplan** (TJ CE 2019 Juiz Leigo, gabarito pós-recurso, `public/data/consulplan.json`), **+21 itens da PF 2021** (Agente; Informática e Contabilidade com fonte embaralhada no PDF, ficaram fora) e **+25 itens do STJ 2018** (Técnico, conhecimentos básicos). `importar-cebraspe-site.sh` corrigido (caminhos do Windows e gabarito em UTF-8)
 - Redesign (04/11/2026): identidade Marca-texto escolhida entre 3 direções por crítica de outro agente (`notas/design/`): amarelo de grifo #ffd43b para ação, berinjela #4a2f7a de marca, roxo claro para IA, Archivo + Source Serif 4, logo "A grifado", modo escuro neutro. Landing /aprovo refeita como página de vendas (hero, números e bancas reais, como funciona, Mentor IA, planos, FAQ, CTA). Lighthouse mobile: home 94, /aprovo 100 de desempenho; 100 nas demais
 - Lighthouse mobile (03/11/2026, Node 22): home 96/100/100/100 e /aprovo 99/100/100/100 (desempenho/acessibilidade/boas práticas/SEO). Fontes do Google passaram a carregar sem bloquear a renderização (app e páginas geradas)
 - Mentor leva a matéria do plano/edital para o filtro certo mesmo com nome diferente do banco (`resolverDisciplina`: "Conhecimentos Específicos" → "Específicos ACE", ignora "Professor de…" se não pedido)

@@ -5,7 +5,7 @@ import json, re, sys, pathlib, os
 txt, GAB, SLUG, PROVA, FONTE, FAIX, ANO = sys.argv[1:8]
 FAIXAS = [(int(a), b) for a, b in (x.split(":", 1) for x in FAIX.split(","))]
 DEP = re.compile(r"\btexto|figura|tabela|quadro|acima|abaixo|gráfico|janela|ilustra|fragmento|trecho|linhas? \d|\(?L\.\s?\d", re.I)
-linhas = [l.strip() for l in open(txt, encoding="utf8").read().replace("\f", "\n").split("\n")]
+linhas = [l.strip() for l in open(txt, encoding="utf8", errors="replace").read().replace("\f", "\n").split("\n")]
 itens, comando, ultimo, ctx, atual = {}, None, int(os.environ.get('INICIO', '1')) - 1, [], None
 dentro_texto = False
 def ctx_texto():

@@ -6,7 +6,7 @@ RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PUB = RAIZ / "public"
 SITE = "https://aprovoapp.netlify.app"
 qs = []
-for f in ["ace-cuite", "comuns", "estilo", "cebraspe", "fgv", "educa-ace", "educa-site", "oab", "questoes"]:
+for f in ["ace-cuite", "comuns", "estilo", "cebraspe", "fgv", "consulplan", "educa-ace", "educa-site", "oab", "questoes"]:
     p = PUB / "data" / f"{f}.json"
     if p.exists():
         qs += json.loads(p.read_text(encoding="utf-8"))
@@ -59,7 +59,7 @@ def amostra(filtro, n=5):
     return out
 
 NQ = f"{len(qs):,}".replace(",", ".")
-PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)" if q["banca"] == "INEP" else re.sub(r" ·.*| \(.*", "", q["prova"])) for q in qs if q["banca"] in ("Cebraspe", "FGV", "INEP")})
+PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)" if q["banca"] == "INEP" else re.sub(r" ·.*| \(.*", "", q["prova"])) for q in qs if q["banca"] in ("Cebraspe", "FGV", "INEP", "Consulplan")})
 CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
@@ -119,6 +119,9 @@ GRUPOS = [
   ("questoes-inss-cebraspe", "Questões do INSS 2022 (Técnico do Seguro Social, Cebraspe) com gabarito oficial", lambda q: "inss-2022" in q["id"]),
   ("questoes-prf-cebraspe", "Questões da PRF 2021 (Policial Rodoviário Federal, Cebraspe) com gabarito oficial", lambda q: "prf-2021" in q["id"]),
   ("questoes-tj-ce-cebraspe", "Questões do TJ CE 2023 (Técnico Judiciário, Cebraspe) com gabarito oficial", lambda q: "tjce-2023" in q["id"]),
+  ("questoes-tj-ce-juiz-leigo-consulplan", "Questões do TJ CE 2019 (Juiz Leigo, Consulplan) com gabarito oficial", lambda q: q["id"].startswith("consulplan-tjce")),
+  ("questoes-pf-cebraspe", "Questões da PF 2021 (Agente de Polícia Federal, Cebraspe) com gabarito oficial", lambda q: "pf-2021" in q["id"]),
+  ("questoes-stj-cebraspe", "Questões do STJ 2018 (Técnico Judiciário, Cebraspe) com gabarito oficial", lambda q: "stj-2018" in q["id"]),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),
