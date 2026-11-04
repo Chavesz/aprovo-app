@@ -341,6 +341,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             onRevisar={alternarRevisar}
           />
         )}
+        {questoes && aba !== 'simulado' && <SimuladoEmAndamento onVoltar={() => setAba('simulado')} />}
         {questoes && aba === 'simulado' && (
           <Simulado
             cargo={cargo || 'ACE'}
@@ -727,6 +728,27 @@ function letraDaTecla(q: Questao, tecla: string) {
 const digitando = (e: KeyboardEvent) =>
   e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof Element && !!e.target.closest('input,textarea,select,[contenteditable]'));
 
+/* ---------- Tamanho do texto da questão (só neste aparelho) ---------- */
+const ESCALAS = [1, 1.15, 1.3];
+const lerEscala = () => { try { const v = Number(localStorage.getItem('cq:fonte-q')); return ESCALAS.includes(v) ? v : 1; } catch { return 1; } };
+const aplicarEscala = (v: number) => document.documentElement.style.setProperty('--escala-q', String(v));
+aplicarEscala(lerEscala());
+
+function BotaoTamanho() {
+  const [v, setV] = useState(lerEscala);
+  const proximo = ESCALAS[(ESCALAS.indexOf(v) + 1) % ESCALAS.length];
+  return (
+    <button
+      className="icone-btn tamanho-texto"
+      onClick={() => { setV(proximo); aplicarEscala(proximo); try { localStorage.setItem('cq:fonte-q', String(proximo)); } catch { /* sem armazenamento */ } }}
+      title={`Tamanho do texto: ${Math.round(v * 100)}% (toque para ${Math.round(proximo * 100)}%)`}
+      aria-label={`Tamanho do texto ${Math.round(v * 100)}%. Trocar para ${Math.round(proximo * 100)}%`}
+    >
+      <span aria-hidden>A<small>A</small></span>
+    </button>
+  );
+}
+
 /* ---------- Questão ---------- */
 
 /** Escuta o teclado enquanto montado; onTecla devolve true quando usou a tecla. */
@@ -759,6 +781,7 @@ function QuestaoCard(props: {
         <span className="mono">{props.posicao}</span>
         <span className="sep" aria-hidden />
         <span>{q.prova} · Q{q.numero}</span>
+        <BotaoTamanho />
         <button
           className={`icone-btn bandeira ${props.marcadaRevisar ? 'ativo' : ''}`}
           onClick={props.onRevisar}
@@ -1131,6 +1154,23 @@ function resultado(prova: Questao[], respostas: Record<string, string>) {
   };
 }
 
+/** Aviso nas outras abas quando há um simulado aberto e com tempo correndo. */
+function SimuladoEmAndamento({ onVoltar }: { onVoltar: () => void }) {
+  const ler = <T,>(k: string, p: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : p; } catch { return p; } };
+  const [agora, setAgora] = useState(Date.now());
+  useEffect(() => { const t = setInterval(() => setAgora(Date.now()), 15000); return () => clearInterval(t); }, []);
+  const prova = ler<unknown[] | null>('cq:sim-prova', null);
+  const fim = ler<number>('cq:sim-fim', 0);
+  if (!prova?.length || ler('cq:sim-encerrado', false) || fim <= agora) return null;
+  const feitas = Object.keys(ler<Record<string, string>>('cq:sim-respostas', {})).length;
+  return (
+    <p className="sim-andamento" role="status">
+      <span>⏱ Simulado em andamento: <strong>{Math.ceil((fim - agora) / 60000)} min</strong> restantes · {feitas}/{prova.length} respondidas</span>
+      <button className="btn btn-sec" onClick={onVoltar}>Voltar ao simulado</button>
+    </p>
+  );
+}
+
 function Simulado(props: {
   cargo: Cargo;
   historico: Resposta[];
@@ -1154,6 +1194,7 @@ function Simulado(props: {
   const [soEduca, setSoEduca] = usePersist('cq:sim-so-educa', false);
   const [semanal, setSemanal] = usePersist('cq:sim-semanal', false);
   const [duvidas, setDuvidas] = usePersist<string[]>('cq:sim-duvidas', []);
+  const [filtroRes, setFiltroRes] = useState<'todas' | 'nok' | 'branco' | 'duvida'>('todas');
   const alternarDuvida = (id: string) => setDuvidas((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]));
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
@@ -1174,6 +1215,7 @@ function Simulado(props: {
     setProva(embaralhar(pool).slice(0, config.total));
     setRespostas({});
     setDuvidas([]);
+    setFiltroRes('todas');
     setI(0);
     setEncerrado(false);
     setFim(Date.now() + config.minutos * 60000);
@@ -1187,6 +1229,7 @@ function Simulado(props: {
     setEstiloProva(true);
     setRespostas({});
     setDuvidas([]);
+    setFiltroRes('todas');
     setI(0);
     setEncerrado(false);
     setFim(Date.now() + 180 * 60000);
@@ -1401,10 +1444,29 @@ function Simulado(props: {
             : ''}
           Toque numa questão para conferir.
         </p>
+        {(() => {
+          const conta = {
+            todas: prova.length,
+            nok: prova.filter((q) => respostas[q.id] && respostas[q.id] !== q.gabarito).length,
+            branco: prova.filter((q) => !respostas[q.id]).length,
+            duvida: prova.filter((q) => duvidas.includes(q.id)).length,
+          };
+          const rotulos = { todas: 'Todas', nok: 'Erradas', branco: 'Em branco', duvida: 'Com dúvida' } as const;
+          return (
+            <div className="filtro-resultado" role="group" aria-label="Filtrar o resultado">
+              {(Object.keys(rotulos) as (keyof typeof rotulos)[]).filter((k) => k === 'todas' || conta[k] > 0).map((k) => (
+                <button key={k} className="chip" aria-pressed={filtroRes === k} onClick={() => setFiltroRes(k)}>
+                  {rotulos[k]} <span className="mono">{conta[k]}</span>
+                </button>
+              ))}
+            </div>
+          );
+        })()}
         <ol className="resultado">
           {prova.map((q, n) => {
             const m = respostas[q.id];
             const st = !m ? 'branco' : m === q.gabarito ? 'ok' : 'nok';
+            if (filtroRes === 'duvida' ? !duvidas.includes(q.id) : filtroRes !== 'todas' && st !== filtroRes) return null;
             return (
               <li key={q.id}>
                 <details>
@@ -1441,6 +1503,7 @@ function Simulado(props: {
                 setEstiloProva(false);
                 setRespostas({});
                 setDuvidas([]);
+                setFiltroRes('todas');
                 setI(0);
                 setEncerrado(false);
                 setFim(Date.now() + Math.max(5, erradas.length * 2) * 60000);

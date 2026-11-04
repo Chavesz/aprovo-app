@@ -24,6 +24,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026 (12), experiência: **filtro no resultado do simulado** (Todas / Erradas / Em branco / Com dúvida, com contagem); **aviso de simulado em andamento** nas outras abas (minutos restantes, respondidas e "Voltar ao simulado"); **tamanho do texto da questão** (botão Aa no topo da questão: 100%, 115%, 130%, guardado no aparelho)
 - Lote 04/11/2026 (11), experiência: **atalhos no Praticar** (letra responde, Enter/→ próxima, ← volta); **marcar dúvida no simulado** (botão ou tecla ?, aparece no mapa e no aviso de entrega: "9 em branco e 1 com dúvida"); **aviso de 5 minutos finais** (faixa + relógio vermelho); barra do simulado corrigida no celular (o botão Entregar saía da tela)
 - Lote 04/11/2026 (10), experiência: lote 9 testado na tela em tamanho de celular (refazer as erradas: 3 itens, 6 min; WhatsApp: texto certo; caderno .txt conferido) e corrigido o .txt, que não trazia as alternativas na múltipla escolha; **entregar com aviso de quantas estão em branco**; **atalhos de teclado no simulado** (letra marca, C/E no Certo/Errado, ← → trocam; dica só aparece em computador); **contador "N/M respondidas"** ao lado do mapa
 - Lote 04/11/2026 (9): **"Refazer as N que errei"** no fim do simulado (nova rodada só com as erradas, 2 min por item); **baixar o Meu caderno em .txt** (todo ou só o filtrado pela busca); **"Desafiar no WhatsApp"** também no resultado do simulado comum e do Certo/Errado

@@ -861,3 +861,11 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .barra-simulado{flex-wrap:wrap}
 .mapa{min-width:0}
 @media (max-width:600px){.barra-simulado .mapa{order:5;flex-basis:100%}.mapa-contagem{margin-right:auto}}
+.enunciado, .comando { font-size: calc(1.0625rem * var(--escala-q, 1)); }
+.alt { font-size: calc(1rem * var(--escala-q, 1)); }
+.tamanho-texto span { font-weight: 700; font-size: 1rem; letter-spacing: -.02em; }
+.tamanho-texto small { font-size: .7em; }
+.filtro-resultado { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.filtro-resultado .chip[aria-pressed="true"] { background: var(--acao); color: #2a1f3d; border-color: transparent; font-weight: 700; }
+.sim-andamento { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; background: var(--grifo); }
+.questao-meta .tamanho-texto{margin-left:auto}.questao-meta .tamanho-texto + .bandeira{margin-left:0}
