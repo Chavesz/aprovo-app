@@ -824,3 +824,6 @@ textarea {
 h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .grifo { background: linear-gradient(transparent 55%, var(--acao) 55%, var(--acao) 92%, transparent 92%); padding: 0 2px; }
 .aviso.revisao-dia { background: var(--ia-fundo); color: var(--tinta); border-left: 4px solid var(--acento); }
+
+.tag-oficial { background: var(--ok-fundo); color: var(--ok); font-weight: 600; }
+.tag-autoral { background: var(--ia-fundo); color: var(--acento); }

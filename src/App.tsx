@@ -13,6 +13,9 @@ type Aba = 'mentor' | 'concursos' | 'praticar' | 'simulado' | 'edital' | 'desemp
 
 const FILTROS_VAZIOS: Filtros = { banca: '', orgao: '', disciplina: '', assunto: '', ano: '', status: 'todas' };
 
+/** Prova oficial de banca x questão autoral/no estilo da banca (nunca apresentada como oficial). */
+export const eOficial = (q: Questao) => !q.ia && !/aprov|autoral|estilo|elaborad/i.test(q.banca);
+
 const unicos = (qs: Questao[], k: keyof Questao) =>
   Array.from(new Set(qs.map((q) => String(q[k])))).sort((a, b) => a.localeCompare(b, 'pt-BR', { numeric: true }));
 
@@ -562,6 +565,7 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
       (!f.disciplina || q.disciplina === f.disciplina) &&
       (!f.assunto || q.assunto === f.assunto) &&
       (!f.ano || String(q.ano) === f.ano) &&
+      (!f.origem || (f.origem === 'Provas oficiais') === eOficial(q)) &&
       (!f.tipo || (f.tipo === 'Certo ou Errado') === (q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo')) &&
       (f.status === 'todas' ||
         (f.status === 'ineditas' && !respondidas.has(q.id)) ||
@@ -632,6 +636,7 @@ function Praticar(props: {
           <Select rotulo="Assunto" valor={filtros.assunto} opcoes={unicos(base, 'assunto')} onChange={(v) => set('assunto', v)} />
           <Select rotulo="Ano" valor={filtros.ano} opcoes={unicos(questoes, 'ano').reverse()} onChange={(v) => set('ano', v)} />
           <Select rotulo="Tipo" valor={filtros.tipo ?? ''} opcoes={['Múltipla escolha', 'Certo ou Errado']} onChange={(v) => set('tipo', v)} />
+          <Select rotulo="Origem" valor={filtros.origem ?? ''} opcoes={['Provas oficiais', 'Autorais e no estilo da banca']} onChange={(v) => set('origem', v)} />
           <fieldset className="status">
             <legend className="rotulo">Mostrar</legend>
             {(
@@ -732,6 +737,7 @@ function QuestaoCard(props: {
         {q.assunto !== q.disciplina && <span className="tag">{q.assunto}</span>}
         {q.ia && <span className="tag tag-ia">Gerada por IA</span>}
         {q.idioma && <span className="tag">{q.idioma === 'ingles' ? 'Inglês' : 'Espanhol'}</span>}
+        {eOficial(q) ? <span className="tag tag-oficial">✓ Prova oficial</span> : !q.ia && <span className="tag tag-autoral">Autoral</span>}
         <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
       </div>
 

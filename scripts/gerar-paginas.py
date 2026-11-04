@@ -122,6 +122,7 @@ GRUPOS = [
   ("questoes-tj-ce-juiz-leigo-consulplan", "Questões do TJ CE 2019 (Juiz Leigo, Consulplan) com gabarito oficial", lambda q: q["id"].startswith("consulplan-tjce")),
   ("questoes-pf-cebraspe", "Questões da PF 2021 (Agente de Polícia Federal, Cebraspe) com gabarito oficial", lambda q: "pf-2021" in q["id"]),
   ("questoes-stj-cebraspe", "Questões do STJ 2018 (Técnico Judiciário, Cebraspe) com gabarito oficial", lambda q: "stj-2018" in q["id"]),
+  ("questoes-pc-pb-cebraspe", "Questões da PC PB 2021 (Agente de Investigação, Cebraspe) com gabarito oficial", lambda q: "pcpb-2021" in q["id"]),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),

@@ -62,6 +62,7 @@ export interface Filtros {
   ano: string;
   /** '' todas, 'me' múltipla escolha, 'ce' Certo ou Errado. */
   tipo?: string;
+  origem?: string;
   status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco' | 'inteligente' | 'hoje' | 'dificeis';
 }
 
