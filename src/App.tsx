@@ -398,7 +398,8 @@ function Meta({
   onMeta: (m: { data: string; porDia: number }) => void;
   historico: Resposta[];
 }) {
-  const [editando, setEditando] = useState(!meta.data);
+  // Começa recolhido: a questão precisa aparecer na primeira tela do celular.
+  const [editando, setEditando] = useState(false);
   const hojeK = diaChave(Date.now());
   const doDia = historico.filter((h) => diaChave(h.em) === hojeK);
   const feitas = doDia.length;
@@ -416,7 +417,9 @@ function Meta({
     <section className="coluna meta-dia">
       <div className="meta-contagem">
         {dias === null ? (
-          <span className="nota">Coloque a data da sua prova</span>
+          <button className="link nota" onClick={() => setEditando(true)}>
+            Definir a data da prova
+          </button>
         ) : dias > 0 ? (
           <>
             <span className="meta-numero">{dias}</span>
@@ -455,7 +458,7 @@ function Meta({
           </button>
         </div>
       ) : (
-        <button className="link meta-editar" onClick={() => setEditando(true)}>
+        meta.data && <button className="link meta-editar" onClick={() => setEditando(true)}>
           Mudar data ou meta
         </button>
       )}
@@ -598,7 +601,7 @@ function Praticar(props: {
         <div className="filtros-corpo">
           <Select rotulo="Banca" valor={filtros.banca} opcoes={unicos(questoes, 'banca')} onChange={(v) => set('banca', v)} />
           <Select rotulo="Órgão" valor={filtros.orgao} opcoes={unicos(questoes, 'orgao')} onChange={(v) => set('orgao', v)} />
-          <Select rotulo="Disciplina" valor={filtros.disciplina} opcoes={unicos(questoes, 'disciplina')} onChange={(v) => set('disciplina', v)} />
+          <Select rotulo="Disciplina" agrupar valor={filtros.disciplina} opcoes={unicos(questoes, 'disciplina')} onChange={(v) => set('disciplina', v)} />
           <Select rotulo="Assunto" valor={filtros.assunto} opcoes={unicos(base, 'assunto')} onChange={(v) => set('assunto', v)} />
           <Select rotulo="Ano" valor={filtros.ano} opcoes={unicos(questoes, 'ano').reverse()} onChange={(v) => set('ano', v)} />
           <Select rotulo="Tipo" valor={filtros.tipo ?? ''} opcoes={['Múltipla escolha', 'Certo ou Errado']} onChange={(v) => set('tipo', v)} />
@@ -1968,7 +1971,41 @@ function Revisar(props: {
 
 /* ---------- Peças ---------- */
 
-function Select(props: { rotulo: string; valor: string; opcoes: string[]; onChange: (v: string) => void; vazio?: string }) {
+/** Área de cada matéria, para agrupar o filtro (com as provas da Cebraspe passaram de 100 matérias). */
+const AREAS: [string, RegExp][] = [
+  ['Básicas', /portugu|raciocínio|lógic|informática|atualidades|conhecimentos (gerais|básicos)|matemática|inglês|espanhol|redação/i],
+  ['Direito', /direito|legisla|processual|ética|administrativo/i],
+  ['Saúde', /saúde|sus|acs|ace|enferm|medic|médic|odonto|dent|nutri|farm|fisio|fono|psic|psiq|cardio|clínica|dermato|endocrino|gineco|pediatr|fisiatr|bioquím|terap|veterin|serviço social|assistente social|biolog|biólog|radiolog|ortopéd|ciências da natureza/i],
+  ['Engenharia e exatas', /engenh|arquitet|edifica|estatíst|físic|segurança do trabalho|químic|geolog|minera|eletro|mecatr|atuarial/i],
+  ['Educação e comunicação', /pedagog|educa|comunica|jornal|redat|revisor|editor|linguagens|humanas|geograf|antropolog|arqueolog|museólog|desenhista|desportivo/i],
+  ['Tecnologia', /sistemas|banco de dados|suporte|program|computa|tecnologia/i],
+  ['Gestão e contas', /contab|contador|bancári|caixa|vendas|economi|orçamento|controle|auditor|administra|gestão|secretári|arquiv|bibliotec/i],
+];
+const areaDe = (m: string) => AREAS.find(([, r]) => r.test(m))?.[0] ?? 'Outras';
+
+function Select(props: { rotulo: string; valor: string; opcoes: string[]; onChange: (v: string) => void; vazio?: string; agrupar?: boolean }) {
+  if (props.agrupar && props.opcoes.length > 25) {
+    const grupos = new Map<string, string[]>();
+    for (const o of props.opcoes) grupos.set(areaDe(o), [...(grupos.get(areaDe(o)) ?? []), o]);
+    const ordem = [...AREAS.map(([a]) => a), 'Outras'].filter((a) => grupos.has(a));
+    return (
+      <label className="campo">
+        <span className="rotulo">{props.rotulo}</span>
+        <select value={props.valor} onChange={(e) => props.onChange(e.target.value)}>
+          <option value="">{props.vazio ?? 'Todos'}</option>
+          {ordem.map((a) => (
+            <optgroup key={a} label={a}>
+              {grupos.get(a)!.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+    );
+  }
   return (
     <label className="campo">
       <span className="rotulo">{props.rotulo}</span>

@@ -8,7 +8,7 @@ PEQ = {"De", "Do", "Da", "Dos", "Das", "E"}
 def nome(c):
     c = re.sub(r"^(ANALISTA|TÉCNICO)( -)? (DE )?(ESPECIALIDADE: )?", "", c).replace("/ PERITO", "")
     c = c.split("/")[-1].strip() or c
-    return " ".join(w.lower() if w.title() in PEQ else w.title() for w in c.split())
+    return " ".join(w.lower() if w.title() in PEQ | {"Em"} else w.title() for w in c.split())
 out = []
 for q in d:
     if q["id"].startswith(PREF):
