@@ -9,7 +9,6 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 
 ## A fazer
 - [P2] Mais provas oficiais da Cebraspe pelo site novo (PF 2021, STJ 2018, PC PB 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
-- [P3] Mostrar os modelos de 1 toque também ao editar o perfil do Mentor
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
 - [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
 - [P3] Provas de Consulplan e IDECAN (ainda não verificadas). Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
@@ -25,6 +24,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Mentor: trocar de modelo ao editar o perfil** ("Trocar por um modelo pronto" troca matérias e pesos de uma vez); testado com o modelo INSS
 - [P1] **+66 questões oficiais do TJ CE 2023 (Cebraspe)**, Técnico Judiciário (Judiciária e Técnico-Administrativa), múltipla escolha A–E, gabarito definitivo; novo importador `scripts/importar-cebraspe-questao.py`
 - [P1] **+68 itens oficiais da PRF 2021 (Cebraspe)**: conhecimentos gerais, legislação de trânsito e direito, gabarito definitivo; `scripts/importar-cebraspe-site.sh` para qualquer caderno do site novo
 - [P2] **Mentor: modelo INSS** (Técnico do Seguro Social) em 1 toque, com Seguridade Social e Previdência pesando o dobro; a matéria entra no grupo Direito do filtro

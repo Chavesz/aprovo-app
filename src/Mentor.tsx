@@ -284,17 +284,17 @@ function Onboarding({ inicial, onPronto, onUso }: { inicial: PerfilMentor | null
       <h1 className="titulo">Vamos montar seu plano.</h1>
       <p className="lead">Responda rapidinho. O Mentor usa isso e o seu desempenho nas questões para dizer o que estudar a cada dia.</p>
 
-      {!p.disciplinas.length && (
+      {(
         <div className="mentor-modelos">
-          <p className="rotulo">Comece em 1 toque</p>
+          <p className="rotulo">{p.disciplinas.length ? 'Trocar por um modelo pronto' : 'Comece em 1 toque'}</p>
           <div className="mentor-chips">
             {MODELOS.map((m) => (
-              <button key={m.rotulo} className="chip" onClick={() => set({ cargo: p.cargo || m.cargo, banca: p.banca || m.banca, concurso: p.concurso || m.rotulo, disciplinas: m.disciplinas })}>
+              <button key={m.rotulo} className="chip" onClick={() => set(p.disciplinas.length ? { cargo: m.cargo, banca: m.banca, concurso: m.rotulo, disciplinas: m.disciplinas, faceis: [], dificeis: [] } : { cargo: p.cargo || m.cargo, banca: p.banca || m.banca, concurso: p.concurso || m.rotulo, disciplinas: m.disciplinas })}>
                 {m.rotulo}
               </button>
             ))}
           </div>
-          <p className="nota">Ou leia o seu edital com a IA aí embaixo para o plano sair sob medida.</p>
+          <p className="nota">{p.disciplinas.length ? 'Troca as matérias e os pesos pelos do modelo.' : 'Ou leia o seu edital com a IA aí embaixo para o plano sair sob medida.'}</p>
         </div>
       )}
 
