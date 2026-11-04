@@ -741,3 +741,9 @@ textarea {
 .trilha-links { display: flex; gap: 10px; font-size: .9rem; }
 .dica-dia p { font-size: 1.1rem; margin: 0; }
 @media (max-width: 560px) { .radar-form { grid-template-columns: 1fr; } }
+.revisao-dia { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.simulado-semana { border-color: var(--acento); margin-bottom: 14px; }
+.comentarios { margin-top: 12px; border-top: 1px solid var(--linha); padding-top: 8px; display: grid; gap: 8px; }
+.comentarios summary { cursor: pointer; font-weight: 600; }
+.comentarios textarea { width: 100%; min-height: 4rem; padding: 8px; border: 1px solid var(--linha); border-radius: 8px; font: inherit; background: inherit; color: inherit; box-sizing: border-box; }
+.comentario-aluno { margin: 0; padding: 8px; background: var(--papel-2); border-radius: 8px; }

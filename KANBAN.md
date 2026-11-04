@@ -8,17 +8,17 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P2] Revisão espaçada (1-7-30 dias) das questões erradas, com aviso no Mentor
-- [P2] Ranking por concurso e simulado semanal com nota de corte estimada
 - [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
-- [P3] Fórum ou comentários de alunos nas questões
 - [P3] Questões de mais bancas oficiais públicas (Cebraspe, FGV, FCC), sempre com a fonte
 
 ## Fazendo
 - (nenhum)
 
 ## Feito
+- [P2] **Revisão espaçada**: questão errada volta em 1, 7 e 30 dias (filtro "Revisão do dia" + aviso no Praticar)
+- [P2] **Simulado da semana**: as mesmas 40 questões para todos, com nota de corte estimada pelo ranking
+- [P3] **Comentários dos alunos** em cada questão (/api/comentarios)
 - [P1] Mentor com IA: onboarding, plano adaptativo, chat, resumo em PDF, Grátis × Pro
 - [P1] **Concursos abertos perto de você**: estado + cidade, via API pública do Querido Diário (diários oficiais), com o link do diário e a fonte; atalho para o DOU
 - [P1] **Página por banca**: estilo, dicas e onde baixar as provas anteriores oficiais (sites das bancas)

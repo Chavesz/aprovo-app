@@ -66,6 +66,17 @@ function iaDeExemplo(): Plugin {
         res.end(progresso.get(u) ?? '{}');
       });
 
+      const comentarios = new Map<string, unknown[]>();
+      server.middlewares.use('/api/comentarios', async (req, res) => {
+        res.setHeader('content-type', 'application/json');
+        const id = new URL(req.url ?? '', 'http://x').searchParams.get('id') ?? '';
+        if (req.method === 'GET') return res.end(JSON.stringify(comentarios.get(id) ?? []));
+        const p = JSON.parse((await lerCorpo(req)) || '{}');
+        const l = [...(comentarios.get(p.id) ?? []), { usuario: 'teste', texto: p.texto, em: Date.now() }];
+        comentarios.set(p.id, l);
+        res.end(JSON.stringify(l));
+      });
+
       // Mentor de exemplo: sem chave da IA no `npm run dev`.
       server.middlewares.use('/api/mentor', async (req, res) => {
         const p = JSON.parse((await lerCorpo(req)) || '{}');

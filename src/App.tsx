@@ -286,6 +286,12 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
         {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
+        {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
+          <div className="aviso revisao-dia">
+            <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 7 e 30 dias).</span>
+            <button className="btn" onClick={() => setFiltros({ ...FILTROS_VAZIOS, status: 'hoje' })}>Revisar agora</button>
+          </div>
+        )}
         {questoes && aba === 'praticar' && (
           <Praticar
             questoes={questoes}
@@ -478,10 +484,27 @@ function ordemInteligente(lista: Questao[], historico: Resposta[]) {
     .map((x) => x.q);
 }
 
+/** Revisão espaçada: questão errada volta 1, 7 e 30 dias depois; cada acerto na revisão empurra para o próximo intervalo. */
+const INTERVALOS = [1, 7, 30];
+export function revisaoDoDia(historico: Resposta[], agora = Date.now()) {
+  const por = new Map<string, Resposta[]>();
+  historico.forEach((h) => por.set(h.id, [...(por.get(h.id) ?? []), h]));
+  const devidas = new Set<string>();
+  por.forEach((rs, id) => {
+    const iErro = rs.map((r) => r.certa).lastIndexOf(false);
+    if (iErro < 0) return;
+    const acertos = rs.length - 1 - iErro;
+    if (acertos >= INTERVALOS.length) return;
+    if (agora - rs[rs.length - 1].em >= INTERVALOS[acertos] * 86400_000 - 3600_000) devidas.add(id);
+  });
+  return devidas;
+}
+
 function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[], bloco: string[]) {
   const respondidas = new Set(historico.map((h) => h.id));
   const ultimas = new Map<string, boolean>();
   historico.forEach((h) => ultimas.set(h.id, h.certa));
+  const devidas = f.status === 'hoje' ? revisaoDoDia(historico) : null;
   const lista = qs.filter(
     (q) =>
       (!f.banca || q.banca === f.banca) &&
@@ -494,6 +517,7 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
         (f.status === 'erradas' && ultimas.get(q.id) === false) ||
         (f.status === 'revisar' && revisar.includes(q.id)) ||
         (f.status === 'bloco' && bloco.includes(q.id)) ||
+        (f.status === 'hoje' && devidas!.has(q.id)) ||
         (f.status === 'inteligente' && (!bloco.length || bloco.includes(q.id))))
   );
   if (f.status === 'inteligente') return ordemInteligente(lista, historico);
@@ -565,6 +589,7 @@ function Praticar(props: {
                 ['revisar', 'Marcadas'],
                 ['bloco', 'Meu bloco'],
                 ['inteligente', 'Treino inteligente'],
+                ['hoje', 'Revisão do dia'],
               ] as const
             ).map(([v, r]) => (
               <label key={v} className="chip">
@@ -718,6 +743,7 @@ function QuestaoCard(props: {
           )}
         </div>
       )}
+      {revelar && marcada && <Comentarios id={q.id} />}
     </article>
   );
 }
@@ -786,6 +812,81 @@ function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: O
     const ordem = [...doBloco.filter(preferida), ...doBloco.filter((q) => !preferida(q))];
     return ordem.filter(unica).slice(0, b.n);
   });
+}
+
+type ComentarioAluno = { usuario: string; texto: string; em: number };
+/** Comentários dos alunos na questão: dúvidas, macetes e recursos. */
+function Comentarios({ id }: { id: string }) {
+  const [lista, setLista] = useState<ComentarioAluno[] | null>(null);
+  const [aberto, setAberto] = useState(false);
+  const [texto, setTexto] = useState('');
+  const [erro, setErro] = useState('');
+  const auth = () => ({ authorization: `Bearer ${contaSalva()?.token ?? ''}` });
+  useEffect(() => {
+    setLista(null);
+    setAberto(false);
+    fetch(`/api/comentarios?id=${encodeURIComponent(id)}`, { headers: auth() })
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setLista)
+      .catch(() => setLista([]));
+  }, [id]);
+  const publicar = async () => {
+    setErro('');
+    const r = await fetch('/api/comentarios', { method: 'POST', headers: { ...auth(), 'content-type': 'application/json' }, body: JSON.stringify({ id, texto }) });
+    const d = await r.json().catch(() => ({ erro: 'Falha ao publicar.' }));
+    if (!r.ok) return setErro(d.erro);
+    setLista(d);
+    setTexto('');
+  };
+  return (
+    <details className="comentarios" open={aberto} onToggle={(e) => setAberto((e.currentTarget as HTMLDetailsElement).open)}>
+      <summary>Comentários dos alunos ({lista?.length ?? '…'})</summary>
+      {lista?.map((c, i) => (
+        <p key={i} className="comentario-aluno">
+          <strong>{c.usuario}</strong> <span className="nota">{new Date(c.em).toLocaleDateString('pt-BR')}</span>
+          <br />
+          {c.texto}
+        </p>
+      ))}
+      <textarea value={texto} maxLength={600} onChange={(e) => setTexto(e.target.value)} placeholder="Dúvida, macete ou recurso sobre esta questão" />
+      {erro && <p className="aviso">{erro}</p>}
+      <button className="btn btn-sec" disabled={texto.trim().length < 3} onClick={publicar}>Comentar</button>
+    </details>
+  );
+}
+
+/** Semana do ano (fuso de Brasília): o simulado semanal é o mesmo para todo mundo na mesma semana. */
+const semanaAtual = () => Math.floor((Date.now() - 3 * 3600_000 + 3 * 86400_000) / (7 * 86400_000));
+
+function montarSimuladoSemana(questoes: Questao[]): Questao[] {
+  let semente = semanaAtual() * 9301 + 49297;
+  const rnd = () => ((semente = (semente * 9301 + 49297) % 233280) / 233280);
+  const estilo = questoes.filter((q) => q.comentario || /educa/i.test(q.banca)).sort((a, b) => (a.id < b.id ? -1 : 1));
+  return FORMATO_ACE.flatMap((b) =>
+    estilo
+      .filter(b.filtro)
+      .map((q) => ({ q, r: rnd() }))
+      .sort((x, y) => x.r - y.r)
+      .slice(0, b.n)
+      .map((x) => x.q),
+  );
+}
+
+/** Nota de corte estimada: 70º percentil das melhores notas do ranking (quem passaria entre os 30% melhores). */
+function useNotaCorte() {
+  const [corte, setCorte] = useState<number | null>(null);
+  useEffect(() => {
+    const conta = contaSalva();
+    if (!conta) return;
+    fetch('/api/ranking', { headers: { authorization: `Bearer ${conta.token}` } })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((linhas: { melhorNota?: number }[]) => {
+        const notas = linhas.map((l) => l.melhorNota ?? 0).filter((n) => n > 0).sort((a, b) => a - b);
+        setCorte(notas.length >= 3 ? notas[Math.floor(notas.length * 0.7)] : 60);
+      })
+      .catch(() => setCorte(60));
+  }, []);
+  return corte;
 }
 
 /** Provas aplicadas pela EDUCA já usadas no treino. Os links buscam o PDF original (site da banca ou da prefeitura). */
@@ -893,8 +994,9 @@ function Simulado(props: {
     setAgora(Date.now());
   };
 
-  const iniciarProva = () => {
-    setProva(montarProvaEstilo(props.questoes, props.historico, origem, soEduca));
+  const corte = useNotaCorte();
+  const iniciarProva = (semanal = false) => {
+    setProva(semanal ? montarSimuladoSemana(props.questoes) : montarProvaEstilo(props.questoes, props.historico, origem, soEduca));
     setEstiloProva(true);
     setRespostas({});
     setI(0);
@@ -931,6 +1033,15 @@ function Simulado(props: {
         <p className="sobretitulo">Simulado</p>
         <h1 className="titulo">Treine com o relógio correndo.</h1>
         <p className="lead">Questões sorteadas, sem gabarito até o fim. O resultado entra no seu desempenho.</p>
+        <div className="prova-estilo simulado-semana">
+          <p className="rotulo">Simulado da semana</p>
+          <p className="prova-estilo-titulo">As mesmas 40 questões para todos os alunos até domingo</p>
+          <p className="nota">
+            Compare sua nota no ranking. Nota de corte estimada: <strong>{corte ?? '…'}</strong> pontos (70% das melhores notas do
+            ranking ficam abaixo dela).
+          </p>
+          <button className="btn" onClick={() => iniciarProva(true)}>Fazer o simulado da semana</button>
+        </div>
         <div className="prova-estilo">
           <p className="rotulo">Prova no estilo da banca</p>
           <p className="prova-estilo-titulo">{props.cargo} Cuité de Mamanguape · EDUCA PB</p>
@@ -959,7 +1070,7 @@ function Simulado(props: {
               da banca
             </span>
           </label>
-          <button className="btn btn-grande" onClick={iniciarProva}>
+          <button className="btn btn-grande" onClick={() => iniciarProva()}>
             Gerar prova no estilo da banca
           </button>
         </div>
