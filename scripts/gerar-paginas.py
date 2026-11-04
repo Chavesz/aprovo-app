@@ -23,8 +23,8 @@ a.sec{display:inline-flex;align-items:center;min-height:52px;margin-left:16px;co
 nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:24px}nav a{color:var(--tinta);text-decoration:none;font-weight:600}nav .marca{display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:800;margin-right:auto;color:var(--marca)}nav .entrar{border:1.5px solid var(--linha);padding:7px 16px;border-radius:999px}
 .selo{font-size:.92rem;color:var(--tinta2);margin-top:12px}.lead{font-size:1.15rem;color:var(--tinta2);max-width:36em}
 section{padding:56px 0;border-top:1px solid var(--linha)}.kicker{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--marca);margin:0 0 8px}
-.hero{display:grid;gap:36px;align-items:center;padding:20px 0 48px}@media (min-width:880px){.hero{grid-template-columns:1.1fr .9fr}}
-.demo{background:var(--sup);border:1px solid var(--linha);border-radius:18px;padding:20px;box-shadow:0 24px 48px -32px rgba(42,31,61,.45)}.demo .meta{font-size:.82rem;color:var(--tinta2);margin:0 0 8px}.demo .cmd{font-family:'Source Serif 4',Georgia,serif;font-size:1.02rem;margin:0 0 14px}
+.grifo{background-repeat:no-repeat;background-size:100% 100%}.hero{position:relative;isolation:isolate;display:grid;gap:36px;align-items:center;padding:20px 0 48px}@media (min-width:880px){.hero{grid-template-columns:1.1fr .9fr}}
+.hero-fundo{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}.demo{background:var(--sup);border:1px solid var(--linha);border-radius:18px;padding:20px;box-shadow:0 24px 48px -32px rgba(42,31,61,.45)}.demo .meta{font-size:.82rem;color:var(--tinta2);margin:0 0 8px}.demo .cmd{font-family:'Source Serif 4',Georgia,serif;font-size:1.02rem;margin:0 0 14px}
 .alt{display:flex;gap:10px;align-items:center;border:1.5px solid var(--linha);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.95rem}.alt b{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--raised);font-size:.85rem}
 .alt.ok{border:2px solid var(--ok);background:var(--okbg)}.alt.ok b{background:var(--ok);color:var(--sup)}.alt.nok{border:2px solid var(--nok);background:var(--nokbg)}.alt.nok b{background:var(--nok);color:var(--sup)}.alt small{margin-left:auto;font-weight:700;white-space:nowrap}.alt.ok small{color:var(--ok)}.alt.nok small{color:var(--nok)}
 .mentor-bal{background:var(--ia);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.92rem}.mentor-bal strong{color:var(--marca)}
@@ -105,7 +105,7 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <details><summary>Preciso criar conta?</summary><p>Para testar, não: faça 5 questões direto. A conta serve para salvar o progresso e continuar em outro aparelho.</p></details></section>
 <section class="final"><h2>Sua vaga começa na próxima questão.</h2><p>5 questões grátis, sem cadastro e sem cartão.</p><p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></p></section>
 <div class="cta-fixa" hidden><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></div>
-<script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script>"""))
+<script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script><script src="/js/motion.js" defer></script>"""))
 
 GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),
