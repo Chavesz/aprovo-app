@@ -1,9 +1,13 @@
 # Converte questões da prova OFICIAL e pública CAIXA 2010 nível médio (Cebraspe, caderno ALFA) para o formato do app.
 # Fonte: https://cdn.cebraspe.org.br/concursos/caixanm12010 (caderno e gabarito definitivo).
-# Uso: python importar-cebraspe.py q.json GABARITO60 slug "nome da prova" url-da-fonte  (acrescenta em public/data/cebraspe.json)
+# Uso: python importar-cebraspe.py q.json GABARITO slug "nome da prova" url-da-fonte ["25:Português,40:Informática"] [ano]  (acrescenta em public/data/cebraspe.json)
 import json, sys, pathlib
 GAB, SLUG, PROVA, FONTE = sys.argv[2:6]
+FAIXAS = [(int(a), b) for a, b in (x.split(":") for x in sys.argv[6].split(","))] if len(sys.argv) > 6 else None
+ANO = int(sys.argv[7]) if len(sys.argv) > 7 else 2010
+
 def disc(n):
+    if FAIXAS: return next(b for a, b in FAIXAS if n <= a)
     if n <= 10: return "Português"
     if n <= 14: return "Matemática Financeira"
     if n <= 18: return "Ética"
@@ -20,11 +24,11 @@ for q in json.load(open(sys.argv[1], encoding="utf8")):
     if g == "X": continue  # anulada
     out.append({
         "id": f"cebraspe-{SLUG}-{q['n']}", "banca": "Cebraspe", "orgao": "CAIXA", "prova": PROVA,
-        "ano": 2010, "numero": q["n"], "disciplina": disc(q["n"]), "assunto": disc(q["n"]),
+        "ano": ANO, "numero": q["n"], "disciplina": disc(q["n"]), "assunto": disc(q["n"]),
         "enunciado": "", "comando": q["cmd"],
         "alternativas": [{"letra": "ABCDE"[k], "texto": t} for k, t in enumerate(q["alts"])],
         "gabarito": g,
-        "comentario": "Gabarito oficial definitivo da Cebraspe (CAIXA 2010). Fonte: " + FONTE + ". Atenção: a legislação pode ter mudado desde 2010.",
+        "comentario": f"Gabarito oficial definitivo da Cebraspe ({PROVA}). Fonte: {FONTE}. Atenção: leis e fatos podem ter mudado desde {ANO}.",
     })
 dest.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
 print(len(out))

@@ -20,6 +20,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P3] **Prova oficial UERN 2010 (Cebraspe)**: +24 questões com gabarito definitivo e fonte; importador aceita gabarito, matérias por faixa e ano
 - [P2] **Filtro "Mais difíceis"** no Praticar (menos de 40% de acerto da comunidade, 5+ respostas)
 - [P2] **Ranking do simulado da semana**: aba nova no ranking, zera no domingo
 - [P2] **Estatística justa**: só a primeira resposta de cada aluno conta no % da comunidade
