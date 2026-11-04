@@ -236,6 +236,7 @@ const MODELOS: { rotulo: string; cargo: string; banca: string; disciplinas: Perf
   { rotulo: 'Agente de Endemias (ACE)', cargo: 'Agente de Combate às Endemias', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 5), d('Saúde Pública', 10, 2), d('Específicos ACE', 15, 2)] },
   { rotulo: 'Técnico nível médio (Cebraspe)', cargo: 'Técnico Administrativo', banca: 'Cebraspe', disciplinas: [d('Português', 20), d('Informática', 10), d('Direito Constitucional', 10), d('Direito Administrativo', 15, 2), d('Raciocínio Lógico', 10)] },
   { rotulo: 'Prefeitura (nível médio)', cargo: 'Assistente Administrativo', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 10), d('Informática', 5), d('Atualidades', 5), d('Direito Administrativo', 10, 2)] },
+  { rotulo: 'INSS (Técnico do Seguro Social)', cargo: 'Técnico do Seguro Social', banca: 'Cebraspe', disciplinas: [d('Português', 15), d('Raciocínio Lógico', 5), d('Informática', 5), d('Direito Constitucional', 10), d('Direito Administrativo', 10), d('Seguridade Social e Previdência', 50, 2)] },
   { rotulo: 'Polícia e Bombeiros (FGV)', cargo: 'Soldado / Cabo / Cadete', banca: 'FGV', disciplinas: [d('Português', 20, 2), d('Raciocínio Lógico', 10), d('Específicos PM SP', 30, 2), d('Matemática', 10), d('Direito Constitucional', 10)] },
   { rotulo: 'Enfermagem', cargo: 'Técnico de Enfermagem', banca: '', disciplinas: [d('Português', 10), d('Saúde Pública', 10), d('Enfermagem', 20, 2)] },
 ];

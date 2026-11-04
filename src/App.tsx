@@ -1993,7 +1993,7 @@ function Revisar(props: {
 /** Área de cada matéria, para agrupar o filtro (com as provas da Cebraspe passaram de 100 matérias). */
 const AREAS: [string, RegExp][] = [
   ['Básicas', /portugu|raciocínio|lógic|informática|atualidades|conhecimentos (gerais|básicos)|matemática|inglês|espanhol|redação/i],
-  ['Direito', /direito|legisla|processual|ética|administrativo/i],
+  ['Direito', /direito|legisla|previd|seguridade|processual|ética|administrativo/i],
   ['Saúde', /saúde|sus|acs|ace|enferm|medic|médic|odonto|dent|nutri|farm|fisio|fono|psic|psiq|cardio|clínica|dermato|endocrino|gineco|pediatr|fisiatr|bioquím|terap|veterin|serviço social|assistente social|biolog|biólog|radiolog|ortopéd|ciências da natureza/i],
   ['Engenharia e exatas', /engenh|arquitet|edifica|estatíst|físic|segurança do trabalho|químic|geolog|minera|eletro|mecatr|atuarial/i],
   ['Educação e comunicação', /pedagog|educa|comunica|jornal|redat|revisor|editor|linguagens|humanas|geograf|antropolog|arqueolog|museólog|desenhista|desportivo/i],
