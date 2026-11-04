@@ -14,7 +14,7 @@ Nunca mande nenhuma dessas chaves por chat, e-mail ou commit. Elas só vão no p
 | 1 | `ANTHROPIC_API_KEY` | O Mentor com IA: conversa, leitura do edital, resumos e geração de questões | 5 min |
 | 2 | Mercado Pago (`MP_ACCESS_TOKEN`, `PRO_PRECO`) | A cobrança do plano Pro com Pix e cartão | 20 min |
 | 3 | Preço do Pro | Decisão de negócio: o valor que vai em `PRO_PRECO` | — |
-| 4 | Resend (`RESEND_API_KEY`, `EMAIL_DE`, `EMAIL_SEGREDO`) | E-mail de boas-vindas e lembrete diário de revisão | 30 min |
+| 4 | Resend (`RESEND_API_KEY`, `EMAIL_DE`, `EMAIL_SEGREDO`) | E-mail de boas-vindas, lembrete diário de revisão e alerta semanal de concurso na cidade | 30 min |
 | 5 | `SUPABASE_SERVICE_ROLE_KEY` | Cópia de segurança dos dados no Supabase (o app já funciona sem) | 5 min |
 | 6 | Tirar o selo "Powered by Netlify" | Visual mais limpo e uns 35 KB a menos em cada página | 2 min |
 | 7 | Depoimentos reais | Prova social na landing (hoje ela mostra só números reais do banco) | contínuo |

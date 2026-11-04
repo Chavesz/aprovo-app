@@ -6,7 +6,7 @@ import { createHmac } from 'node:crypto';
 
 export const SITE = (process.env.SITE_URL ?? 'https://aprovoapp.netlify.app').replace(/\/$/, '');
 export const emails = () => getStore({ name: 'emails', consistency: 'strong' });
-export interface Contato { email: string; optin: boolean; criadoEm: number; ultimoLembrete?: string }
+export interface Contato { email: string; optin: boolean; criadoEm: number; ultimoLembrete?: string; ultimoAlerta?: string }
 
 export const emailLigado = () => !!(process.env.RESEND_API_KEY && process.env.EMAIL_DE && process.env.EMAIL_SEGREDO);
 export const emailValido = (e: string) => /^[^\s@]{1,64}@[^\s@]{1,190}\.[a-z]{2,}$/i.test(e ?? '');
@@ -63,3 +63,10 @@ export function devidasHoje(historico: { id: string; certa: boolean; em: number 
   });
   return n;
 }
+
+export const alertaConcursos = (usuario: string, nome: string, cidade: string, itens: { data: string; url: string; trecho: string }[]) =>
+  moldura(usuario, `${esc(nome)}, saiu concurso no diário oficial de ${esc(cidade)}`,
+    `<p>Encontramos ${itens.length} ${itens.length === 1 ? 'publicação' : 'publicações'} com "concurso" e "edital" desde o último aviso:</p><ul>${itens
+      .map((i) => `<li style="margin-bottom:10px"><strong>${esc(i.data)}</strong>: ${esc(i.trecho.slice(0, 220))}… <a href="${esc(i.url)}" style="color:#4a2f7a">abrir o diário</a></li>`)
+      .join('')}</ul><p>Confira o edital no link oficial. Os dados vêm do projeto Querido Diário (Open Knowledge Brasil).</p>`,
+    'Ver no radar de concursos', `${SITE}/`);

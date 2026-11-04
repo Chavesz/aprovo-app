@@ -24,6 +24,8 @@ const CHAVES = [
   'cq:mentor',
   'cq:resumos',
   'cq:flash',
+  'cq:radar-uf',
+  'cq:radar-cidade',
 ] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {
