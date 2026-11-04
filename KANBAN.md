@@ -8,7 +8,7 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P2] Carregar as questões sob demanda (o `cebraspe.json` passou de 5 MB): dividir por concurso e baixar só o do filtro
+- [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
 - [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
 - [P3] Provas de outras bancas (FCC, Vunesp, IBFC, AOCP, Consulplan, IDECAN): os sites delas montam a lista de provas com JavaScript; precisa achar os PDFs oficiais por outro caminho
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
@@ -23,6 +23,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Abertura mais rápida**: o app abre com os bancos menores e o da Cebraspe (5+ MB) entra logo depois, sem travar a primeira tela
+- [P1] **Primeira prova oficial da FGV**: PM SP Cabo 2022, 55 questões de múltipla escolha com gabarito definitivo e fonte (lista de PDFs pega com o navegador, pois o site monta por JavaScript); importador `scripts/importar-fgv.py`; página de SEO nova
 - [P1] **+703 itens oficiais da SEDUC AM 2011 (Cebraspe)**: professores de 18 áreas, pedagogo, merendeiro e apoio; nome do cargo tirado da página oficial; página de SEO nova
 - [P2] **Resumo semanal compartilhável** no Desempenho: questões, % de acerto, dias de estudo, ponto forte e o que focar, com botão para WhatsApp
 - [P2] **Revisão espaçada 1-3-7-30** (antes 1-7-30) e aviso de quantas voltam amanhã

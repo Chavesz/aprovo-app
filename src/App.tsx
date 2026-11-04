@@ -98,9 +98,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       opcional('/data/educa-ace.json'),
       opcional('/data/educa-site.json'),
       opcional('/data/privado/educa.json'),
-      ...['/data/ace-cuite.json', '/data/comuns.json', '/data/cebraspe.json', '/data/fgv.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
+      ...['/data/ace-cuite.json', '/data/comuns.json', '/data/fgv.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])
-      .then((partes) => setOficiais(partes.flat()))
+      .then((partes) => {
+        setOficiais(partes.flat());
+        // O banco da Cebraspe é o maior (5+ MB): o app abre com o resto e ele entra logo depois.
+        return opcional('/data/cebraspe.json').then((c) => c.length && setOficiais((v) => { const ja = new Set((v ?? []).map((q) => q.id)); return [...(v ?? []), ...c.filter((q) => !ja.has(q.id))]; }));
+      })
       .catch(() => setErro(true));
   }, []);
 
