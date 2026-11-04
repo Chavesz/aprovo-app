@@ -10,12 +10,19 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
-- [P3] Mais provas oficiais de outras bancas (FGV, FCC e mais Cebraspe), usando o importador `scripts/importar-cebraspe*.py`
+- [P3] Mais provas oficiais de outras bancas (FGV, FCC, Vunesp, IBFC). Atenção: vários PDFs da Cebraspe vêm com fonte embaralhada e não dão para extrair texto (ex.: CAIXA NM2 2010)
+- [P1] Onboarding que converte: tela de boas-vindas com escolha do concurso e primeiro mini-simulado de 5 questões antes do cadastro
+- [P2] Compartilhar resultado do simulado (imagem/link para WhatsApp) com convite, para crescer por indicação
+- [P2] Metas e sequência de dias (streak) com lembrete diário
 
 ## Fazendo
 - (nenhum)
 
 ## Feito
+- [P1] **Modo celular / PWA**: instala como app, abre offline com as questões já baixadas
+- [P1] **Landing de vendas** em /aprovo, com benefícios, planos e questões de exemplo
+- [P1] **SEO por concurso**: 10 páginas /concursos/* com questões de amostra, sitemap.xml e robots.txt (`scripts/gerar-paginas.py`)
+- [P2] **Estatísticas por banca** no Desempenho (além de matéria e assunto)
 - [P3] **Primeira prova oficial da Cebraspe**: CAIXA 2010 nível médio, 27 questões com o gabarito definitivo e a fonte (texto/figura e anuladas ficaram de fora)
 - [P2] **Revisão espaçada**: questão errada volta em 1, 7 e 30 dias (filtro "Revisão do dia" + aviso no Praticar)
 - [P2] **Simulado da semana**: as mesmas 40 questões para todos, com nota de corte estimada pelo ranking

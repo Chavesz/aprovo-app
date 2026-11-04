@@ -1305,6 +1305,7 @@ function Desempenho({
   const unicas = new Set(hist.map((h) => h.id)).size;
 
   const disciplinas = useMemo(() => agrupar(hist, porId, (q) => q.disciplina).sort((x, y) => y.t - x.t), [hist, porId]);
+  const bancas = useMemo(() => agrupar(hist, porId, (q) => q.banca).sort((x, y) => y.t - x.t), [hist, porId]);
   const assuntos = useMemo(
     () => agrupar(hist, porId, (q) => `${q.assunto}|${q.disciplina}`).sort((x, y) => pct(x.a, x.t) - pct(y.a, y.t) || y.t - x.t),
     [hist, porId]
@@ -1507,6 +1508,15 @@ function Desempenho({
       <h2 className="subtitulo">Por disciplina</h2>
       <ul className="assuntos">
         {disciplinas.map((g) => (
+          <LinhaBarra key={g.nome} titulo={g.nome} a={g.a} t={g.t} />
+        ))}
+      </ul>
+
+      <h2 className="subtitulo">
+        Por banca <span className="nota">cada banca cobra de um jeito</span>
+      </h2>
+      <ul className="assuntos">
+        {bancas.map((g) => (
           <LinhaBarra key={g.nome} titulo={g.nome} a={g.a} t={g.t} />
         ))}
       </ul>
