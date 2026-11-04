@@ -163,7 +163,7 @@ function Bancas() {
 
 const DICAS = [
   'Faça questões antes de ler a teoria: o erro mostra o que estudar.',
-  'Revise hoje o que errou ontem. Revisão em 1, 7 e 30 dias fixa o conteúdo.',
+  'Revise hoje o que errou ontem. Revisão em 1, 3, 7 e 30 dias fixa o conteúdo.',
   'Estude a matéria de maior peso primeiro, quando a cabeça está descansada.',
   'Leia o edital inteiro: o conteúdo programático é o seu mapa.',
   '25 minutos focado e 5 de pausa rendem mais que 3 horas distraído.',

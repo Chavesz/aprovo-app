@@ -55,13 +55,13 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <h2>Como funciona</h2><ol class="passos">
 <li><strong>Escolha o seu concurso.</strong> Cole o edital ou comece por um modelo pronto (ACS, ACE, técnico, prefeitura, enfermagem).</li>
 <li><strong>Receba o plano do dia.</strong> O Mentor diz o que estudar hoje, por quanto tempo, e ajusta pelo que você erra.</li>
-<li><strong>Treine e revise.</strong> Questões da banca, simulado da semana com ranking e revisão em 1, 7 e 30 dias.</li></ol>
+<li><strong>Treine e revise.</strong> Questões da banca, simulado da semana com ranking e revisão em 1, 3, 7 e 30 dias.</li></ol>
 <div class="grade numeros"><div><strong>{len(qs)}</strong><br>questões com gabarito</div><div><strong>{len({q['banca'] for q in qs})}</strong><br>bancas</div><div><strong>{len({q['disciplina'] for q in qs})}</strong><br>matérias</div><div><strong>{sum(1 for q in qs if q.get('comentario'))}</strong><br>comentadas</div></div>
 <h2>Por que funciona</h2><div class="grade">
 <div class="caixa"><strong>Mentor com IA</strong><br>Lê o edital, monta o plano da semana e tira dúvidas com base nos seus erros.</div>
 <div class="caixa"><strong>Questões oficiais</strong><br>Provas reais e públicas das bancas, sempre com a fonte, mais questões comentadas.</div>
 <div class="caixa"><strong>Simulado da semana</strong><br>Mesma prova para todos, ranking e nota de corte estimada.</div>
-<div class="caixa"><strong>Revisão espaçada</strong><br>A questão errada volta em 1, 7 e 30 dias. Você não esquece mais.</div>
+<div class="caixa"><strong>Revisão espaçada</strong><br>A questão errada volta em 1, 3, 7 e 30 dias. Você não esquece mais.</div>
 <div class="caixa"><strong>Concursos abertos</strong><br>Busca editais nos diários oficiais da sua cidade e do seu estado.</div>
 <div class="caixa"><strong>Funciona no celular</strong><br>Instale como app e estude até sem internet.</div></div>
 <h2>Provas oficiais no banco</h2><p class="lista-provas">{" · ".join(PROVAS)} e outras, sempre com a fonte e o gabarito definitivo.</p>

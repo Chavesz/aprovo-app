@@ -801,3 +801,8 @@ textarea {
 
 .plano-hoje { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--linha); border-radius: 12px; margin-top: 12px; margin-bottom: 0; }
 .plano-hoje .link { flex-shrink: 0; font-weight: 600; }
+.revisao-amanha { margin: 8px auto 0; }
+
+.resumo-semana { border: 1px solid var(--linha); border-radius: 12px; padding: 16px; margin-top: 16px; margin-bottom: 8px; }
+.resumo-numeros { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 6px 0 10px; }
+.resumo-numeros strong { font-size: 1.5rem; color: var(--acento); margin-right: 4px; }

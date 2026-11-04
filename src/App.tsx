@@ -305,9 +305,12 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'praticar' && <Foco />}
         {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
           <div className="aviso revisao-dia">
-            <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 7 e 30 dias).</span>
+            <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 3, 7 e 30 dias).</span>
             <button className="btn" onClick={() => setFiltros({ ...FILTROS_VAZIOS, status: 'hoje' })}>Revisar agora</button>
           </div>
+        )}
+        {questoes && aba === 'praticar' && revisaoDoDia(historico).size === 0 && revisaoDoDia(historico, Date.now() + 86400_000).size > 0 && (
+          <p className="nota coluna revisao-amanha">🔁 Revisão em dia. Amanhã voltam {revisaoDoDia(historico, Date.now() + 86400_000).size} questões que você errou.</p>
         )}
         {questoes && aba === 'praticar' && (
           <Praticar
@@ -371,6 +374,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {questoes && aba === 'desempenho' && (
           <>
+            <ResumoSemana historico={historico} questoes={questoes} />
             <Ranking conta={conta} />
             <Desempenho questoes={oficiais ?? questoes} onAnular={anular} anuladas={anuladas} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
@@ -511,8 +515,8 @@ function ordemInteligente(lista: Questao[], historico: Resposta[]) {
     .map((x) => x.q);
 }
 
-/** Revisão espaçada: questão errada volta 1, 7 e 30 dias depois; cada acerto na revisão empurra para o próximo intervalo. */
-const INTERVALOS = [1, 7, 30];
+/** Revisão espaçada: questão errada volta 1, 3, 7 e 30 dias depois; cada acerto na revisão empurra para o próximo intervalo. */
+const INTERVALOS = [1, 3, 7, 30];
 /** Questões que menos de 40% da comunidade acerta (carregado uma vez por sessão). */
 const DIFICEIS = new Set<string>();
 const carregarDificeis = () =>
@@ -1993,6 +1997,49 @@ const AREAS: [string, RegExp][] = [
   ['Gestão e contas', /contab|contador|bancári|caixa|vendas|economi|orçamento|controle|auditor|administra|gestão|secretári|arquiv|bibliotec/i],
 ];
 const areaDe = (m: string) => AREAS.find(([, r]) => r.test(m))?.[0] ?? 'Outras';
+
+/** Resumo dos últimos 7 dias, com botão para mandar no WhatsApp (ou no compartilhar do celular). */
+function ResumoSemana({ historico, questoes }: { historico: Resposta[]; questoes: Questao[] }) {
+  const desde = Date.now() - 7 * 86400_000;
+  const sem = historico.filter((h) => h.em >= desde);
+  if (sem.length < 5) return null;
+  const certas = sem.filter((h) => h.certa).length;
+  const dias = new Set(sem.map((h) => diaChave(h.em))).size;
+  const disc = new Map(questoes.map((q) => [q.id, q.disciplina]));
+  const por = new Map<string, { a: number; t: number }>();
+  sem.forEach((h) => {
+    const d = disc.get(h.id);
+    if (!d) return;
+    const v = por.get(d) ?? { a: 0, t: 0 };
+    por.set(d, { a: v.a + (h.certa ? 1 : 0), t: v.t + 1 });
+  });
+  const validas = [...por.entries()].filter(([, v]) => v.t >= 3).sort((x, y) => y[1].a / y[1].t - x[1].a / x[1].t);
+  const melhor = validas[0]?.[0];
+  const pior = validas.length > 1 ? validas[validas.length - 1][0] : undefined;
+  const texto = `Minha semana no Aprovô: ${sem.length} questões, ${pct(certas, sem.length)}% de acerto, ${dias} ${dias === 1 ? 'dia' : 'dias'} de estudo${melhor ? `. Mandei bem em ${melhor}` : ''}. Bora estudar junto?`;
+  const compartilhar = () => {
+    const url = `${location.origin}/aprovo`;
+    if (navigator.share) navigator.share({ title: 'Aprovô', text: texto, url }).catch(() => undefined);
+    else window.open(`https://wa.me/?text=${encodeURIComponent(`${texto} ${url}`)}`, '_blank');
+  };
+  return (
+    <section className="coluna estreita resumo-semana">
+      <p className="sobretitulo">Sua semana</p>
+      <div className="resumo-numeros">
+        <span><strong className="mono">{sem.length}</strong> questões</span>
+        <span><strong className="mono">{pct(certas, sem.length)}%</strong> de acerto</span>
+        <span><strong className="mono">{dias}</strong> {dias === 1 ? 'dia' : 'dias'} de estudo</span>
+      </div>
+      {(melhor || pior) && (
+        <p className="nota">
+          {melhor && <>Ponto forte: <strong>{melhor}</strong>. </>}
+          {pior && <>Foque em: <strong>{pior}</strong>.</>}
+        </p>
+      )}
+      <button className="btn btn-sec" onClick={compartilhar}>Compartilhar minha semana</button>
+    </section>
+  );
+}
 
 function Select(props: { rotulo: string; valor: string; opcoes: string[]; onChange: (v: string) => void; vazio?: string; agrupar?: boolean }) {
   if (props.agrupar && props.opcoes.length > 25) {
