@@ -1314,6 +1314,16 @@ function Simulado(props: {
             })()}
           </>
         )}
+        {!estiloProva && (
+          <a
+            className="btn btn-sec compartilhar"
+            target="_blank"
+            rel="noreferrer"
+            href={`https://wa.me/?text=${encodeURIComponent(`Acertei ${acertos} de ${prova.length} no simulado do Aprovô. Duvido você bater! Treine grátis: https://aprovoapp.netlify.app/aprovo`)}`}
+          >
+            Desafiar no WhatsApp
+          </a>
+        )}
         <p className="lead">
           {Object.keys(respostas).length < prova.length
             ? `${prova.length - Object.keys(respostas).length} em branco. `
@@ -1349,6 +1359,26 @@ function Simulado(props: {
             );
           })}
         </ol>
+        {(() => {
+          const erradas = prova.filter((q) => respostas[q.id] && respostas[q.id] !== q.gabarito);
+          if (!erradas.length) return null;
+          return (
+            <button
+              className="btn btn-sec"
+              onClick={() => {
+                setProva(embaralhar(erradas));
+                setEstiloProva(false);
+                setRespostas({});
+                setI(0);
+                setEncerrado(false);
+                setFim(Date.now() + Math.max(5, erradas.length * 2) * 60000);
+                setAgora(Date.now());
+              }}
+            >
+              Refazer as {erradas.length} que errei
+            </button>
+          );
+        })()}
         <button className="btn" onClick={() => setProva(null)}>
           Novo simulado
         </button>
@@ -1929,6 +1959,25 @@ function MeuCaderno({ porId }: { porId: Map<string, Questao> }) {
         })}
         {!filtradas.length && <li className="nota">Nada encontrado.</li>}
       </ul>
+      <button
+        className="link"
+        onClick={() => {
+          const txt = filtradas.map(([id, n]) => { const q = porId.get(id)!; return `${q.disciplina} · ${q.prova}
+Anotação: ${n}
+Questão: ${q.comando.replace(/<[^>]+>|\*\*/g, '').replace(/\s+/g, ' ').trim()}
+Gabarito: ${q.gabarito}
+`; }).join('\n');
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([`Meu caderno · Aprovô (${new Date().toLocaleDateString('pt-BR')})
+
+${txt}`], { type: 'text/plain;charset=utf-8' }));
+          a.download = 'meu-caderno-aprovo.txt';
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }}
+      >
+        ⬇ Baixar {filtradas.length === notas.length ? 'o caderno' : `as ${filtradas.length} filtradas`} (.txt)
+      </button>
     </details>
   );
 }
