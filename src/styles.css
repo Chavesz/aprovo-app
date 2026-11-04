@@ -758,3 +758,6 @@ textarea {
 .teste-veredito { font-weight: 600; margin: 0; }
 .teste-veredito.ok { color: var(--ok, #2e7d32); }
 .teste-veredito.nok { color: var(--nok); }
+.foco-btn { margin: 0 0 12px; }
+.foco { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; margin: 0 0 12px; color: var(--acento); }
+.foco.pausa { color: var(--tinta-2); }

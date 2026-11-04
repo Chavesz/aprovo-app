@@ -350,6 +350,28 @@ function Onboarding({ inicial, onPronto, onUso }: { inicial: PerfilMentor | null
   );
 }
 
+/** Gera um .ics com os blocos da semana (19h em diante, um evento por matéria) para abrir na agenda do celular. */
+function baixarAgenda(semana: ReturnType<typeof montarPlano>['semana']) {
+  const f = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const ev: string[] = [];
+  const CRLF = String.fromCharCode(13, 10);
+  semana.forEach((d, n) => {
+    const ini = new Date(d.data);
+    ini.setHours(19, 0, 0, 0);
+    d.blocos.forEach((b, k) => {
+      const fim = new Date(ini.getTime() + b.min * 60000);
+      ev.push(['BEGIN:VEVENT', `UID:aprovo-${n}-${k}-${ini.getTime()}@aprovo`, `DTSTAMP:${f(new Date())}`, `DTSTART:${f(ini)}`, `DTEND:${f(fim)}`,
+        `SUMMARY:Estudar ${b.nome}`, `DESCRIPTION:${b.assunto} · plano do Mentor Aprovô`, 'BEGIN:VALARM', 'TRIGGER:-PT10M', 'ACTION:DISPLAY', 'DESCRIPTION:Hora de estudar', 'END:VALARM', 'END:VEVENT'].join(CRLF));
+      ini.setTime(fim.getTime() + 5 * 60000);
+    });
+  });
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Aprovo//Plano//PT', ...ev, 'END:VCALENDAR'].join(CRLF);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  a.download = 'plano-aprovo.ics';
+  a.click();
+}
+
 function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {
   plano: ReturnType<typeof montarPlano>;
   perfil: PerfilMentor;
@@ -391,7 +413,12 @@ function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {
         ))}
       </ol>
 
-      <h2 className="subtitulo">Esta semana</h2>
+      <h2 className="subtitulo">
+        Esta semana{' '}
+        <button className="link" onClick={() => baixarAgenda(plano.semana)}>
+          Colocar na agenda do celular
+        </button>
+      </h2>
       <div className="mentor-semana">
         {plano.semana.map((d, n) => (
           <article key={n} className={n === 0 ? 'mentor-dia hoje' : 'mentor-dia'}>

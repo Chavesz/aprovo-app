@@ -286,6 +286,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
         {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
+        {questoes && aba === 'praticar' && <Foco />}
         {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
           <div className="aviso revisao-dia">
             <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 7 e 30 dias).</span>
@@ -819,6 +820,48 @@ function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: O
     const ordem = [...doBloco.filter(preferida), ...doBloco.filter((q) => !preferida(q))];
     return ordem.filter(unica).slice(0, b.n);
   });
+}
+
+/** Modo foco: 25 min de questões e 5 de pausa, com aviso sonoro simples. */
+function Foco() {
+  const [fim, setFim] = useState(0);
+  const [pausa, setPausa] = useState(false);
+  const [agora, setAgora] = useState(Date.now());
+  useEffect(() => {
+    if (!fim) return;
+    const t = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [fim]);
+  const resta = Math.max(0, Math.round((fim - agora) / 1000));
+  useEffect(() => {
+    if (fim && resta === 0) {
+      try {
+        const ctx = new AudioContext();
+        const o = ctx.createOscillator();
+        o.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.4);
+      } catch {
+        /* sem áudio */
+      }
+      const p = !pausa;
+      setPausa(p);
+      setFim(Date.now() + (p ? 5 : 25) * 60000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resta]);
+  if (!fim)
+    return (
+      <button className="link foco-btn" onClick={() => { setPausa(false); setFim(Date.now() + 25 * 60000); setAgora(Date.now()); }}>
+        ⏱ Modo foco 25/5
+      </button>
+    );
+  return (
+    <p className={`foco ${pausa ? 'pausa' : ''}`}>
+      {pausa ? 'Pausa' : 'Foco'} {String(Math.floor(resta / 60)).padStart(2, '0')}:{String(resta % 60).padStart(2, '0')}{' '}
+      <button className="link" onClick={() => setFim(0)}>parar</button>
+    </p>
+  );
 }
 
 type ComentarioAluno = { usuario: string; texto: string; em: number };
