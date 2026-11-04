@@ -853,3 +853,11 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .deixar-branco { display: block; margin: 10px 0 0; }
 .ranking-media{margin:.5rem 0 1rem;padding:.6rem .8rem;border-radius:10px;background:var(--grifo)}
 .atalhos{display:none;font-size:.8rem}@media (hover:hover) and (pointer:fine){.atalhos{display:block}}.mapa-contagem{white-space:nowrap}
+.mapa-item.duvida{box-shadow:inset 0 -3px 0 var(--acao);position:relative}
+.mapa-item.duvida::after{content:"?";position:absolute;top:-6px;right:-4px;font-size:.7rem;font-weight:800;color:var(--acento)}
+.marcar-duvida{display:block;margin:.4rem 0}
+.marcar-duvida.ativa{font-weight:700;background:var(--grifo);padding:.2rem .4rem;border-radius:6px}
+.aviso-tempo{flex-basis:100%;order:-1;padding:.4rem .6rem;border-radius:8px;background:var(--grifo);font-weight:600;font-size:.9rem}
+.barra-simulado{flex-wrap:wrap}
+.mapa{min-width:0}
+@media (max-width:600px){.barra-simulado .mapa{order:5;flex-basis:100%}.mapa-contagem{margin-right:auto}}

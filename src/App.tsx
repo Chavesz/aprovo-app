@@ -1,6 +1,6 @@
 import Mentor, { PlanoDeHoje, resolverDisciplina } from './Mentor';
 import Descobrir from './Descobrir';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
 import { md } from './md';
@@ -676,6 +676,19 @@ function Praticar(props: {
           />
         ) : (
           <>
+            <AtalhosPratica
+              onTecla={(e) => {
+                if (e.key === 'ArrowLeft' && i > 0) ir(i - 1);
+                else if ((e.key === 'ArrowRight' || e.key === 'Enter') && i < lista.length - 1) ir(i + 1);
+                else {
+                  const l = letraDaTecla(q, e.key);
+                  if (!l || marcada) return false;
+                  setMarcada(l);
+                  props.onResponder({ id: q.id, marcada: l, certa: l === q.gabarito, em: Date.now() });
+                }
+                return true;
+              }}
+            />
             <QuestaoCard
               q={q}
               posicao={`${i + 1} de ${lista.length}`}
@@ -689,6 +702,7 @@ function Praticar(props: {
               marcadaRevisar={revisar.includes(q.id)}
               onRevisar={() => props.onRevisar(q.id)}
             />
+            <p className="nota atalhos">Atalhos: tecle a letra para responder, Enter ou → para a próxima, ← para voltar.</p>
             <div className="navegacao">
               <button className="btn btn-sec" onClick={() => ir(i - 1)} disabled={i === 0}>
                 Anterior
@@ -704,7 +718,28 @@ function Praticar(props: {
   );
 }
 
+/** Letra da alternativa pela tecla: A–E na múltipla escolha, C/E no Certo/Errado. */
+function letraDaTecla(q: Questao, tecla: string) {
+  const k = tecla.toUpperCase();
+  const ce = q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo';
+  return (ce ? q.alternativas.find((a) => a.texto[0].toUpperCase() === k) : q.alternativas.find((a) => a.letra.toUpperCase() === k))?.letra;
+}
+const digitando = (e: KeyboardEvent) =>
+  e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof Element && !!e.target.closest('input,textarea,select,[contenteditable]'));
+
 /* ---------- Questão ---------- */
+
+/** Escuta o teclado enquanto montado; onTecla devolve true quando usou a tecla. */
+function AtalhosPratica({ onTecla }: { onTecla: (e: KeyboardEvent) => boolean }) {
+  const ref = useRef(onTecla);
+  ref.current = onTecla;
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => { if (!digitando(e) && ref.current(e)) e.preventDefault(); };
+    window.addEventListener('keydown', f);
+    return () => window.removeEventListener('keydown', f);
+  }, []);
+  return null;
+}
 
 function QuestaoCard(props: {
   q: Questao;
@@ -1118,6 +1153,8 @@ function Simulado(props: {
   const [origem, setOrigem] = usePersist<Origem>('cq:sim-origem', 'misturado');
   const [soEduca, setSoEduca] = usePersist('cq:sim-so-educa', false);
   const [semanal, setSemanal] = usePersist('cq:sim-semanal', false);
+  const [duvidas, setDuvidas] = usePersist<string[]>('cq:sim-duvidas', []);
+  const alternarDuvida = (id: string) => setDuvidas((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]));
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -1136,6 +1173,7 @@ function Simulado(props: {
     const pool = props.questoes.filter((q) => !config.disciplina || q.disciplina === config.disciplina);
     setProva(embaralhar(pool).slice(0, config.total));
     setRespostas({});
+    setDuvidas([]);
     setI(0);
     setEncerrado(false);
     setFim(Date.now() + config.minutos * 60000);
@@ -1148,6 +1186,7 @@ function Simulado(props: {
     setSemanal(semanal);
     setEstiloProva(true);
     setRespostas({});
+    setDuvidas([]);
     setI(0);
     setEncerrado(false);
     setFim(Date.now() + 180 * 60000);
@@ -1157,7 +1196,9 @@ function Simulado(props: {
   function entregar() {
     if (!prova) return;
     const brancos = prova.filter((q) => !respostas[q.id]).length;
-    if (confirm(brancos ? `Faltam ${brancos} ${brancos === 1 ? 'questão' : 'questões'} em branco. Entregar mesmo assim?` : 'Entregar o simulado agora?')) encerrar();
+    const nd = prova.filter((q) => duvidas.includes(q.id)).length;
+    const partes = [brancos && `${brancos} em branco`, nd && `${nd} com dúvida`].filter(Boolean);
+    if (confirm(partes.length ? `Você tem ${partes.join(' e ')}. Entregar mesmo assim?` : 'Entregar o simulado agora?')) encerrar();
   }
 
   // Atalhos no computador: letra marca a alternativa (C/E no Certo/Errado), setas trocam de questão.
@@ -1167,7 +1208,9 @@ function Simulado(props: {
       if (e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable]'))) return;
       const q = prova[i];
       if (!q) return;
-      if (e.key === 'ArrowRight' && i < prova.length - 1) setI(i + 1);
+      if (e.key.toUpperCase() === 'D' && !(q.alternativas.length > 3 && q.alternativas.some((a) => a.letra.toUpperCase() === 'D'))) alternarDuvida(q.id);
+      else if (e.key === '?') alternarDuvida(q.id);
+      else if (e.key === 'ArrowRight' && i < prova.length - 1) setI(i + 1);
       else if (e.key === 'ArrowLeft' && i > 0) setI(i - 1);
       else {
         const k = e.key.toUpperCase();
@@ -1397,6 +1440,7 @@ function Simulado(props: {
                 setProva(embaralhar(erradas));
                 setEstiloProva(false);
                 setRespostas({});
+                setDuvidas([]);
                 setI(0);
                 setEncerrado(false);
                 setFim(Date.now() + Math.max(5, erradas.length * 2) * 60000);
@@ -1420,16 +1464,19 @@ function Simulado(props: {
   return (
     <section className="coluna">
       <div className="barra-simulado">
-        <span className={`relogio mono ${restante < 60 ? 'urgente' : ''}`} role="timer" aria-label="Tempo restante">
+        {restante > 0 && restante <= 300 && (
+          <span className="aviso-tempo" role="status">Faltam {Math.ceil(restante / 60)} min: confira as em branco e as com dúvida</span>
+        )}
+        <span className={`relogio mono ${restante < 300 ? 'urgente' : ''}`} role="timer" aria-label="Tempo restante">
           {mm}:{ss}
         </span>
         <div className="mapa" aria-label="Mapa de questões">
           {prova.map((p, n) => (
             <button
               key={p.id}
-              className={`mapa-item ${respostas[p.id] ? 'feita' : ''} ${n === i ? 'atual' : ''}`}
+              className={`mapa-item ${respostas[p.id] ? 'feita' : ''} ${n === i ? 'atual' : ''} ${duvidas.includes(p.id) ? 'duvida' : ''}`}
               onClick={() => setI(n)}
-              aria-label={`Ir para questão ${n + 1}`}
+              aria-label={`Ir para questão ${n + 1}${duvidas.includes(p.id) ? ' (com dúvida)' : ''}`}
             >
               {n + 1}
             </button>
@@ -1455,12 +1502,15 @@ function Simulado(props: {
         marcadaRevisar={props.revisar.includes(q.id)}
         onRevisar={() => props.onRevisar(q.id)}
       />
+      <button className={`link marcar-duvida ${duvidas.includes(q.id) ? 'ativa' : ''}`} aria-pressed={duvidas.includes(q.id)} onClick={() => alternarDuvida(q.id)}>
+        {duvidas.includes(q.id) ? '? Com dúvida (toque para tirar)' : '? Marcar dúvida para voltar depois'}
+      </button>
       {respostas[q.id] && q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo' && (
         <button className="link deixar-branco" onClick={() => setRespostas((r) => { const n = { ...r }; delete n[q.id]; return n; })}>
           Deixar em branco (na Cebraspe, errar tira um ponto; branco vale zero)
         </button>
       )}
-      <p className="nota atalhos">Atalhos: tecle a letra para marcar (C ou E no Certo/Errado) e use ← → para trocar de questão.</p>
+      <p className="nota atalhos">Atalhos: tecle a letra para marcar (C ou E no Certo/Errado), ? marca dúvida e ← → trocam de questão.</p>
       <div className="navegacao">
         <button className="btn btn-sec" onClick={() => setI(i - 1)} disabled={i === 0}>
           Anterior
