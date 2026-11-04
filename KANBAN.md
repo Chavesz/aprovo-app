@@ -24,6 +24,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **Auditoria das questões**: `scripts/auditar-questoes.py` (ids e textos duplicados, gabarito sem alternativa, alternativas vazias, restos de PDF); 75 removidas e 46 textos limpos; relatório em `notas/auditoria-qualidade.md`
+- [P1] **Auditoria de desempenho no celular**: OAB e ENEM (1,1 MB comprimidos) também carregam depois da abertura; medições em `notas/auditoria-qualidade.md`
 - [P2] **Mentor: trocar de modelo ao editar o perfil** ("Trocar por um modelo pronto" troca matérias e pesos de uma vez); testado com o modelo INSS
 - [P1] **+66 questões oficiais do TJ CE 2023 (Cebraspe)**, Técnico Judiciário (Judiciária e Técnico-Administrativa), múltipla escolha A–E, gabarito definitivo; novo importador `scripts/importar-cebraspe-questao.py`
 - [P1] **+68 itens oficiais da PRF 2021 (Cebraspe)**: conhecimentos gerais, legislação de trânsito e direito, gabarito definitivo; `scripts/importar-cebraspe-site.sh` para qualquer caderno do site novo
