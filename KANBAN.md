@@ -23,6 +23,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+164 itens oficiais do INSS 2022 (Cebraspe)**, Técnico do Seguro Social: básicos e Seguridade/Previdência, gabarito definitivo e fonte; links pegos no site novo da Cebraspe (`scripts/importar-inss-2022.sh`); página de SEO nova
 - [P2] **Mentor: modelo "Polícia e Bombeiros (FGV)"** em 1 toque, usando as matérias das provas da PM SP e do CBMERJ
 - [P2] **Pesquisa das bancas FCC, Vunesp, IBFC e AOCP** pelo navegador: nenhuma deixa a prova pública (detalhes no card de Consulplan/IDECAN)
 - [P1] **+73 questões oficiais da FGV: CBMERJ Cadete 2022** (Português, Matemática, Física, Química, Biologia, Geografia, História e Sociologia), gabarito definitivo e fonte; importador FGV agora separa questões coladas na mesma linha e limpa rodapés
