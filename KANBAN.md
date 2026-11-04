@@ -23,6 +23,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Landing no celular sem botão duplicado**: o botão fixo "Fazer 5 questões grátis" só aparece depois que o botão do topo sai da tela
 - [P2] **Abertura mais rápida**: o app abre com os bancos menores e o da Cebraspe (5+ MB) entra logo depois, sem travar a primeira tela
 - [P1] **Primeira prova oficial da FGV**: PM SP Cabo 2022, 55 questões de múltipla escolha com gabarito definitivo e fonte (lista de PDFs pega com o navegador, pois o site monta por JavaScript); importador `scripts/importar-fgv.py`; página de SEO nova
 - [P1] **+703 itens oficiais da SEDUC AM 2011 (Cebraspe)**: professores de 18 áreas, pedagogo, merendeiro e apoio; nome do cargo tirado da página oficial; página de SEO nova

@@ -22,7 +22,7 @@ a.sec{display:inline-block;margin-left:14px;color:inherit}.selo{font-size:.9rem;
 .numeros{text-align:center;margin:28px 0}.numeros strong{font-family:Fraunces,Georgia,serif;font-size:2rem;color:var(--acento)}
 .passos{padding-left:1.3rem}.passos li{margin:.5em 0}.lista-provas{opacity:.85}
 details{border-top:1px solid var(--linha);padding:12px 0}summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
-.cta-fixa{display:none}@media (max-width:640px){.cta-fixa{display:block;position:fixed;left:0;right:0;bottom:0;padding:10px 16px;background:var(--papel);border-top:1px solid var(--linha)}.cta-fixa .cta{display:block;text-align:center}main{padding-bottom:96px}}
+.cta-fixa{display:none}.cta-fixa[hidden]{display:none!important}@media (max-width:640px){.cta-fixa{display:block;position:fixed;left:0;right:0;bottom:0;padding:10px 16px;background:var(--papel);border-top:1px solid var(--linha)}.cta-fixa .cta{display:block;text-align:center}main{padding-bottom:96px}}
 .q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;opacity:.75}"""
 
 def pagina(caminho, titulo, desc, corpo):
@@ -74,7 +74,8 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas das bancas (com a fonte em cada questão) e de questões autorais escritas a partir da lei. Nada copiado de material pago.</p></details>
 <details><summary>Funciona no celular?</summary><p>Funciona. Dá para instalar como app pela tela inicial e estudar até sem internet com as questões já baixadas.</p></details>
 <details><summary>Meu concurso não está na lista. Serve para mim?</summary><p>Serve. Cole o edital no Mentor e ele monta o plano com as matérias e pesos do seu concurso. As matérias comuns (Português, RLM, Informática, Direito) caem em quase todos.</p></details>
-{CTA}<div class="cta-fixa"><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></div>"""))
+{CTA}<div class="cta-fixa" hidden><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></div>
+<script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script>"""))
 
 GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),
