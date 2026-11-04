@@ -98,7 +98,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       opcional('/data/educa-ace.json'),
       opcional('/data/educa-site.json'),
       opcional('/data/privado/educa.json'),
-      ...['/data/ace-cuite.json', '/data/comuns.json', '/data/cebraspe.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
+      ...['/data/ace-cuite.json', '/data/comuns.json', '/data/cebraspe.json', '/data/fgv.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])
       .then((partes) => setOficiais(partes.flat()))
       .catch(() => setErro(true));

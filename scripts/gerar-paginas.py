@@ -6,7 +6,7 @@ RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PUB = RAIZ / "public"
 SITE = "https://aprovoapp.netlify.app"
 qs = []
-for f in ["ace-cuite", "comuns", "cebraspe", "educa-ace", "educa-site", "oab", "questoes"]:
+for f in ["ace-cuite", "comuns", "cebraspe", "fgv", "educa-ace", "educa-site", "oab", "questoes"]:
     p = PUB / "data" / f"{f}.json"
     if p.exists():
         qs += json.loads(p.read_text(encoding="utf-8"))
@@ -83,6 +83,7 @@ GRUPOS = [
   ("questoes-mpu-cebraspe", "Questões do MPU 2010 (Cebraspe) com gabarito oficial", lambda q: q["id"].startswith("cebraspe-mpu")),
   ("questoes-fub-cebraspe", "Questões da FUB 2009 (UnB, Cebraspe) com gabarito oficial", lambda q: q["id"].startswith("cebraspe-fub")),
   ("questoes-seduc-am-cebraspe", "Questões da SEDUC AM 2011 (professores, Cebraspe) com gabarito oficial", lambda q: "seduc-am" in q["id"]),
+  ("questoes-pm-sp-fgv", "Questões da PM SP (Cabo 2022, FGV) com gabarito oficial", lambda q: q["id"].startswith("fgv-pmesp")),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),
