@@ -1,6 +1,7 @@
 // /api/progresso: guarda e devolve o progresso (histórico, marcadas, editais...) de cada conta.
 import { getStore } from '@netlify/blobs';
 import { json, usuarioDaRequisicao } from '../lib/contas';
+import { espelharProgresso } from '../lib/supa';
 
 const LIMITE = 4_000_000; // ~4 MB por conta
 
@@ -59,7 +60,7 @@ async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prov
   });
 }
 
-export default async (req: Request) => {
+export default async (req: Request, context: { waitUntil?: (p: Promise<unknown>) => void }) => {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return json({ erro: 'Sessão expirada. Entre de novo.' }, 401);
   const store = getStore({ name: 'progresso', consistency: 'strong' });
@@ -78,6 +79,11 @@ export default async (req: Request) => {
     await store.set(usuario, texto);
     const dados = JSON.parse(texto);
     await atualizarRanking(usuario, dados['cq:historico'] ?? [], dados['cq:provas'] ?? []);
+    // Espelha no Supabase depois de responder (o Blobs já guardou; se o Supabase falhar, nada se perde).
+    const conta = (await getStore({ name: 'usuarios', consistency: 'strong' }).get(usuario, { type: 'json' })) as { nome?: string } | null;
+    const espelho = espelharProgresso(usuario, conta?.nome ?? '', dados);
+    if (context?.waitUntil) context.waitUntil(espelho);
+    else await espelho;
     return json({ ok: true, salvoEm: Date.now() });
   }
   return json({ erro: 'Método não permitido.' }, 405);

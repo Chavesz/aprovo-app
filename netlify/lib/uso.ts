@@ -1,5 +1,6 @@
 // Limite diário de uso da IA por conta (compartilhado entre /api/mentor e /api/ia).
 import { getStore } from '@netlify/blobs';
+import { espelharUso } from './supa';
 
 export const LIMITES = { gratis: 15, pro: 300 } as const;
 export type Plano = keyof typeof LIMITES;
@@ -23,4 +24,5 @@ export async function situacao(usuario: string) {
 /** Conta uma chamada à IA (pedidos maiores, como gerar questões, podem valer mais de 1). */
 export async function registrarUso(usuario: string, usadas: number, peso = 1) {
   await uso().set(`${usuario}:${diaBR()}`, String(usadas + peso));
+  await espelharUso(usuario, diaBR(), usadas + peso);
 }
