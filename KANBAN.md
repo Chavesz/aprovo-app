@@ -23,6 +23,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **Landing /aprovo mais vendedora**: número real de questões no topo (9.592), "Como funciona" em 3 passos, lista das provas oficiais no banco, perguntas frequentes e botão fixo no celular; print em `notas/depois-landing-celular.jpg`
 - [P1] **Plano do dia na home**: faixa no topo do Praticar com o primeiro bloco do plano ("Hoje: 45 min de Direito Administrativo · Treinar agora") ou o convite para montar o plano
 - [P1] **Mentor em 1 toque**: 5 modelos prontos (ACS, ACE, Técnico Cebraspe, Prefeitura nível médio, Enfermagem) geram o plano na hora, sem gastar a IA nem colar o edital
 - [P2] **Filtro de matéria agrupado por área** (Básicas, Direito, Saúde, Engenharia e exatas, Educação e comunicação, Tecnologia, Gestão e contas)

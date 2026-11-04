@@ -20,6 +20,9 @@ h1{font-size:clamp(2rem,6vw,3.2rem);margin:.2em 0}a.cta{display:inline-block;bac
 nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}nav a{color:inherit;text-decoration:none;font-weight:500}nav .marca{font-family:Fraunces,Georgia,serif;font-size:1.3rem;font-weight:650;margin-right:auto}nav .entrar{border:1px solid var(--linha);padding:6px 14px;border-radius:999px}
 a.sec{display:inline-block;margin-left:14px;color:inherit}.selo{font-size:.9rem;opacity:.8;margin-top:10px}
 .numeros{text-align:center;margin:28px 0}.numeros strong{font-family:Fraunces,Georgia,serif;font-size:2rem;color:var(--acento)}
+.passos{padding-left:1.3rem}.passos li{margin:.5em 0}.lista-provas{opacity:.85}
+details{border-top:1px solid var(--linha);padding:12px 0}summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.cta-fixa{display:none}@media (max-width:640px){.cta-fixa{display:block;position:fixed;left:0;right:0;bottom:0;padding:10px 16px;background:var(--papel);border-top:1px solid var(--linha)}.cta-fixa .cta{display:block;text-align:center}main{padding-bottom:96px}}
 .q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;opacity:.75}"""
 
 def pagina(caminho, titulo, desc, corpo):
@@ -40,13 +43,19 @@ def amostra(filtro, n=5):
 <p>{html.escape(q['comando'])}</p><ol type="A">{alts}</ol><p class="fonte">Gabarito e comentário no app. Fonte: {html.escape(q['prova'])}</p></div>"""
     return out
 
+NQ = f"{len(qs):,}".replace(",", ".")
+PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)" if q["banca"] == "INEP" else re.sub(r" ·.*| \(.*", "", q["prova"])) for q in qs if q["banca"] in ("Cebraspe", "FGV", "INEP")})
 CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
 paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no concurso",
   "Questões oficiais com fonte, simulado no estilo da banca, plano de estudos com IA, revisão espaçada e radar de concursos abertos.",
   f"""<h1>Estude o que cai. Passe no concurso.</h1>
-<p>O Aprovô monta seu plano de estudos a partir do edital, treina você com questões oficiais da banca e revisa o que você erra até virar acerto.</p>{CTA}
+<p>O Aprovô monta seu plano de estudos a partir do edital, treina você com <strong>{NQ} questões com gabarito</strong> e revisa o que você erra até virar acerto.</p>{CTA}
+<h2>Como funciona</h2><ol class="passos">
+<li><strong>Escolha o seu concurso.</strong> Cole o edital ou comece por um modelo pronto (ACS, ACE, técnico, prefeitura, enfermagem).</li>
+<li><strong>Receba o plano do dia.</strong> O Mentor diz o que estudar hoje, por quanto tempo, e ajusta pelo que você erra.</li>
+<li><strong>Treine e revise.</strong> Questões da banca, simulado da semana com ranking e revisão em 1, 7 e 30 dias.</li></ol>
 <div class="grade numeros"><div><strong>{len(qs)}</strong><br>questões com gabarito</div><div><strong>{len({q['banca'] for q in qs})}</strong><br>bancas</div><div><strong>{len({q['disciplina'] for q in qs})}</strong><br>matérias</div><div><strong>{sum(1 for q in qs if q.get('comentario'))}</strong><br>comentadas</div></div>
 <h2>Por que funciona</h2><div class="grade">
 <div class="caixa"><strong>Mentor com IA</strong><br>Lê o edital, monta o plano da semana e tira dúvidas com base nos seus erros.</div>
@@ -55,10 +64,17 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <div class="caixa"><strong>Revisão espaçada</strong><br>A questão errada volta em 1, 7 e 30 dias. Você não esquece mais.</div>
 <div class="caixa"><strong>Concursos abertos</strong><br>Busca editais nos diários oficiais da sua cidade e do seu estado.</div>
 <div class="caixa"><strong>Funciona no celular</strong><br>Instale como app e estude até sem internet.</div></div>
+<h2>Provas oficiais no banco</h2><p class="lista-provas">{" · ".join(PROVAS)} e outras, sempre com a fonte e o gabarito definitivo.</p>
 <h2>Planos</h2><div class="grade">
 <div class="caixa"><strong>Grátis</strong><br>Questões, simulados, estatísticas e 15 mensagens por dia com o Mentor.</div>
 <div class="caixa"><strong>Pro (em breve)</strong><br>300 mensagens por dia, resumos em PDF ilimitados e plano completo.</div></div>
-<h2>Veja como são as questões</h2>{amostra(lambda q: q.get('comentario'), 3)}{CTA}"""))
+<h2>Veja como são as questões</h2>{amostra(lambda q: q.get('comentario'), 3)}
+<h2>Perguntas frequentes</h2>
+<details><summary>É grátis mesmo?</summary><p>Sim. Questões, simulados, estatísticas, revisão e 15 mensagens por dia com o Mentor não custam nada e não pedem cartão.</p></details>
+<details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas das bancas (com a fonte em cada questão) e de questões autorais escritas a partir da lei. Nada copiado de material pago.</p></details>
+<details><summary>Funciona no celular?</summary><p>Funciona. Dá para instalar como app pela tela inicial e estudar até sem internet com as questões já baixadas.</p></details>
+<details><summary>Meu concurso não está na lista. Serve para mim?</summary><p>Serve. Cole o edital no Mentor e ele monta o plano com as matérias e pesos do seu concurso. As matérias comuns (Português, RLM, Informática, Direito) caem em quase todos.</p></details>
+{CTA}<div class="cta-fixa"><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></div>"""))
 
 GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),
