@@ -10,7 +10,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P2] Polimento visual do Praticar no celular: o cartão da meta ocupa a tela toda e empurra a questão para baixo da dobra (recolher depois de definido)
 - [P2] Filtro de matéria agrupado por área (Saúde, Engenharia, Informática, Direito...), porque com o MPU passaram de 80 matérias
-- [P3] Mais concursos da Cebraspe no mesmo formato (pastas com caderno + `Gab_definitivo`): FUB 2009, SEDUC AM 2011
+- [P3] Mais concursos da Cebraspe no mesmo formato: SEDUC AM 2011 (`scripts/importar-cebraspe-lote.sh`)
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -23,6 +23,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+1.180 itens oficiais da FUB 2009 (Cebraspe)**, 49 cargos, gabarito definitivo e fonte; importador genérico `scripts/importar-cebraspe-lote.sh` (qualquer pasta da Cebraspe) e filtro de texto colado no PDF
 - [P2] **Limpeza dos enunciados**: 684 comandos sem cabeçalho/rodapé de página do caderno (`scripts/limpar-cabecalhos.py`)
 - [P2] **Polimento do ranking no celular**: sozinho no ranking vira um cartão compacto (sem pódio de "1º de 1"), e o desempenho sobe para a primeira tela; prints em `notas/antes|depois-desempenho-celular.jpg`
 - [P1] **+3.294 itens oficiais do MPU 2010 (Cebraspe)**, 54 cadernos (analista e técnico), Certo ou Errado, gabarito definitivo e fonte; `scripts/importar-mpu-2010.sh` + `ajustar-mpu-2010.py`; página de SEO nova

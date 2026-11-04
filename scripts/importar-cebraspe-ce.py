@@ -1,19 +1,19 @@
 # Importa itens Certo/Errado de cadernos OFICIAIS da Cebraspe (texto extraído com pdftotext -enc UTF-8).
 # Uso: python importar-cebraspe-ce.py caderno.txt GABARITO slug "nome da prova" fonte "faixas" ano
 # Só entram itens com comando "julgue" que não dependem de texto, figura, tabela ou quadro; anulados (X) ficam de fora.
-import json, re, sys, pathlib
+import json, re, sys, pathlib, os
 txt, GAB, SLUG, PROVA, FONTE, FAIX, ANO = sys.argv[1:8]
 FAIXAS = [(int(a), b) for a, b in (x.split(":", 1) for x in FAIX.split(","))]
 DEP = re.compile(r"\btexto|figura|tabela|quadro|acima|abaixo|gráfico|janela|ilustra|fragmento|trecho|linhas? \d|\(?L\.\s?\d", re.I)
 linhas = [l.strip() for l in open(txt, encoding="utf8").read().replace("\f", "\n").split("\n")]
-itens, comando, ultimo, ctx, atual = {}, None, 0, [], None
+itens, comando, ultimo, ctx, atual = {}, None, int(os.environ.get('INICIO', '1')) - 1, [], None
 dentro_texto = False
 def ctx_texto():
     # Dentro de um texto longo (linhas numeradas 1, 4, 7...) o número da linha não é item.
     return dentro_texto
 def fecha():
     global atual
-    if atual and comando and not DEP.search(atual[1]) and re.match(r'^[A-ZÀ-Ú“"]', atual[1]) and atual[1].rstrip().endswith(('.', '?', ')')):
+    if atual and comando and not DEP.search(atual[1]) and re.match(r'^[A-ZÀ-Ú“"]', atual[1]) and atual[1].rstrip().endswith(('.', '?', ')')) and max(map(len, atual[1].split())) <= 24:
         itens[atual[0]] = (comando, atual[1])
     atual = None
 for l in linhas:
