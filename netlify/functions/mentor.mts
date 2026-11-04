@@ -1,30 +1,11 @@
 // /api/mentor: o "mentor com IA" do Aprovô. Conversa, resumo por assunto e leitura do edital (texto, link ou PDF).
 // Usa a ANTHROPIC_API_KEY da Netlify e conta as mensagens do dia por conta (plano grátis x pago).
 import Anthropic from '@anthropic-ai/sdk';
-import { getStore } from '@netlify/blobs';
 import { json, usuarioDaRequisicao } from '../lib/contas';
+import { registrarUso, situacao } from '../lib/uso';
 
 // Modelo mais barato que dá conta de explicar questão e montar resumo.
 const MODELO = 'claude-haiku-5-5';
-const LIMITES = { gratis: 15, pro: 300 } as const;
-type Plano = keyof typeof LIMITES;
-// Contas com o plano pago liberado à mão enquanto não existe cobrança.
-const PRO = new Set(['chavin', 'kaua', 'kaua.chaves']);
-
-const diaBR = () => new Date(Date.now() - 3 * 3600_000).toISOString().slice(0, 10);
-const uso = () => getStore({ name: 'uso-ia', consistency: 'strong' });
-
-async function planoDe(usuario: string): Promise<Plano> {
-  const p = (await getStore({ name: 'planos', consistency: 'strong' }).get(usuario, { type: 'json' })) as { plano?: Plano } | null;
-  return p?.plano ?? (PRO.has(usuario) ? 'pro' : 'gratis');
-}
-
-async function situacao(usuario: string) {
-  const plano = await planoDe(usuario);
-  const usadas = Number((await uso().get(`${usuario}:${diaBR()}`)) ?? 0);
-  return { plano, usadas, limite: LIMITES[plano] };
-}
-
 const SISTEMA = `Você é o Mentor do Aprovô, um professor e coach de concursos públicos brasileiros.
 Escreva em português do Brasil, direto e motivador, com frases curtas. Use listas e negrito quando ajudar.
 Baseie-se na legislação e doutrina vigentes e cite artigo e número da lei quando houver.
@@ -67,9 +48,14 @@ type Pedido =
 
 /** Conteúdo do edital para a IA: texto colado, página/PDF de um link, ou PDF enviado (base64). */
 async function conteudoEdital(p: Extract<Pedido, { acao: 'edital' }>): Promise<Anthropic.ContentBlockParam[]> {
+  if (p.pdf && p.pdf.length > 34_000_000) throw new Error('O PDF do edital é grande demais.');
   if (p.pdf) return [{ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: p.pdf } }];
   if (p.url) {
-    const r = await fetch(p.url, { redirect: 'follow' });
+    const u = new URL(p.url);
+    // Só links públicos http(s): bloqueia endereços internos (proteção contra SSRF).
+    if (!/^https?:$/.test(u.protocol) || /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.|\[)/i.test(u.hostname) || !u.hostname.includes('.'))
+      throw new Error('Use um link público (https://...) do edital.');
+    const r = await fetch(u, { redirect: 'follow', signal: AbortSignal.timeout(20000) });
     if (!r.ok) throw new Error(`O link do edital não abriu (${r.status}).`);
     if (r.headers.get('content-type')?.includes('pdf') || /\.pdf($|\?)/i.test(p.url)) {
       const b = Buffer.from(await r.arrayBuffer());
@@ -155,7 +141,7 @@ Se houver vários cargos, use o de nível médio de saúde ou o primeiro listado
     }
 
     if (resposta.stop_reason === 'refusal') return json({ erro: 'O Mentor não pode responder isso. Reformule.' }, 422);
-    await uso().set(`${usuario}:${diaBR()}`, String(s.usadas + 1));
+    await registrarUso(usuario, s.usadas);
     const texto = resposta.content.find((b): b is Anthropic.TextBlock => b.type === 'text')?.text ?? '';
     const restante = { usadas: s.usadas + 1, limite: s.limite, plano: s.plano };
     return json(p.acao === 'edital' ? { edital: JSON.parse(texto), ...restante } : { texto, ...restante });

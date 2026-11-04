@@ -14,7 +14,7 @@ interface Usuario {
 }
 
 export const json = (corpo: unknown, status = 200) =>
-  new Response(JSON.stringify(corpo), { status, headers: { 'content-type': 'application/json' } });
+  new Response(JSON.stringify(corpo), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 
 /** Usuário como chave: sem acento, minúsculo, espaços viram ponto ("Kauã Chaves" → "kaua.chaves"). */
 export const normalizar = (u: string) =>
@@ -39,7 +39,8 @@ async function novaSessao(usuario: string) {
 export async function criarConta(usuario: string, nome: string, senha: string) {
   const u = normalizar(usuario);
   if (u.length < 2 || u.length > 40) throw new Error('Escolha um usuário com 2 a 40 caracteres.');
-  if (!(senha ?? '').length) throw new Error('Digite uma senha.');
+  if ((senha ?? '').length < 6) throw new Error('Use uma senha com pelo menos 6 caracteres.');
+  if (senha.length > 200) throw new Error('Senha longa demais.');
   if (await usuarios().get(u)) throw new Error('Esse usuário já existe. Escolha outro ou entre.');
   const sal = randomBytes(16).toString('hex');
   const dados: Usuario = { usuario: u, nome: (nome ?? '').trim().slice(0, 60) || u, sal, hash: hashSenha(senha, sal), criadoEm: Date.now() };
@@ -47,13 +48,23 @@ export async function criarConta(usuario: string, nome: string, senha: string) {
   return { token: await novaSessao(u), usuario: u, nome: dados.nome };
 }
 
+const tentativas = () => getStore({ name: 'tentativas', consistency: 'strong' });
+
 export async function entrar(usuario: string, senha: string) {
   const u = normalizar(usuario);
+  // Contra força bruta: 8 senhas erradas seguidas bloqueiam a conta por 15 minutos.
+  const t = ((await tentativas().get(u, { type: 'json' })) as { n: number; ate: number } | null) ?? { n: 0, ate: 0 };
+  if (t.ate > Date.now()) throw new Error('Muitas tentativas. Espere 15 minutos e tente de novo.');
   const dados = (await usuarios().get(u, { type: 'json' })) as Usuario | null;
   const ok =
     dados &&
     timingSafeEqual(Buffer.from(hashSenha(senha ?? '', dados.sal), 'hex'), Buffer.from(dados.hash, 'hex'));
-  if (!dados || !ok) throw new Error('Usuário ou senha incorretos.');
+  if (!dados || !ok) {
+    const n = t.n + 1;
+    await tentativas().setJSON(u, { n: n >= 8 ? 0 : n, ate: n >= 8 ? Date.now() + 15 * 60_000 : 0 });
+    throw new Error('Usuário ou senha incorretos.');
+  }
+  if (t.n) await tentativas().delete(u);
   return { token: await novaSessao(u), usuario: u, nome: dados.nome };
 }
 
@@ -65,6 +76,11 @@ export async function sair(token: string) {
 export async function usuarioDaRequisicao(req: Request) {
   const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
   if (!/^[a-f0-9]{64}$/.test(token)) return null;
-  const s = (await sessoes().get(token, { type: 'json' })) as { usuario: string } | null;
+  const s = (await sessoes().get(token, { type: 'json' })) as { usuario: string; criadoEm: number } | null;
+  // Sessões valem 90 dias.
+  if (s && Date.now() - (s.criadoEm ?? 0) > 90 * 86400_000) {
+    await sessoes().delete(token);
+    return null;
+  }
   return s?.usuario ?? null;
 }

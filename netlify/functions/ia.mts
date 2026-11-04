@@ -1,8 +1,11 @@
 // Netlify Function: organiza editais e gera questões com o Claude.
 // Requer a variável de ambiente ANTHROPIC_API_KEY no painel da Netlify.
 import Anthropic from '@anthropic-ai/sdk';
+import { usuarioDaRequisicao } from '../lib/contas';
+import { registrarUso, situacao } from '../lib/uso';
 
-const MODELO = 'claude-opus-5-5';
+// Modelo barato: gerar questão e organizar edital não precisam do maior modelo.
+const MODELO = 'claude-haiku-5-5';
 const LIMITE_TEXTO = 60000;
 
 const SCHEMA_EDITAL = {
@@ -119,6 +122,10 @@ Regras:
 
 export default async (req: Request) => {
   if (req.method !== 'POST') return json({ erro: 'Use POST.' }, 405);
+  const usuario = await usuarioDaRequisicao(req);
+  if (!usuario) return json({ erro: 'Sessão expirada. Entre de novo.' }, 401);
+  const uso = await situacao(usuario);
+  if (uso.usadas >= uso.limite) return json({ erro: `Você usou as ${uso.limite} chamadas de IA de hoje. Amanhã libera de novo.` }, 429);
   if (!process.env.ANTHROPIC_API_KEY) {
     return json({ erro: 'A IA ainda não foi configurada: falta a variável ANTHROPIC_API_KEY na Netlify.' }, 501);
   }
@@ -136,18 +143,16 @@ export default async (req: Request) => {
   const client = new Anthropic();
 
   try {
-    const resposta = await client.beta.messages.create({
+    const resposta = await client.messages.create({
       model: MODELO,
       max_tokens: 16000,
-      betas: ['server-side-fallback-2026-07-01'],
-      // Se o modelo recusar, a API refaz o pedido num modelo alternativo.
-      fallbacks: 'default',
       system: SISTEMA,
-      output_config: { effort: 'medium', format: { type: 'json_schema', schema } },
+      output_config: { format: { type: 'json_schema', schema } },
       messages: [{ role: 'user', content: prompt }],
     } as never);
 
     const msg = resposta as unknown as Anthropic.Message;
+    await registrarUso(usuario, uso.usadas, 2);
     if (msg.stop_reason === 'refusal') return json({ erro: 'A IA recusou esse pedido. Reformule o texto.' }, 422);
     if (msg.stop_reason === 'max_tokens') return json({ erro: 'Resposta longa demais. Peça menos questões.' }, 422);
     const texto = msg.content.find((b): b is Anthropic.TextBlock => b.type === 'text')?.text ?? '';

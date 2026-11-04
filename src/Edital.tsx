@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Edital as TEdital, Filtros, Questao } from './types';
 import { usePersist } from './store';
+import { contaSalva } from './nuvem';
 import { EDITAL_CUITE } from './editalCuite';
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 async function chamarIA<T>(corpo: object): Promise<T> {
   const r = await fetch('/api/ia', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${contaSalva()?.token ?? ''}` },
     body: JSON.stringify(corpo),
   });
   const dados = await r.json().catch(() => ({}));

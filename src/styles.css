@@ -767,3 +767,14 @@ textarea {
 .flash-botoes { display: flex; gap: 10px; }
 .flash-filtro { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; background: inherit; color: inherit; font: inherit; }
 .comunidade { margin: 10px 0 0; font-size: .95rem; color: var(--tinta-2); } .comunidade strong { color: var(--acento); }
+
+/* Polimento: alvos de toque de 44px no celular e foco visível nos componentes novos */
+@media (pointer: coarse) {
+  .btn, .chip, .sub-abas .btn, .teste-alt, .flash-botoes .btn { min-height: 44px; }
+  .link { min-height: 44px; display: inline-flex; align-items: center; }
+}
+.teste-alt:focus-visible, .flash:focus-visible, .radar-form select:focus-visible, .radar-form input:focus-visible, .comentarios textarea:focus-visible {
+  outline: 2px solid var(--acento); outline-offset: 2px;
+}
+
+.cartao a { color: var(--acento); }

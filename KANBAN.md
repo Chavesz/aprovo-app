@@ -8,6 +8,8 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+- [P1] Ligar o Supabase: criar projeto grátis só do Aprovô, rodar `supabase/migrations`, conferir Advisors e trocar as funções para Supabase com fallback para o Blobs (**Kauã cria o projeto**; esta sessão não tem acesso ao Supabase)
+- [P2] Estatística da comunidade: contar no máximo 1 resposta por aluno por questão (hoje dá para inflar)
 - [P2] Filtro "questões difíceis" (menos de 40% de acerto da comunidade)
 - [P2] Ranking semanal do simulado da semana (só quem fez a prova da semana)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
@@ -21,6 +23,9 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **Auditoria de segurança**: /api/ia agora exige login e tem limite diário (antes era aberto e usava o modelo caro: risco de gastar a chave), IA trocada para Haiku, proteção contra SSRF no link do edital, senha mínima de 6, bloqueio após 8 senhas erradas, sessão expira em 90 dias, respostas da API sem cache e cabeçalhos de segurança (CSP, HSTS, X-Frame-Options) no netlify.toml
+- [P1] **Supabase preparado**: migration com 8 tabelas (perfis, respostas, simulados, plano do mentor, uso da IA, assinaturas, radar, comentários) e RLS em todas, `.env.example` e `supabase/README.md`
+- [P2] **Polimento de acessibilidade**: alvos de toque de 44px no celular e foco visível nos componentes novos
 - [P1] **% de acerto da comunidade** em cada questão (/api/estatisticas), mostrado após responder
 - [P2] **Caderno de erros em PDF** na aba Revisar (questões erradas da última vez, com gabarito, comentário e macete)
 - [P2] **Flashcards de lei seca** (24 cartões: CF, 8.080, 8.142, 11.350, improbidade, licitações, LGPD) com caixas de Leitner 1-3-7-15-30 dias, sincronizados na conta

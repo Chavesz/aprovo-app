@@ -5,3 +5,4 @@ dist
 # Provas sem licença aberta, importadas só para uso pessoal
 public/data/privado/
 __pycache__/
+.env
