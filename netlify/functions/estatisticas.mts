@@ -7,6 +7,17 @@ const store = () => getStore({ name: 'estatisticas', consistency: 'strong' });
 export default async (req: Request) => {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return json({ erro: 'Sessão expirada.' }, 401);
+  if (req.method === 'GET' && new URL(req.url).searchParams.has('dificeis')) {
+    // Questões com menos de 40% de acerto e pelo menos 5 respostas.
+    const { blobs } = await store().list();
+    const ids: string[] = [];
+    for (const b of blobs) {
+      if (b.key.startsWith('ja/')) continue;
+      const v = (await store().get(b.key, { type: 'json' })) as { a: number; t: number } | null;
+      if (v && v.t >= 5 && v.a / v.t < 0.4) ids.push(b.key);
+    }
+    return new Response(JSON.stringify(ids), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' } });
+  }
   if (req.method === 'GET') {
     const id = new URL(req.url).searchParams.get('id') ?? '';
     return json(((await store().get(id, { type: 'json' })) as { a: number; t: number } | null) ?? { a: 0, t: 0 });

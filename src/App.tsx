@@ -88,6 +88,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [cargo, setCargo] = usePersist<Cargo | ''>('cq:cargo', /^kaua/.test(conta.usuario) ? 'ACE' : '');
 
   useEffect(() => {
+    carregarDificeis();
     // Os arquivos de privado/ só existem na máquina de quem importou as provas (ficam fora do Git).
     const opcional = (u: string) =>
       fetch(u)
@@ -498,6 +499,13 @@ function ordemInteligente(lista: Questao[], historico: Resposta[]) {
 
 /** Revisão espaçada: questão errada volta 1, 7 e 30 dias depois; cada acerto na revisão empurra para o próximo intervalo. */
 const INTERVALOS = [1, 7, 30];
+/** Questões que menos de 40% da comunidade acerta (carregado uma vez por sessão). */
+const DIFICEIS = new Set<string>();
+const carregarDificeis = () =>
+  fetch('/api/estatisticas?dificeis=1', { headers: { authorization: `Bearer ${contaSalva()?.token ?? ''}` } })
+    .then((r) => (r.ok ? r.json() : []))
+    .then((ids: string[]) => ids.forEach((i) => DIFICEIS.add(i)))
+    .catch(() => {});
 export function revisaoDoDia(historico: Resposta[], agora = Date.now()) {
   const por = new Map<string, Resposta[]>();
   historico.forEach((h) => por.set(h.id, [...(por.get(h.id) ?? []), h]));
@@ -530,6 +538,7 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
         (f.status === 'revisar' && revisar.includes(q.id)) ||
         (f.status === 'bloco' && bloco.includes(q.id)) ||
         (f.status === 'hoje' && devidas!.has(q.id)) ||
+        (f.status === 'dificeis' && DIFICEIS.has(q.id)) ||
         (f.status === 'inteligente' && (!bloco.length || bloco.includes(q.id))))
   );
   if (f.status === 'inteligente') return ordemInteligente(lista, historico);
@@ -602,6 +611,7 @@ function Praticar(props: {
                 ['bloco', 'Meu bloco'],
                 ['inteligente', 'Treino inteligente'],
                 ['hoje', 'Revisão do dia'],
+                ['dificeis', 'Mais difíceis'],
               ] as const
             ).map(([v, r]) => (
               <label key={v} className="chip">

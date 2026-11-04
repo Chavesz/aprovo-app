@@ -9,7 +9,6 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 
 ## A fazer
 - [P1] Ligar o Supabase: criar projeto grátis só do Aprovô, rodar `supabase/migrations`, conferir Advisors e trocar as funções para Supabase com fallback para o Blobs (**Kauã cria o projeto**; esta sessão não tem acesso ao Supabase)
-- [P2] Filtro "questões difíceis" (menos de 40% de acerto da comunidade)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
 - [P3] Lembrete diário por notificação push (precisa de chaves VAPID e de um agendador)
@@ -21,6 +20,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Filtro "Mais difíceis"** no Praticar (menos de 40% de acerto da comunidade, 5+ respostas)
 - [P2] **Ranking do simulado da semana**: aba nova no ranking, zera no domingo
 - [P2] **Estatística justa**: só a primeira resposta de cada aluno conta no % da comunidade
 - [P1] **Auditoria de segurança**: /api/ia agora exige login e tem limite diário (antes era aberto e usava o modelo caro: risco de gastar a chave), IA trocada para Haiku, proteção contra SSRF no link do edital, senha mínima de 6, bloqueio após 8 senhas erradas, sessão expira em 90 dias, respostas da API sem cache e cabeçalhos de segurança (CSP, HSTS, X-Frame-Options) no netlify.toml
