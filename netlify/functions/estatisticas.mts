@@ -5,13 +5,18 @@ import { json, usuarioDaRequisicao } from '../lib/contas';
 const store = () => getStore({ name: 'estatisticas', consistency: 'strong' });
 
 export default async (req: Request) => {
-  if (!(await usuarioDaRequisicao(req))) return json({ erro: 'Sessão expirada.' }, 401);
+  const usuario = await usuarioDaRequisicao(req);
+  if (!usuario) return json({ erro: 'Sessão expirada.' }, 401);
   if (req.method === 'GET') {
     const id = new URL(req.url).searchParams.get('id') ?? '';
     return json(((await store().get(id, { type: 'json' })) as { a: number; t: number } | null) ?? { a: 0, t: 0 });
   }
   const { id, certa } = (await req.json().catch(() => ({}))) as { id?: string; certa?: boolean };
-  if (!id) return json({ erro: 'Sem questão.' }, 400);
+  if (!id || id.length > 120) return json({ erro: 'Sem questão.' }, 400);
+  // Só a primeira resposta de cada aluno conta, para ninguém inflar a estatística.
+  const marca = `ja/${id}/${usuario}`;
+  if (await store().get(marca)) return json({ ok: true });
+  await store().set(marca, '1');
   const s = ((await store().get(id, { type: 'json' })) as { a: number; t: number } | null) ?? { a: 0, t: 0 };
   const novo = { a: s.a + (certa ? 1 : 0), t: s.t + 1 };
   await store().setJSON(id, novo);
