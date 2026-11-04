@@ -838,3 +838,7 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .pt-cab small { display: block; font-weight: 500; font-size: 0.72rem; color: var(--tinta-2); }
 .pt-cab .atual { color: var(--acento); }
 .pt-pro { font-weight: 600; color: var(--acento); }
+
+.nota-q-abrir { margin-top: 12px; display: inline-block; }
+.nota-q { display: grid; gap: 6px; margin-top: 14px; }
+.nota-q textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--grifo); color: var(--tinta); font: inherit; resize: vertical; }

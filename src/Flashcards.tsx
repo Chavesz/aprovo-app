@@ -1,3 +1,4 @@
+import type { Questao, Resposta } from './types';
 // Flashcards de lei seca com revisão espaçada (Leitner simples: acertou sobe de caixa, errou volta para a 1).
 import { useMemo, useState } from 'react';
 import { usePersist } from './store';
@@ -31,13 +32,35 @@ const CARDS: Card[] = [
 ];
 const DIAS = [0, 1, 3, 7, 15, 30];
 
-export default function Flashcards() {
+const ERROS = 'Meus erros';
+const limpar = (t: string) => t.replace(/<[^>]+>/g, '').replace(/\*\*Item:\*\*/g, '').replace(/\s+/g, ' ').trim();
+
+/** Cartões feitos das questões que você errou por último (frente: o comando; verso: o gabarito e o comentário). */
+function cartoesDosErros(questoes: Questao[] = [], historico: Resposta[] = []): Card[] {
+  const ultima = new Map<string, boolean>();
+  for (const h of historico) ultima.set(h.id, h.certa);
+  const porId = new Map(questoes.map((q) => [q.id, q]));
+  const out: Card[] = [];
+  ultima.forEach((certa, id) => {
+    const q = porId.get(id);
+    if (certa || !q) return;
+    const cmd = limpar(q.comando);
+    const alt = q.alternativas.find((a) => a.letra === q.gabarito);
+    const certo = alt && alt.texto !== q.gabarito ? `${q.gabarito}) ${limpar(alt.texto)}` : q.gabarito === 'C' ? 'Certo' : q.gabarito === 'E' ? 'Errado' : q.gabarito;
+    out.push({ lei: ERROS, frente: cmd.length > 320 ? '…' + cmd.slice(-320) : cmd, verso: `Gabarito: ${certo}. ${limpar(q.comentario ?? '').slice(0, 260)}` });
+  });
+  return out.slice(-200);
+}
+
+export default function Flashcards({ questoes, historico }: { questoes?: Questao[]; historico?: Resposta[] } = {}) {
+  const erros = useMemo(() => cartoesDosErros(questoes, historico), [questoes, historico]);
+  const TODOS = useMemo(() => [...erros, ...CARDS], [erros]);
   const [estado, setEstado] = usePersist<Record<string, { caixa: number; quando: number }>>('cq:flash', {});
   const [virado, setVirado] = useState(false);
   const [lei, setLei] = useState('');
   const devidos = useMemo(
-    () => CARDS.filter((c) => (!lei || c.lei === lei) && (estado[c.frente]?.quando ?? 0) <= Date.now()),
-    [estado, lei],
+    () => TODOS.filter((c) => (!lei || c.lei === lei) && (estado[c.frente]?.quando ?? 0) <= Date.now()),
+    [estado, lei, TODOS],
   );
   const c = devidos[0];
   const responder = (acertou: boolean) => {
@@ -45,14 +68,14 @@ export default function Flashcards() {
     setEstado({ ...estado, [c.frente]: { caixa, quando: Date.now() + DIAS[caixa] * 86400000 } });
     setVirado(false);
   };
-  const leis = [...new Set(CARDS.map((x) => x.lei))];
+  const leis = [...new Set(TODOS.map((x) => x.lei))];
   return (
     <section className="cartao">
-      <h2>Flashcards de lei seca</h2>
+      <h2>Flashcards</h2>
       <p className="mudo">Leia a frente, tente lembrar e vire. O que você erra volta amanhã; o que acerta volta em 3, 7, 15 e 30 dias.</p>
       <select value={lei} onChange={(e) => setLei(e.target.value)} className="flash-filtro">
-        <option value="">Todas as leis ({CARDS.length})</option>
-        {leis.map((l) => <option key={l}>{l}</option>)}
+        <option value="">Tudo ({TODOS.length})</option>
+        {leis.map((l) => <option key={l} value={l}>{l === ERROS ? `Meus erros (${erros.length})` : l}</option>)}
       </select>
       {!c ? (
         <p>Tudo revisado por hoje. 🎉 Volte amanhã.</p>

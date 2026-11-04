@@ -1,3 +1,4 @@
+import type { Questao, Resposta } from './types';
 // Aba "Concursos": radar de editais nos diários oficiais (API pública do Querido Diário), páginas das bancas,
 // dica do dia e trilhas de aulas. Só fontes públicas e oficiais; nada de material pago copiado.
 import { useEffect, useState } from 'react';
@@ -264,7 +265,7 @@ function Trilhas({ onPraticar }: { onPraticar: (d: string, a: string) => void })
   );
 }
 
-export default function Descobrir({ onPraticar }: { onPraticar: (d: string, a: string) => void }) {
+export default function Descobrir({ onPraticar, questoes, historico }: { onPraticar: (d: string, a: string) => void; questoes?: Questao[]; historico?: Resposta[] }) {
   const [sub, setSub] = useState<'radar' | 'bancas' | 'trilhas' | 'flash'>('trilhas');
   return (
     <div className="descobrir">
@@ -275,7 +276,7 @@ export default function Descobrir({ onPraticar }: { onPraticar: (d: string, a: s
       </div>
       {sub === 'radar' && <Radar />}
       {sub === 'bancas' && <Bancas />}
-      {sub === 'flash' && <Flashcards />}
+      {sub === 'flash' && <Flashcards questoes={questoes} historico={historico} />}
       {sub === 'trilhas' && <Trilhas onPraticar={onPraticar} />}
     </div>
   );

@@ -20,10 +20,14 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - [P2] **Ligar os e-mails (Kauã)**: código pronto e desligado. Criar conta no Resend, verificar um domínio e definir `RESEND_API_KEY`, `EMAIL_DE` (ex.: `Aprovô <oi@dominio.com.br>`) e `EMAIL_SEGREDO` (qualquer texto longo aleatório, assina o link de descadastro). Boas-vindas sai na criação da conta; lembrete de revisão roda todo dia às 8h (função agendada `lembrete-revisao`)
 - [P3] Mais provas oficiais de outras bancas (FGV, FCC, Vunesp, IBFC). Atenção: vários PDFs da Cebraspe vêm com fonte embaralhada e não dão para extrair texto (ex.: CAIXA NM2 2010). CPCON/UEPB (PB) testada em 03/11/2026: servidor arquivo.cpcon.uepb.edu.br não respondeu, tentar de novo
 
+- [P2] Lista "Meu caderno": ver e buscar todas as anotações por questão num lugar só (hoje elas aparecem na própria questão)
+- [P3] Simulado Cebraspe com botão "deixar em branco" explícito e cronômetro no ritmo da banca (≈ 3 min por item)
+
 ## Fazendo
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026 (7), produto (inspirado na concorrência): **caderno de anotações por questão** ("✎ Anotar nesta questão", salvo na conta), **flashcards dos seus erros** (baralho "Meus erros" montado das questões que você errou por último, com revisão espaçada) e **nota no critério Cebraspe** no simulado de Certo/Errado (certas − erradas, branco vale zero, alerta quando o chute custa caro)
 - Lote 04/11/2026 (6): **alerta semanal por e-mail de concurso novo na cidade do radar** (função agendada `alerta-concursos`, segundas 8h, Querido Diário; cidade/UF do radar passam a sincronizar com a conta; desligado até o Resend), **+29 questões PC PB 2021 Perito/Técnico** (conhecimentos gerais e criminalística). Divisão do cebraspe.json reavaliada: não ajuda a 1ª carga
 - Lote 04/11/2026 (5): `notas/PENDENCIAS-KAUA.md` (tudo que só o Kauã pode fazer: variáveis da Netlify, onde pegar, onde colar e como testar); **+25 itens STJ 2018 Analista** (conhecimentos básicos), **+65 itens STJ 2018 Técnico de Enfermagem** e **+67 questões PC PB 2021 Delegado** (Cebraspe, gabarito definitivo). PF 2021 Escrivão testada: fonte embaralhada, nada aproveitável
 - Lote 04/11/2026 (4): **cobrança do Pro via Mercado Pago pronta e desligada** (`/api/assinar` cria o Checkout Pro com Pix e cartão, sem boleto; `/api/mp-webhook` rebusca o pagamento na API do MP, confere a assinatura se houver segredo, é idempotente e libera o Pro por 30 dias; o plano expira sozinho), **e-mails de ciclo de vida prontos e desligados** (Resend: boas-vindas na criação da conta, lembrete diário de revisão agendado, link de descadastro assinado; e-mail opcional no cadastro) e **+54 questões da PC PB 2021 Escrivão** (Cebraspe)

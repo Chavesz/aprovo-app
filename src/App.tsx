@@ -365,6 +365,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {questoes && aba === 'concursos' && (
           <Descobrir
+            questoes={questoes}
+            historico={historico}
             onPraticar={(disciplina, assunto) => {
               praticarMateria(disciplina, assunto);
               setAba('praticar');
@@ -803,6 +805,7 @@ function QuestaoCard(props: {
           )}
         </div>
       )}
+      {revelar && marcada && <NotaQuestao id={q.id} />}
       {revelar && marcada && <Comunidade id={q.id} />}
       {revelar && marcada && <Comentarios id={q.id} />}
     </article>
@@ -918,6 +921,26 @@ function Foco() {
 }
 
 /** "62% dos alunos acertam esta questão", como nos grandes bancos de questões. */
+/** Caderno: uma anotação sua por questão (fica na conta). Lê e grava direto, para vários cartões abertos não se sobrescreverem. */
+export const lerNotas = (): Record<string, string> => { try { return JSON.parse(localStorage.getItem('cq:notas-q') ?? '{}'); } catch { return {}; } };
+function NotaQuestao({ id }: { id: string }) {
+  const [texto, setTexto] = useState(() => lerNotas()[id] ?? '');
+  const [aberta, setAberta] = useState(() => !!lerNotas()[id]);
+  const salvar = (t: string) => {
+    setTexto(t);
+    const n = lerNotas();
+    if (t.trim()) n[id] = t.slice(0, 2000); else delete n[id];
+    try { localStorage.setItem('cq:notas-q', JSON.stringify(n)); } catch { /* sem armazenamento */ }
+  };
+  if (!aberta) return <button className="link nota-q-abrir" onClick={() => setAberta(true)}>✎ Anotar nesta questão</button>;
+  return (
+    <label className="nota-q">
+      <span className="rotulo">Minha anotação</span>
+      <textarea value={texto} onChange={(e) => salvar(e.target.value)} rows={3} maxLength={2000} placeholder="Ex.: a pegadinha é o prazo de 5 dias, não 10." />
+    </label>
+  );
+}
+
 function Comunidade({ id }: { id: string }) {
   const [s, setS] = useState<{ a: number; t: number } | null>(null);
   useEffect(() => {
@@ -1263,9 +1286,23 @@ function Simulado(props: {
             </p>
           </>
         ) : (
-          <h1 className="titulo">
-            {acertos} de {prova.length} <span className="titulo-sub">({pct(acertos, prova.length)}%)</span>
-          </h1>
+          <>
+            <h1 className="titulo">
+              {acertos} de {prova.length} <span className="titulo-sub">({pct(acertos, prova.length)}%)</span>
+            </h1>
+            {prova.every((q) => q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo') && (() => {
+              // Critério Cebraspe: cada item errado anula um certo; em branco vale zero.
+              const respondidas = prova.filter((q) => respostas[q.id]);
+              const erradas = respondidas.length - acertos;
+              const liquida = acertos - erradas;
+              return (
+                <p className={`aviso-nota ${liquida > prova.length / 2 ? 'ok' : 'nok'}`}>
+                  <strong>Nota no critério Cebraspe: {liquida} de {prova.length}</strong> ({acertos} certas − {erradas} erradas; {prova.length - respondidas.length} em branco).
+                  {erradas > acertos / 2 ? ' Chutar está custando caro: na dúvida, deixe em branco.' : ' Bom controle de risco.'}
+                </p>
+              );
+            })()}
+          </>
         )}
         <p className="lead">
           {Object.keys(respostas).length < prova.length
