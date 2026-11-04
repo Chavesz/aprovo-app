@@ -6,7 +6,7 @@ RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PUB = RAIZ / "public"
 SITE = "https://aprovoapp.netlify.app"
 qs = []
-for f in ["ace-cuite", "comuns", "cebraspe", "fgv", "educa-ace", "educa-site", "oab", "questoes"]:
+for f in ["ace-cuite", "comuns", "estilo", "cebraspe", "fgv", "educa-ace", "educa-site", "oab", "questoes"]:
     p = PUB / "data" / f"{f}.json"
     if p.exists():
         qs += json.loads(p.read_text(encoding="utf-8"))
