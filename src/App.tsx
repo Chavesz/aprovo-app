@@ -1776,6 +1776,30 @@ const DUVIDAS_TRELLO = [
   { assunto: 'Dados de Cuité', disciplina: 'Conhecimentos Gerais', nota: 'cerca de 3 das 5 questões de Gerais caem sobre o município (IBGE).' },
 ];
 
+/** Abre uma página para imprimir/salvar em PDF com as questões que a pessoa errou por último, com gabarito e comentário. */
+function cadernoDeErros(questoes: Questao[], historico: Resposta[]) {
+  const ultima = new Map<string, Resposta>();
+  historico.forEach((h) => ultima.set(h.id, h));
+  const porId = new Map(questoes.map((q) => [q.id, q]));
+  const erradas = [...ultima.values()].filter((r) => !r.certa && porId.has(r.id)).map((r) => ({ q: porId.get(r.id)!, marcada: r.marcada }));
+  erradas.sort((a, b) => a.q.disciplina.localeCompare(b.q.disciplina) || a.q.assunto.localeCompare(b.q.assunto));
+  const esc = (t: string) => t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+  const corpo = erradas
+    .map(({ q, marcada }, i) => `<section><p class="m">${i + 1}. ${esc(q.disciplina)} · ${esc(q.assunto)} · ${esc(q.banca)} ${q.ano}</p>
+${q.enunciado ? `<div>${md(q.enunciado)}</div>` : ''}<p><b>${md(q.comando)}</b></p>
+<ol type="A">${q.alternativas.map((a) => `<li class="${a.letra === q.gabarito ? 'ok' : a.letra === marcada ? 'nok' : ''}">${md(a.texto)}</li>`).join('')}</ol>
+<p>Você marcou <b>${marcada}</b> · Gabarito <b>${q.gabarito}</b></p>${q.comentario ? `<p class="c">${md(q.comentario)}</p>` : ''}${q.macete ? `<p class="c">💡 ${esc(q.macete)}</p>` : ''}</section>`)
+    .join('');
+  const w = window.open('', '_blank');
+  if (!w) return alert('Libere as janelas pop-up para baixar o caderno.');
+  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Caderno de erros · Aprovô</title><style>
+body{font:14px/1.5 system-ui,sans-serif;max-width:720px;margin:24px auto;padding:0 16px;color:#1d1a16}section{border-top:1px solid #ccc;padding:10px 0;break-inside:avoid}
+.m{font-size:12px;color:#666}.ok{color:#1b5e20;font-weight:600}.nok{color:#b71c1c;text-decoration:line-through}.c{background:#f4efe6;padding:8px;border-radius:6px}img{max-width:100%}
+</style></head><body><h1>Caderno de erros</h1><p>${erradas.length} questões que você errou da última vez. Gerado pelo Aprovô em ${new Date().toLocaleDateString('pt-BR')}.</p>${corpo}
+<script>setTimeout(()=>print(),400)</script></body></html>`);
+  w.document.close();
+}
+
 function Revisar(props: {
   questoes: Questao[];
   historico: Resposta[];
@@ -1832,6 +1856,9 @@ function Revisar(props: {
         <>
           <h1 className="titulo">Estudar meus erros</h1>
           <p className="lead">Do assunto que você mais erra para o que menos erra. Leia o resumo, veja uma aula e anote: fica salvo na sua conta.</p>
+          <button className="btn btn-sec" onClick={() => cadernoDeErros(props.questoes, props.historico)}>
+            Baixar caderno de erros (PDF)
+          </button>
           <ul className="lista-fracos">
             {fracos.map((g) => (
               <li key={g.assunto}>

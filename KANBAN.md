@@ -8,8 +8,8 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P1] % de acerto da comunidade em cada questão (como QConcursos/TEC): "62% dos alunos acertam"
-- [P2] Caderno de erros em PDF para imprimir e revisar
+- [P2] Filtro "questões difíceis" (menos de 40% de acerto da comunidade)
+- [P2] Ranking semanal do simulado da semana (só quem fez a prova da semana)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
 - [P3] Lembrete diário por notificação push (precisa de chaves VAPID e de um agendador)
@@ -21,6 +21,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **% de acerto da comunidade** em cada questão (/api/estatisticas), mostrado após responder
+- [P2] **Caderno de erros em PDF** na aba Revisar (questões erradas da última vez, com gabarito, comentário e macete)
 - [P2] **Flashcards de lei seca** (24 cartões: CF, 8.080, 8.142, 11.350, improbidade, licitações, LGPD) com caixas de Leitner 1-3-7-15-30 dias, sincronizados na conta
 - [P2] **Números reais na landing** (4.033 questões, 7 bancas, 34 matérias) e páginas de SEO da OAB e do ENEM
 - [P1] **Plano na agenda do celular**: botão no Mentor baixa um .ics com os blocos da semana e lembrete de 10 min
