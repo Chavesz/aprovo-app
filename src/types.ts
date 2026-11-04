@@ -38,6 +38,8 @@ export interface Resposta {
 /** Resultado de um simulado entregue. */
 export interface ProvaFeita {
   em: number;
+  /** Semana do simulado semanal (mesma prova para todos). */
+  semana?: number;
   /** Questões anuladas (enunciado incompleto) que já valeram ponto nesta prova. */
   anuladas?: string[];
   /** Questões que caíram na prova, na ordem (inclui as deixadas em branco). */

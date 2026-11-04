@@ -30,6 +30,8 @@ export default async (req: Request) => {
         acertosAvulsas: Number(r.acertosAvulsas ?? r.acertos),
         provasEstilo: Number(r.provasEstilo ?? 0),
         melhorNota: Number(r.melhorNota ?? 0),
+        semana: Number(r.semana ?? 0),
+        notaSemana: Number(r.notaSemana ?? 0),
         ultimaNota: Number(r.ultimaNota ?? 0),
       };
     })

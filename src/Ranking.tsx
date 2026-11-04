@@ -15,6 +15,8 @@ interface Linha {
   acertosAvulsas?: number;
   provasEstilo?: number;
   melhorNota?: number;
+  semana?: number;
+  notaSemana?: number;
   ultimaNota?: number;
 }
 
@@ -50,6 +52,15 @@ const CRITERIOS: Criterio[] = [
     valor: (l) => (l.melhorNota ? l.melhorNota : -1),
     destaque: (l) => String(l.melhorNota ?? 0),
     detalhe: (l) => `${l.provasEstilo ?? 0} ${l.provasEstilo === 1 ? 'prova feita' : 'provas feitas'} · última ${l.ultimaNota ?? 0}`,
+  },
+  {
+    id: 'semana',
+    rotulo: 'Simulado da semana',
+    explica: 'Melhor nota no simulado da semana: as mesmas 40 questões para todos. Zera no domingo.',
+    unidade: 'pontos',
+    valor: (l) => (l.notaSemana && l.semana === Math.floor((Date.now() - 3 * 3600_000 + 3 * 86400_000) / (7 * 86400_000)) ? l.notaSemana : -1),
+    destaque: (l) => String(l.notaSemana ?? 0),
+    detalhe: () => 'mesma prova para todos',
   },
   {
     id: 'hoje',

@@ -1046,6 +1046,7 @@ function Simulado(props: {
   const [estiloProva, setEstiloProva] = usePersist('cq:sim-estilo', false);
   const [origem, setOrigem] = usePersist<Origem>('cq:sim-origem', 'misturado');
   const [soEduca, setSoEduca] = usePersist('cq:sim-so-educa', false);
+  const [semanal, setSemanal] = usePersist('cq:sim-semanal', false);
 
   const restante = Math.max(0, Math.round((fim - agora) / 1000));
 
@@ -1071,8 +1072,9 @@ function Simulado(props: {
   };
 
   const corte = useNotaCorte();
-  const iniciarProva = (semanal = false) => {
+  const iniciarProva = (semanal: boolean = false) => {
     setProva(semanal ? montarSimuladoSemana(props.questoes) : montarProvaEstilo(props.questoes, props.historico, origem, soEduca));
+    setSemanal(semanal);
     setEstiloProva(true);
     setRespostas({});
     setI(0);
@@ -1092,6 +1094,7 @@ function Simulado(props: {
     props.onProva({
       em,
       estilo: estiloProva,
+      semana: estiloProva && semanal ? semanaAtual() : undefined,
       acertos: r.acertos,
       total: prova.length,
       respondidas: prova.filter((q) => respostas[q.id]).length,

@@ -13,12 +13,15 @@ interface Resp {
 
 interface Prova {
   em: number;
+  semana?: number;
   estilo: boolean;
   nota: number;
 }
 
 /** Data (AAAA-MM-DD) no horário de Brasília. */
 const diaBR = (t: number) => new Date(t - 3 * 3600_000).toISOString().slice(0, 10);
+
+const semanaAtual = () => Math.floor((Date.now() - 3 * 3600_000 + 3 * 86400_000) / (7 * 86400_000));
 
 /** Guarda o resumo usado no ranking: totais, o dia de hoje e as provas completas (simulados com 30+ questões). */
 async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prova[]) {
@@ -49,6 +52,9 @@ async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prov
     provasEstilo: estilo.length,
     melhorNota: Math.max(0, ...estilo.map((p) => p.nota)),
     ultimaNota: estilo.length ? estilo[estilo.length - 1].nota : 0,
+    // Simulado da semana: melhor nota na semana atual (mesma prova para todos).
+    semana: semanaAtual(),
+    notaSemana: Math.max(0, ...feitas.filter((p) => p.semana === semanaAtual()).map((p) => p.nota)),
     atualizadoEm: Date.now(),
   });
 }
