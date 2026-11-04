@@ -163,6 +163,18 @@ export default function Ranking({ conta }: { conta: Conta }) {
         ))}
       </div>
       <p className="nota ranking-explica">{c.explica}</p>
+      {(() => {
+        const eu = todos.find((l) => l.eu), outros = todos.filter((l) => !l.eu && l.total >= 10);
+        if (!eu || eu.total < 1 || outros.length < 1) return null;
+        const meu = Math.round((eu.acertos / eu.total) * 100);
+        const media = Math.round(outros.reduce((s, l) => s + l.acertos / l.total, 0) / outros.length * 100);
+        return (
+          <p className="ranking-media">
+            Seu acerto <strong className="mono">{meu}%</strong> · média dos alunos <strong className="mono">{media}%</strong>{' '}
+            {meu >= media ? '— acima da média 👏' : `— faltam ${media - meu} pontos`}
+          </p>
+        );
+      })()}
 
       {erro && <p className="nota">Não foi possível carregar o ranking agora.</p>}
       {!linhas && !erro && <p className="nota">Carregando ranking…</p>}

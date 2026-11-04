@@ -1236,6 +1236,16 @@ function Simulado(props: {
           />
           <Segmentado rotulo="Questões" valores={[5, 10, 20, 45]} valor={config.total} onChange={(v) => setConfig({ ...config, total: v })} />
           <Segmentado rotulo="Tempo (min)" valores={[10, 30, 60, 90]} valor={config.minutos} onChange={(v) => setConfig({ ...config, minutos: v })} />
+          {(() => {
+            // Ritmo da Cebraspe: provas de 120 itens Certo/Errado em ~4h, perto de 2 minutos por item.
+            const pool = props.questoes.filter((q) => !config.disciplina || q.disciplina === config.disciplina);
+            const ce = pool.length > 0 && pool.filter((q) => q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo').length / pool.length > 0.8;
+            return ce ? (
+              <button className="chip" onClick={() => setConfig({ ...config, minutos: Math.max(5, config.total * 2) })}>
+                ⏱ Ritmo Cebraspe: {Math.max(5, config.total * 2)} min para {config.total} itens
+              </button>
+            ) : null;
+          })()}
           <button className="btn btn-sec btn-grande" onClick={() => { setEstiloProva(false); iniciar(); }}>
             Começar simulado
           </button>
@@ -1386,6 +1396,11 @@ function Simulado(props: {
         marcadaRevisar={props.revisar.includes(q.id)}
         onRevisar={() => props.onRevisar(q.id)}
       />
+      {respostas[q.id] && q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo' && (
+        <button className="link deixar-branco" onClick={() => setRespostas((r) => { const n = { ...r }; delete n[q.id]; return n; })}>
+          Deixar em branco (na Cebraspe, errar tira um ponto; branco vale zero)
+        </button>
+      )}
       <div className="navegacao">
         <button className="btn btn-sec" onClick={() => setI(i - 1)} disabled={i === 0}>
           Anterior
@@ -1888,6 +1903,36 @@ body{font:14px/1.5 system-ui,sans-serif;max-width:720px;margin:24px auto;padding
   w.document.close();
 }
 
+/** Todas as anotações feitas nas questões, com busca. */
+function MeuCaderno({ porId }: { porId: Map<string, Questao> }) {
+  const [busca, setBusca] = useState('');
+  const [aberto, setAberto] = useState(false);
+  const notas = useMemo(() => Object.entries(lerNotas()).filter(([id]) => porId.has(id)), [porId, aberto]);
+  if (!notas.length) return null;
+  const sa = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const filtradas = notas.filter(([id, n]) => { const q = porId.get(id)!; return !busca || sa(`${n} ${q.disciplina} ${q.assunto} ${q.comando}`).includes(sa(busca)); });
+  return (
+    <details className="caderno" open={aberto} onToggle={(e) => setAberto((e.target as HTMLDetailsElement).open)}>
+      <summary><strong>📒 Meu caderno</strong> <span className="nota">{notas.length} {notas.length === 1 ? 'anotação' : 'anotações'}</span></summary>
+      <input className="caderno-busca" type="search" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nas anotações, matéria ou questão" aria-label="Buscar no caderno" />
+      <ul className="caderno-lista">
+        {filtradas.map(([id, n]) => {
+          const q = porId.get(id)!;
+          const cmd = q.comando.replace(/<[^>]+>|\*\*Item:\*\*/g, '').replace(/\s+/g, ' ').trim();
+          return (
+            <li key={id}>
+              <p className="rotulo">{q.disciplina} · {q.prova}</p>
+              <p className="caderno-nota">{n}</p>
+              <p className="nota">{cmd.length > 180 ? '…' + cmd.slice(-180) : cmd} <strong>Gabarito: {q.gabarito}</strong></p>
+            </li>
+          );
+        })}
+        {!filtradas.length && <li className="nota">Nada encontrado.</li>}
+      </ul>
+    </details>
+  );
+}
+
 function Revisar(props: {
   questoes: Questao[];
   historico: Resposta[];
@@ -1940,6 +1985,7 @@ function Revisar(props: {
   return (
     <section className="coluna estreita">
       <p className="sobretitulo">Revisar</p>
+      <MeuCaderno porId={porId} />
       {fracos.length > 0 && (
         <>
           <h1 className="titulo">Estudar meus erros</h1>

@@ -842,3 +842,13 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .nota-q-abrir { margin-top: 12px; display: inline-block; }
 .nota-q { display: grid; gap: 6px; margin-top: 14px; }
 .nota-q textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--grifo); color: var(--tinta); font: inherit; resize: vertical; }
+
+.caderno { border: 1px solid var(--linha); border-radius: 14px; background: var(--superficie); padding: 6px 16px; margin: 8px 0 24px; }
+.caderno summary { min-height: 48px; display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.caderno-busca { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel); margin: 4px 0 12px; }
+.caderno-lista { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 10px; }
+.caderno-lista li { border-top: 1px solid var(--linha); padding-top: 10px; }
+.caderno-nota { margin: 4px 0; padding: 8px 10px; background: var(--grifo); border-radius: 6px; white-space: pre-wrap; }
+
+.deixar-branco { display: block; margin: 10px 0 0; }
+.ranking-media{margin:.5rem 0 1rem;padding:.6rem .8rem;border-radius:10px;background:var(--grifo)}
