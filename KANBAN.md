@@ -8,8 +8,8 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P2] Mais provas oficiais da Cebraspe pelo site novo (demais cargos da PC PB 2021, do STJ 2018 e da PF 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
-- [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
+- [P2] Mais provas oficiais da Cebraspe pelo site novo (demais cargos do STJ 2018 e da PC PB 2021; PF 2021 Escrivão/Papiloscopista têm fonte embaralhada, não rendem): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
+- [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro. Avaliado em 04/11/2026: ganho pequeno hoje (já carrega depois da abertura, ~700 KB comprimido) e exige mudar todos os importadores; refazer quando passar de ~2 MB
 - [P3] Mais provas da Consulplan (importador pronto: `scripts/importar-consulplan.py`). Verificado em 04/11/2026: dos 296 concursos listados, só o TJ CE 2019 tem caderno + gabarito pós-recurso; os de 2026 (TJMG, Bálsamo, Potirendaba, SAAEB, CRA/PR...) publicaram cadernos mas só gabarito preliminar, tentar de novo quando sair o pós-recurso. caderno e gabarito definitivo são públicos no CDN (`cdnsite.institutoconsulplan.org.br/concursos/...`), links na página de cada concurso (montada por JS, usar o navegador). Ex.: TJ CE Juiz Leigo 2019
 - [P3] Provas de outras bancas. Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
@@ -25,6 +25,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026 (5): `notas/PENDENCIAS-KAUA.md` (tudo que só o Kauã pode fazer: variáveis da Netlify, onde pegar, onde colar e como testar); **+25 itens STJ 2018 Analista** (conhecimentos básicos), **+65 itens STJ 2018 Técnico de Enfermagem** e **+67 questões PC PB 2021 Delegado** (Cebraspe, gabarito definitivo). PF 2021 Escrivão testada: fonte embaralhada, nada aproveitável
 - Lote 04/11/2026 (4): **cobrança do Pro via Mercado Pago pronta e desligada** (`/api/assinar` cria o Checkout Pro com Pix e cartão, sem boleto; `/api/mp-webhook` rebusca o pagamento na API do MP, confere a assinatura se houver segredo, é idempotente e libera o Pro por 30 dias; o plano expira sozinho), **e-mails de ciclo de vida prontos e desligados** (Resend: boas-vindas na criação da conta, lembrete diário de revisão agendado, link de descadastro assinado; e-mail opcional no cadastro) e **+54 questões da PC PB 2021 Escrivão** (Cebraspe)
 - Lote 04/11/2026 (3), conversão: **primeira visita cai direto na 1ª questão** do teste grátis (sem tela de login; link "Já tenho conta"), **tela de planos Grátis x Pro** no Mentor com tabela comparativa fiel aos limites reais (15/300 mensagens) e botão "Quero o Pro quando abrir" (só registra no aparelho, nada é cobrado), **faixa de prova social** na landing com as provas oficiais reais do banco e a contagem de cada uma
 - Lote 04/11/2026 (2): **+45 questões da PC PB 2021** (Agente de Investigação, Cebraspe, múltipla escolha, gabarito definitivo); selo **"✓ Prova oficial" / "Autoral"** em cada questão e filtro **Origem** no Praticar. Consulplan: nenhuma outra prova com gabarito definitivo publicado
