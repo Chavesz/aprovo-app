@@ -778,3 +778,15 @@ textarea {
 }
 
 .cartao a { color: var(--acento); }
+
+/* Polimento celular: menu de baixo numa linha só (7 abas), rolável se faltar espaço; topo sem botões cortados */
+@media (max-width: 899px) {
+  .abas { display: flex; overflow-x: auto; scrollbar-width: none; gap: 0; }
+  .abas::-webkit-scrollbar { display: none; }
+  .aba { flex: 1 0 64px; min-width: 64px; font-size: 0.6875rem; }
+  .conta-btn { max-width: 72px; padding: 0 8px; }
+}
+@media (max-width: 420px) {
+  .topo .conta-btn { max-width: 80px; padding: 0 8px; font-size: .75rem; flex-shrink: 0; }
+  .topo .marca-nome { font-size: 1.05rem; }
+}

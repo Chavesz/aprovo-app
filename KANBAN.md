@@ -8,6 +8,8 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+- [P2] Ícones próprios para Edital e Mentor (hoje usam o mesmo)
+- [P2] Filtro por "tipo de questão" (múltipla escolha × Certo ou Errado), já que a Cebraspe trouxe 1.000+ itens C/E
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -20,6 +22,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Polimento visual no celular** (menu numa linha, topo sem cortes, sem tag repetida), com prints em `notas/`
 - [P1] **+1.061 itens oficiais da Cebraspe** (SEMAD São Luís 2008, 38 cadernos de saúde, Certo ou Errado) com gabarito definitivo e fonte; importador `scripts/importar-cebraspe-ce.py` + lote `scripts/importar-semad-slz-2008.sh`
 - [P1] **Supabase fase 1**: escrita dupla Blobs → Supabase (perfis/Auth, respostas, simulados, plano do mentor, uso da IA, comentários), service role só nas funções, sem perder dados
 - [P3] **Prova oficial UERN 2010 (Cebraspe)**: +24 questões com gabarito definitivo e fonte; importador aceita gabarito, matérias por faixa e ano

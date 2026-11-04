@@ -697,7 +697,7 @@ function QuestaoCard(props: {
       </header>
       <div className="tags">
         <span className="tag">{q.disciplina}</span>
-        <span className="tag">{q.assunto}</span>
+        {q.assunto !== q.disciplina && <span className="tag">{q.assunto}</span>}
         {q.ia && <span className="tag tag-ia">Gerada por IA</span>}
         {q.idioma && <span className="tag">{q.idioma === 'ingles' ? 'Inglês' : 'Espanhol'}</span>}
         <span className="tag tag-fraca">{q.banca} · {q.orgao}</span>
