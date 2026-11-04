@@ -827,3 +827,14 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 
 .tag-oficial { background: var(--ok-fundo); color: var(--ok); font-weight: 600; }
 .tag-autoral { background: var(--ia-fundo); color: var(--acento); }
+
+/* ---------- Planos Grátis x Pro ---------- */
+.planos-pro { margin: 32px 0; padding: 20px; border: 1px solid var(--linha); border-radius: 14px; background: var(--superficie); }
+.planos-pro h2 { font-size: 1.35rem; margin: 4px 0 16px; }
+.planos-tabela { display: grid; border: 1px solid var(--linha); border-radius: var(--raio); overflow: hidden; margin-bottom: 16px; }
+.pt-linha { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--linha); font-size: 0.9rem; align-items: center; }
+.pt-linha:first-child { border-top: 0; }
+.pt-cab { background: var(--papel-2); font-weight: 700; }
+.pt-cab small { display: block; font-weight: 500; font-size: 0.72rem; color: var(--tinta-2); }
+.pt-cab .atual { color: var(--acento); }
+.pt-pro { font-weight: 600; color: var(--acento); }

@@ -72,14 +72,21 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
-  const [teste, setTeste] = useState<'nao' | 'fazendo' | number>(() => (new URLSearchParams(location.search).has('teste') ? 'fazendo' : 'nao'));
+  const [teste, setTeste] = useState<'nao' | 'fazendo' | number>(() => {
+    // Primeira visita (ou link ?teste): cai direto na 1ª questão, sem tela de login no caminho.
+    let veio = false;
+    try { veio = !!localStorage.getItem('cq:ja-entrou'); } catch { /* sem armazenamento */ }
+    return new URLSearchParams(location.search).has('teste') || !veio ? 'fazendo' : 'nao';
+  });
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
     setEnviando(true);
     try {
-      onEntrar(await autenticar(modo, usuario, senha, nome));
+      const c = await autenticar(modo, usuario, senha, nome);
+      try { localStorage.setItem('cq:ja-entrou', '1'); } catch { /* sem armazenamento */ }
+      onEntrar(c);
     } catch (err) {
       setErro((err as Error).message);
       setEnviando(false);
@@ -95,12 +102,15 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
         <span className="marca-nome">Aprovô</span>
       </div>
       {teste === 'fazendo' ? (
+        <>
+        <p className="nota teste-topo">5 questões grátis, sem cadastro. <button className="link" onClick={() => { setTeste('nao'); setModo('entrar'); }}>Já tenho conta</button></p>
         <TesteRapido
           onFim={(n) => {
             setTeste(n);
             setModo('criar');
           }}
         />
+        </>
       ) : (
         <>
       {typeof teste === 'number' ? (

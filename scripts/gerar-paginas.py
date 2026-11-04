@@ -28,6 +28,7 @@ section{padding:56px 0;border-top:1px solid var(--linha)}.kicker{font-size:.8rem
 .alt{display:flex;gap:10px;align-items:center;border:1.5px solid var(--linha);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.95rem}.alt b{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--raised);font-size:.85rem}
 .alt.ok{border:2px solid var(--ok);background:var(--okbg)}.alt.ok b{background:var(--ok);color:var(--sup)}.alt.nok{border:2px solid var(--nok);background:var(--nokbg)}.alt.nok b{background:var(--nok);color:var(--sup)}.alt small{margin-left:auto;font-weight:700;white-space:nowrap}.alt.ok small{color:var(--ok)}.alt.nok small{color:var(--nok)}
 .mentor-bal{background:var(--ia);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.92rem}.mentor-bal strong{color:var(--marca)}
+.faixa-provas{padding:28px 0}.faixa-provas ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media (min-width:720px){.faixa-provas ul{grid-template-columns:repeat(6,1fr)}}.faixa-provas li{background:var(--sup);border:1px solid var(--linha);border-radius:12px;padding:12px 14px}.faixa-provas li strong{display:block;font-size:1.05rem;font-weight:800;color:var(--marca)}.faixa-provas li span{font-size:.82rem;color:var(--tinta2)}
 .numeros{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}@media (min-width:720px){.numeros{grid-template-columns:repeat(4,1fr)}}.numeros div{background:var(--sup);border:1px solid var(--linha);border-radius:14px;padding:18px}.numeros strong{display:block;font-size:2rem;font-weight:800;color:var(--marca);line-height:1.1}
 .bancas{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.bancas span{border:1px solid var(--linha);background:var(--sup);border-radius:999px;padding:6px 12px;font-size:.88rem;font-weight:600}
 .passos{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));counter-reset:p;list-style:none;padding:0}.passos li{background:var(--sup);border:1px solid var(--linha);border-radius:14px;padding:20px;counter-increment:p}.passos li::before{content:counter(p);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--acao);color:var(--acaot);font-weight:800;margin-bottom:10px}
@@ -63,6 +64,17 @@ PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)"
 CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
+def _orgao(q):
+    pr = q["prova"]
+    if pr.startswith("OAB"): return "OAB"
+    if q["banca"] == "INEP": return "ENEM"
+    return re.split(r" \d{4}| ·| \(", pr)[0].strip()
+_cont = {}
+for q in qs:
+    if q["banca"] in ("Cebraspe", "FGV", "INEP", "Consulplan"):
+        _cont[_orgao(q)] = _cont.get(_orgao(q), 0) + 1
+TOPO = sorted(_cont.items(), key=lambda x: -x[1])[:12]
+FAIXA = "".join(f'<li><strong>{html.escape(o)}</strong><span>{n:,} questões</span></li>'.replace(",", ".") for o, n in TOPO)
 BANCAS = sorted({q["banca"] for q in qs if not re.search(r"aprov|autoral|estilo|elaborad", q["banca"], re.I)})
 NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
 paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no concurso",
@@ -74,6 +86,7 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <p class="cmd">A administração pública pode anular os próprios atos quando eivados de vício de legalidade.</p>
 <div class="alt nok"><b>E</b>Errado<small>✕ Sua resposta</small></div><div class="alt ok"><b>C</b>Certo<small>✓ Correta</small></div>
 <div class="mentor-bal"><strong>Mentor:</strong> é a autotutela (Súmula 473 do STF). Vou trazer essa de volta amanhã.</div></div></div>
+<section class="faixa-provas" aria-label="Provas oficiais no banco"><p class="kicker">Questões de provas reais de</p><ul>{FAIXA}</ul><p class="selo">Cada questão traz a fonte e o gabarito definitivo publicado pela banca.</p></section>
 <section><p class="kicker">Banco de questões</p><h2>Provas reais, com fonte e gabarito definitivo.</h2>
 <div class="numeros"><div><strong>{NQ}</strong>questões com gabarito</div><div><strong>{len(BANCAS)}</strong>bancas</div><div><strong>{len({q['disciplina'] for q in qs})}</strong>matérias</div><div><strong>{NCOM}</strong>com comentário</div></div>
 <div class="bancas">{"".join(f"<span>{html.escape(b)}</span>" for b in BANCAS)}</div>

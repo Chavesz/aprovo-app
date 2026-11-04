@@ -546,19 +546,36 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
   );
 }
 
+const COMPARA: [string, string, string][] = [
+  ['Questões oficiais com gabarito', 'Todas', 'Todas'],
+  ['Simulado da semana e ranking', '✓', '✓'],
+  ['Revisão espaçada (1, 3, 7 e 30 dias)', '✓', '✓'],
+  ['Plano do dia pelo edital', '✓', '✓ revisado toda semana'],
+  ['Mentor IA: conversa, explicação e resumo', '15 por dia', '300 por dia'],
+  ['Resumo do assunto para baixar em PDF', '✓ (conta nas 15)', '✓ (conta nas 300)'],
+];
+
+/** Comparação Grátis x Pro. A assinatura ainda não abriu: o botão só registra o interesse neste aparelho. */
 function Planos({ uso }: { uso: Uso | null }) {
+  const pro = uso?.plano === 'pro';
+  const [quer, setQuer] = useState(() => { try { return !!localStorage.getItem('cq:quer-pro'); } catch { return false; } });
   return (
-    <div className="mentor-planos">
-      <article className={uso?.plano !== 'pro' ? 'atual' : ''}>
-        <p className="rotulo">Grátis</p>
-        <p>Plano de estudos, questões, simulados e <strong>15 mensagens</strong> do Mentor por dia.</p>
-      </article>
-      <article className={uso?.plano === 'pro' ? 'atual' : ''}>
-        <p className="rotulo">Pro · em breve</p>
-        <p>Mentor quase ilimitado (300 por dia), resumos em PDF à vontade e plano revisado toda semana.</p>
-        {uso?.plano !== 'pro' && <p className="nota">A assinatura ainda não está aberta.</p>}
-      </article>
-    </div>
+    <section className="planos-pro" aria-labelledby="planos-titulo">
+      <p className="rotulo">Planos</p>
+      <h2 id="planos-titulo">O Grátis já aprova. O Pro tira o limite do Mentor.</h2>
+      <div className="planos-tabela" role="table" aria-label="Comparação entre os planos Grátis e Pro">
+        <div className="pt-linha pt-cab" role="row"><span role="columnheader">Recurso</span><span role="columnheader" className={!pro ? 'atual' : ''}>Grátis{!pro && <small>seu plano</small>}</span><span role="columnheader" className={pro ? 'atual' : ''}>Pro{pro ? <small>seu plano</small> : <small>em breve</small>}</span></div>
+        {COMPARA.map(([r, g, p]) => (
+          <div className="pt-linha" role="row" key={r}><span role="cell">{r}</span><span role="cell">{g}</span><span role="cell" className="pt-pro">{p}</span></div>
+        ))}
+      </div>
+      {!pro && (
+        quer ? <p className="aviso-nota ok">Anotado! Quando o Pro abrir, você vê o aviso aqui no app primeiro.</p> : (
+          <button className="btn" onClick={() => { try { localStorage.setItem('cq:quer-pro', '1'); } catch { /* sem armazenamento */ } setQuer(true); }}>Quero o Pro quando abrir</button>
+        )
+      )}
+      <p className="nota">O preço será anunciado no lançamento. Nada é cobrado hoje.</p>
+    </section>
   );
 }
 
