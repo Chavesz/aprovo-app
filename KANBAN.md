@@ -10,12 +10,13 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
-- [P3] Questões de mais bancas oficiais públicas (Cebraspe, FGV, FCC), sempre com a fonte
+- [P3] Mais provas oficiais de outras bancas (FGV, FCC e mais Cebraspe), usando o importador `scripts/importar-cebraspe*.py`
 
 ## Fazendo
 - (nenhum)
 
 ## Feito
+- [P3] **Primeira prova oficial da Cebraspe**: CAIXA 2010 nível médio, 27 questões com o gabarito definitivo e a fonte (texto/figura e anuladas ficaram de fora)
 - [P2] **Revisão espaçada**: questão errada volta em 1, 7 e 30 dias (filtro "Revisão do dia" + aviso no Praticar)
 - [P2] **Simulado da semana**: as mesmas 40 questões para todos, com nota de corte estimada pelo ranking
 - [P3] **Comentários dos alunos** em cada questão (/api/comentarios)
