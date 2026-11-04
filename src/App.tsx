@@ -1839,7 +1839,7 @@ ${q.enunciado ? `<div>${md(q.enunciado)}</div>` : ''}<p><b>${md(q.comando)}</b><
   if (!w) return alert('Libere as janelas pop-up para baixar o caderno.');
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Caderno de erros · Aprovô</title><style>
 body{font:14px/1.5 system-ui,sans-serif;max-width:720px;margin:24px auto;padding:0 16px;color:#1d1a16}section{border-top:1px solid #ccc;padding:10px 0;break-inside:avoid}
-.m{font-size:12px;color:#666}.ok{color:#1b5e20;font-weight:600}.nok{color:#b71c1c;text-decoration:line-through}.c{background:#f4efe6;padding:8px;border-radius:6px}img{max-width:100%}
+.m{font-size:12px;color:#666}.ok{color:#1b5e20;font-weight:600}.nok{color:#b71c1c;text-decoration:line-through}.c{background:#f0eff4;padding:8px;border-radius:6px}img{max-width:100%}
 </style></head><body><h1>Caderno de erros</h1><p>${erradas.length} questões que você errou da última vez. Gerado pelo Aprovô em ${new Date().toLocaleDateString('pt-BR')}.</p>${corpo}
 <script>setTimeout(()=>print(),400)</script></body></html>`);
   w.document.close();
@@ -2137,3 +2137,4 @@ const IconDoc = () => <svg {...svg}><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v
 const IconSpark = () => <svg {...svg}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" /></svg>;
 const IconBook = () => <svg {...svg}><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" /></svg>;
 const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;
+
