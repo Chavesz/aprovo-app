@@ -16,7 +16,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
 - [P3] Lembrete diário por notificação push (precisa de chaves VAPID e de um agendador)
-- [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
+- [P1] **Ligar a cobrança do Pro (Kauã)**: o código está pronto e desligado. Na Netlify (Site settings → Environment variables): `MP_ACCESS_TOKEN` (credencial de produção do Mercado Pago), `PRO_PRECO` (ex.: `19.90`), opcionais `PRO_DIAS` (padrão 30) e `MP_WEBHOOK_SECRET` (painel do MP → Webhooks, URL `https://aprovoapp.netlify.app/api/mp-webhook`, evento Pagamentos). Depois do deploy o botão "Assinar o Pro" aparece sozinho no Mentor. Testar antes com a credencial de teste do MP
+- [P2] **Ligar os e-mails (Kauã)**: código pronto e desligado. Criar conta no Resend, verificar um domínio e definir `RESEND_API_KEY`, `EMAIL_DE` (ex.: `Aprovô <oi@dominio.com.br>`) e `EMAIL_SEGREDO` (qualquer texto longo aleatório, assina o link de descadastro). Boas-vindas sai na criação da conta; lembrete de revisão roda todo dia às 8h (função agendada `lembrete-revisao`)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
 - [P3] Mais provas oficiais de outras bancas (FGV, FCC, Vunesp, IBFC). Atenção: vários PDFs da Cebraspe vêm com fonte embaralhada e não dão para extrair texto (ex.: CAIXA NM2 2010). CPCON/UEPB (PB) testada em 03/11/2026: servidor arquivo.cpcon.uepb.edu.br não respondeu, tentar de novo
 
@@ -24,6 +25,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026 (4): **cobrança do Pro via Mercado Pago pronta e desligada** (`/api/assinar` cria o Checkout Pro com Pix e cartão, sem boleto; `/api/mp-webhook` rebusca o pagamento na API do MP, confere a assinatura se houver segredo, é idempotente e libera o Pro por 30 dias; o plano expira sozinho), **e-mails de ciclo de vida prontos e desligados** (Resend: boas-vindas na criação da conta, lembrete diário de revisão agendado, link de descadastro assinado; e-mail opcional no cadastro) e **+54 questões da PC PB 2021 Escrivão** (Cebraspe)
 - Lote 04/11/2026 (3), conversão: **primeira visita cai direto na 1ª questão** do teste grátis (sem tela de login; link "Já tenho conta"), **tela de planos Grátis x Pro** no Mentor com tabela comparativa fiel aos limites reais (15/300 mensagens) e botão "Quero o Pro quando abrir" (só registra no aparelho, nada é cobrado), **faixa de prova social** na landing com as provas oficiais reais do banco e a contagem de cada uma
 - Lote 04/11/2026 (2): **+45 questões da PC PB 2021** (Agente de Investigação, Cebraspe, múltipla escolha, gabarito definitivo); selo **"✓ Prova oficial" / "Autoral"** em cada questão e filtro **Origem** no Praticar. Consulplan: nenhuma outra prova com gabarito definitivo publicado
 - Lote 04/11/2026: **+36 questões da Consulplan** (TJ CE 2019 Juiz Leigo, gabarito pós-recurso, `public/data/consulplan.json`), **+21 itens da PF 2021** (Agente; Informática e Contabilidade com fonte embaralhada no PDF, ficaram fora) e **+25 itens do STJ 2018** (Técnico, conhecimentos básicos). `importar-cebraspe-site.sh` corrigido (caminhos do Windows e gabarito em UTF-8)

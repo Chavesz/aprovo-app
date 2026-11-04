@@ -11,8 +11,10 @@ export const diaBR = () => new Date(Date.now() - 3 * 3600_000).toISOString().sli
 const uso = () => getStore({ name: 'uso-ia', consistency: 'strong' });
 
 export async function planoDe(usuario: string): Promise<Plano> {
-  const p = (await getStore({ name: 'planos', consistency: 'strong' }).get(usuario, { type: 'json' })) as { plano?: Plano } | null;
-  return p?.plano ?? (PRO.has(usuario) ? 'pro' : 'gratis');
+  const p = (await getStore({ name: 'planos', consistency: 'strong' }).get(usuario, { type: 'json' })) as { plano?: Plano; ate?: number } | null;
+  // Pro pago vale até a data "ate" (vinda do webhook do Mercado Pago); sem data, é liberação manual.
+  if (p?.plano === 'pro' && (!p.ate || p.ate > Date.now())) return 'pro';
+  return PRO.has(usuario) ? 'pro' : 'gratis';
 }
 
 export async function situacao(usuario: string) {

@@ -69,6 +69,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   const [modo, setModo] = useState<'entrar' | 'criar'>('entrar');
   const [usuario, setUsuario] = useState('');
   const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
@@ -84,7 +85,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
     setErro('');
     setEnviando(true);
     try {
-      const c = await autenticar(modo, usuario, senha, nome);
+      const c = await autenticar(modo, usuario, senha, nome, modo === 'criar' ? email : '');
       try { localStorage.setItem('cq:ja-entrou', '1'); } catch { /* sem armazenamento */ }
       onEntrar(c);
     } catch (err) {
@@ -142,6 +143,12 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
             placeholder="ex.: Kauã Chaves"
           />
         </label>
+        {modo === 'criar' && (
+          <label className="campo">
+            <span className="rotulo">E-mail (opcional)</span>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" maxLength={200} placeholder="para receber o lembrete de revisão" />
+          </label>
+        )}
         <label className="campo">
           <span className="rotulo">Senha</span>
           <input

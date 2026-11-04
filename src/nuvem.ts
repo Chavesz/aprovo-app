@@ -55,11 +55,11 @@ async function pedir<T>(url: string, init: RequestInit): Promise<T> {
   return dados as T;
 }
 
-export async function autenticar(acao: 'entrar' | 'criar', usuario: string, senha: string, nome = '') {
+export async function autenticar(acao: 'entrar' | 'criar', usuario: string, senha: string, nome = '', email = '') {
   const c = await pedir<Conta>('/api/conta', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ acao, usuario, senha, nome }),
+    body: JSON.stringify({ acao, usuario, senha, nome, email }),
   });
   // Outra pessoa usava este aparelho: não mistura o progresso dela com o da nova conta.
   const dono = ler<string>('cq:dono', '');

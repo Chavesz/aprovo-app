@@ -559,6 +559,20 @@ const COMPARA: [string, string, string][] = [
 function Planos({ uso }: { uso: Uso | null }) {
   const pro = uso?.plano === 'pro';
   const [quer, setQuer] = useState(() => { try { return !!localStorage.getItem('cq:quer-pro'); } catch { return false; } });
+  const [venda, setVenda] = useState<{ disponivel: boolean; preco: number | null; dias: number } | null>(null);
+  const [abrindo, setAbrindo] = useState(false);
+  const [erroPg, setErroPg] = useState('');
+  useEffect(() => { fetch('/api/assinar').then((r) => r.json()).then(setVenda).catch(() => setVenda(null)); }, []);
+  async function assinar() {
+    setAbrindo(true); setErroPg('');
+    try {
+      const r = await fetch('/api/assinar', { method: 'POST', headers: { authorization: `Bearer ${contaSalva()?.token ?? ''}` } });
+      const j = (await r.json()) as { url?: string; erro?: string };
+      if (j.url) { location.href = j.url; return; }
+      setErroPg(j.erro ?? 'Não foi possível abrir o pagamento.');
+    } catch { setErroPg('Sem conexão. Tente de novo.'); }
+    setAbrindo(false);
+  }
   return (
     <section className="planos-pro" aria-labelledby="planos-titulo">
       <p className="rotulo">Planos</p>
@@ -569,12 +583,19 @@ function Planos({ uso }: { uso: Uso | null }) {
           <div className="pt-linha" role="row" key={r}><span role="cell">{r}</span><span role="cell">{g}</span><span role="cell" className="pt-pro">{p}</span></div>
         ))}
       </div>
-      {!pro && (
+      {!pro && venda?.disponivel && (
+        <>
+          <button className="btn btn-grande" disabled={abrindo} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : `Assinar o Pro · R$ ${venda.preco!.toFixed(2).replace('.', ',')} por ${venda.dias} dias`}</button>
+          {erroPg && <p className="aviso" role="alert">{erroPg}</p>}
+          <p className="nota">Pix ou cartão pelo Mercado Pago. Sem renovação automática: o acesso vale {venda.dias} dias por pagamento.</p>
+        </>
+      )}
+      {!pro && !venda?.disponivel && (
         quer ? <p className="aviso-nota ok">Anotado! Quando o Pro abrir, você vê o aviso aqui no app primeiro.</p> : (
           <button className="btn" onClick={() => { try { localStorage.setItem('cq:quer-pro', '1'); } catch { /* sem armazenamento */ } setQuer(true); }}>Quero o Pro quando abrir</button>
         )
       )}
-      <p className="nota">O preço será anunciado no lançamento. Nada é cobrado hoje.</p>
+      {!venda?.disponivel && <p className="nota">O preço será anunciado no lançamento. Nada é cobrado hoje.</p>}
     </section>
   );
 }
