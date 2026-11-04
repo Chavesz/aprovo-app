@@ -1154,6 +1154,34 @@ function Simulado(props: {
     setAgora(Date.now());
   };
 
+  function entregar() {
+    if (!prova) return;
+    const brancos = prova.filter((q) => !respostas[q.id]).length;
+    if (confirm(brancos ? `Faltam ${brancos} ${brancos === 1 ? 'questão' : 'questões'} em branco. Entregar mesmo assim?` : 'Entregar o simulado agora?')) encerrar();
+  }
+
+  // Atalhos no computador: letra marca a alternativa (C/E no Certo/Errado), setas trocam de questão.
+  useEffect(() => {
+    if (!prova || encerrado) return;
+    const tecla = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || (e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable]'))) return;
+      const q = prova[i];
+      if (!q) return;
+      if (e.key === 'ArrowRight' && i < prova.length - 1) setI(i + 1);
+      else if (e.key === 'ArrowLeft' && i > 0) setI(i - 1);
+      else {
+        const k = e.key.toUpperCase();
+        const ce = q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo';
+        const alt = ce ? q.alternativas.find((a) => a.texto[0].toUpperCase() === k) : q.alternativas.find((a) => a.letra.toUpperCase() === k);
+        if (!alt) return;
+        setRespostas((r) => ({ ...r, [q.id]: alt.letra }));
+      }
+      e.preventDefault();
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, [prova, i, encerrado]);
+
   function encerrar() {
     if (!prova) return;
     const em = Date.now();
@@ -1407,7 +1435,8 @@ function Simulado(props: {
             </button>
           ))}
         </div>
-        <button className="btn btn-sec" onClick={() => confirm('Entregar o simulado agora?') && encerrar()}>
+        <span className="nota mapa-contagem" aria-live="polite">{Object.keys(respostas).length}/{prova.length} respondidas</span>
+        <button className="btn btn-sec" onClick={entregar}>
           Entregar
         </button>
         <button
@@ -1431,6 +1460,7 @@ function Simulado(props: {
           Deixar em branco (na Cebraspe, errar tira um ponto; branco vale zero)
         </button>
       )}
+      <p className="nota atalhos">Atalhos: tecle a letra para marcar (C ou E no Certo/Errado) e use ← → para trocar de questão.</p>
       <div className="navegacao">
         <button className="btn btn-sec" onClick={() => setI(i - 1)} disabled={i === 0}>
           Anterior
@@ -1440,7 +1470,7 @@ function Simulado(props: {
             Próxima
           </button>
         ) : (
-          <button className="btn" onClick={encerrar}>
+          <button className="btn" onClick={entregar}>
             Entregar simulado
           </button>
         )}
@@ -1965,6 +1995,7 @@ function MeuCaderno({ porId }: { porId: Map<string, Questao> }) {
           const txt = filtradas.map(([id, n]) => { const q = porId.get(id)!; return `${q.disciplina} · ${q.prova}
 Anotação: ${n}
 Questão: ${q.comando.replace(/<[^>]+>|\*\*/g, '').replace(/\s+/g, ' ').trim()}
+${q.alternativas.length > 2 ? q.alternativas.map((a) => `${a.letra}) ${a.texto.replace(/<[^>]+>/g, '')}`).join('\n') + '\n' : ''}
 Gabarito: ${q.gabarito}
 `; }).join('\n');
           const a = document.createElement('a');

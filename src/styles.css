@@ -852,3 +852,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 
 .deixar-branco { display: block; margin: 10px 0 0; }
 .ranking-media{margin:.5rem 0 1rem;padding:.6rem .8rem;border-radius:10px;background:var(--grifo)}
+.atalhos{display:none;font-size:.8rem}@media (hover:hover) and (pointer:fine){.atalhos{display:block}}.mapa-contagem{white-space:nowrap}
