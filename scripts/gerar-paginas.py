@@ -87,6 +87,8 @@ GRUPOS = [
   ("questoes-pm-sp-fgv", "Questões da PM SP (Cabo 2022, FGV) com gabarito oficial", lambda q: q["id"].startswith("fgv-pmesp")),
   ("questoes-cbmerj-fgv", "Questões do CBMERJ (Cadete 2022, FGV) com gabarito oficial", lambda q: q["id"].startswith("fgv-cbmerj")),
   ("questoes-inss-cebraspe", "Questões do INSS 2022 (Técnico do Seguro Social, Cebraspe) com gabarito oficial", lambda q: "inss-2022" in q["id"]),
+  ("questoes-prf-cebraspe", "Questões da PRF 2021 (Policial Rodoviário Federal, Cebraspe) com gabarito oficial", lambda q: "prf-2021" in q["id"]),
+  ("questoes-tj-ce-cebraspe", "Questões do TJ CE 2023 (Técnico Judiciário, Cebraspe) com gabarito oficial", lambda q: "tjce-2023" in q["id"]),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),

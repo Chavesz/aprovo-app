@@ -8,7 +8,7 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
-- [P2] Mais provas oficiais da Cebraspe pelo site novo (PF 2021, PRF 2021, STJ 2018, TJ CE 2023, PC PB 2021): mesmo caminho do INSS 2022
+- [P2] Mais provas oficiais da Cebraspe pelo site novo (PF 2021, STJ 2018, PC PB 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
 - [P3] Mostrar os modelos de 1 toque também ao editar o perfil do Mentor
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
 - [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
@@ -25,6 +25,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+66 questões oficiais do TJ CE 2023 (Cebraspe)**, Técnico Judiciário (Judiciária e Técnico-Administrativa), múltipla escolha A–E, gabarito definitivo; novo importador `scripts/importar-cebraspe-questao.py`
+- [P1] **+68 itens oficiais da PRF 2021 (Cebraspe)**: conhecimentos gerais, legislação de trânsito e direito, gabarito definitivo; `scripts/importar-cebraspe-site.sh` para qualquer caderno do site novo
 - [P2] **Mentor: modelo INSS** (Técnico do Seguro Social) em 1 toque, com Seguridade Social e Previdência pesando o dobro; a matéria entra no grupo Direito do filtro
 - [P2] **20 questões autorais no estilo FCC e Vunesp** (CF, Lei 8.112, atos administrativos, Português, Matemática, RLM, Informática), marcadas como "Aprovô (estilo FCC/Vunesp)" e "não são oficiais" (`scripts/gerar-estilo.py`)
 - [P1] **+164 itens oficiais do INSS 2022 (Cebraspe)**, Técnico do Seguro Social: básicos e Seguridade/Previdência, gabarito definitivo e fonte; links pegos no site novo da Cebraspe (`scripts/importar-inss-2022.sh`); página de SEO nova
