@@ -63,7 +63,7 @@ PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)"
 CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
-BANCAS = sorted({q["banca"] for q in qs})
+BANCAS = sorted({q["banca"] for q in qs if not re.search(r"aprov|autoral|estilo|elaborad", q["banca"], re.I)})
 NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
 paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no concurso",
   "Questões oficiais com fonte, plano de estudos com IA a partir do edital, simulado da semana e revisão espaçada. Comece grátis.",

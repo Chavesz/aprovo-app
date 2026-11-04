@@ -24,6 +24,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Redesign (04/11/2026): identidade Marca-texto escolhida entre 3 direções por crítica de outro agente (`notas/design/`): amarelo de grifo #ffd43b para ação, berinjela #4a2f7a de marca, roxo claro para IA, Archivo + Source Serif 4, logo "A grifado", modo escuro neutro. Landing /aprovo refeita como página de vendas (hero, números e bancas reais, como funciona, Mentor IA, planos, FAQ, CTA). Lighthouse mobile: home 94, /aprovo 100 de desempenho; 100 nas demais
 - Lighthouse mobile (03/11/2026, Node 22): home 96/100/100/100 e /aprovo 99/100/100/100 (desempenho/acessibilidade/boas práticas/SEO). Fontes do Google passaram a carregar sem bloquear a renderização (app e páginas geradas)
 - Mentor leva a matéria do plano/edital para o filtro certo mesmo com nome diferente do banco (`resolverDisciplina`: "Conhecimentos Específicos" → "Específicos ACE", ignora "Professor de…" se não pedido)
 - Verificação Consulplan/IDECAN (03/11/2026): **Consulplan** publica caderno + gabarito definitivo sem login; **IDECAN** bloqueia com verificação anti-robô (Cloudflare), fica fora
