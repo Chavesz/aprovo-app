@@ -221,7 +221,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     { id: 'concursos', rotulo: 'Concursos', icone: <IconBook /> },
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
-    { id: 'edital', rotulo: 'Edital', icone: <IconSpark /> },
+    { id: 'edital', rotulo: 'Edital', icone: <IconDoc /> },
     { id: 'desempenho', rotulo: 'Desempenho', icone: <IconChart /> },
     { id: 'revisar', rotulo: 'Revisar', icone: <IconFlag /> },
   ];
@@ -532,6 +532,7 @@ function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisa
       (!f.disciplina || q.disciplina === f.disciplina) &&
       (!f.assunto || q.assunto === f.assunto) &&
       (!f.ano || String(q.ano) === f.ano) &&
+      (!f.tipo || (f.tipo === 'Certo ou Errado') === (q.alternativas.length === 2 && q.alternativas[0].texto === 'Certo')) &&
       (f.status === 'todas' ||
         (f.status === 'ineditas' && !respondidas.has(q.id)) ||
         (f.status === 'erradas' && ultimas.get(q.id) === false) ||
@@ -600,6 +601,7 @@ function Praticar(props: {
           <Select rotulo="Disciplina" valor={filtros.disciplina} opcoes={unicos(questoes, 'disciplina')} onChange={(v) => set('disciplina', v)} />
           <Select rotulo="Assunto" valor={filtros.assunto} opcoes={unicos(base, 'assunto')} onChange={(v) => set('assunto', v)} />
           <Select rotulo="Ano" valor={filtros.ano} opcoes={unicos(questoes, 'ano').reverse()} onChange={(v) => set('ano', v)} />
+          <Select rotulo="Tipo" valor={filtros.tipo ?? ''} opcoes={['Múltipla escolha', 'Certo ou Errado']} onChange={(v) => set('tipo', v)} />
           <fieldset className="status">
             <legend className="rotulo">Mostrar</legend>
             {(
@@ -2024,6 +2026,7 @@ const IconClock = () => <svg {...svg}><circle cx="12" cy="13" r="8" /><path d="M
 const IconChart = () => <svg {...svg}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>;
 const IconFlag = () => <svg {...svg}><path d="M5 21V4h11l-2 4 2 4H5" /></svg>;
 const IconFilter = () => <svg {...svg}><path d="M3 5h18M6 12h12M10 19h4" /></svg>;
+const IconDoc = () => <svg {...svg}><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h8M9 17h6" /></svg>;
 const IconSpark = () => <svg {...svg}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" /></svg>;
 const IconBook = () => <svg {...svg}><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" /></svg>;
 const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;

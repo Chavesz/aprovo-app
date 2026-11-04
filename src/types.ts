@@ -60,6 +60,8 @@ export interface Filtros {
   disciplina: string;
   assunto: string;
   ano: string;
+  /** '' todas, 'me' múltipla escolha, 'ce' Certo ou Errado. */
+  tipo?: string;
   status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco' | 'inteligente' | 'hoje' | 'dificeis';
 }
 
