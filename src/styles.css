@@ -806,3 +806,4 @@ textarea {
 .resumo-semana { border: 1px solid var(--linha); border-radius: 12px; padding: 16px; margin-top: 16px; margin-bottom: 8px; }
 .resumo-numeros { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 6px 0 10px; }
 .resumo-numeros strong { font-size: 1.5rem; color: var(--acento); margin-right: 4px; }
+.carregando-mais { margin: 6px auto 0; font-size: .9rem; }

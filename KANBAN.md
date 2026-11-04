@@ -24,6 +24,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Aviso "carregando mais provas"** no Praticar enquanto Cebraspe, OAB e ENEM chegam (some sozinho; o aluno já pode começar)
 - [P1] **Auditoria das questões**: `scripts/auditar-questoes.py` (ids e textos duplicados, gabarito sem alternativa, alternativas vazias, restos de PDF); 75 removidas e 46 textos limpos; relatório em `notas/auditoria-qualidade.md`
 - [P1] **Auditoria de desempenho no celular**: OAB e ENEM (1,1 MB comprimidos) também carregam depois da abertura; medições em `notas/auditoria-qualidade.md`
 - [P2] **Mentor: trocar de modelo ao editar o perfil** ("Trocar por um modelo pronto" troca matérias e pesos de uma vez); testado com o modelo INSS

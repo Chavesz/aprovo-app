@@ -60,6 +60,7 @@ export default function App() {
 
 function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [oficiais, setOficiais] = useState<Questao[] | null>(null);
+  const [carregandoMais, setCarregandoMais] = useState(true);
   const [geradas, setGeradas] = usePersist<Questao[]>('cq:geradas', []);
   const [erro, setErro] = useState(false);
   const [aba, setAba] = usePersist<Aba>('cq:aba', 'praticar');
@@ -103,7 +104,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       .then((partes) => {
         setOficiais(partes.flat());
         // Os bancos grandes (Cebraspe, OAB e ENEM, ~1,8 MB comprimidos) entram depois que o app já abriu.
-        return Promise.all(['/data/cebraspe.json', '/data/oab.json', '/data/questoes.json'].map(opcional)).then((ps) => ps.flat()).then((c) => c.length && setOficiais((v) => { const ja = new Set((v ?? []).map((q) => q.id)); return [...(v ?? []), ...c.filter((q) => !ja.has(q.id))]; }));
+        return Promise.all(['/data/cebraspe.json', '/data/oab.json', '/data/questoes.json'].map(opcional)).then((ps) => ps.flat()).then((c) => c.length && setOficiais((v) => { const ja = new Set((v ?? []).map((q) => q.id)); return [...(v ?? []), ...c.filter((q) => !ja.has(q.id))]; })).finally(() => setCarregandoMais(false));
       })
       .catch(() => setErro(true));
   }, []);
@@ -307,6 +308,9 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
         {questoes && aba === 'praticar' && <Foco />}
+        {questoes && aba === 'praticar' && carregandoMais && (
+          <p className="nota coluna carregando-mais" role="status">Carregando as provas da Cebraspe, OAB e ENEM… você já pode começar.</p>
+        )}
         {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
           <div className="aviso revisao-dia">
             <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 3, 7 e 30 dias).</span>
