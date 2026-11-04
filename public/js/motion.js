@@ -2,16 +2,16 @@
 // e só para quem não pediu movimento reduzido. Sem JS (ou com movimento reduzido) a página fica completa e parada.
 (function () {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var CDN = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/';
+  var CDN = '/js/vendor/';
   function js(src) {
     return new Promise(function (ok, erro) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = erro; document.head.appendChild(s); });
   }
   function iniciar() {
-    Promise.all([js(CDN + 'gsap.min.js'), js('https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js')])
+    Promise.all([js(CDN + 'gsap.min.js'), js('/js/vendor/lenis.min.js')])
       .then(function () { return js(CDN + 'ScrollTrigger.min.js'); })
       .then(animar)
       .catch(function () { /* sem rede para o CDN: a página segue parada e completa */ });
-    if (matchMedia('(min-width: 880px)').matches) js('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js').then(fundo).catch(function () {});
+    if (matchMedia('(min-width: 880px)').matches) js('/js/vendor/three.min.js').then(fundo).catch(function () {});
   }
   function animar() {
     var gsap = window.gsap; gsap.registerPlugin(window.ScrollTrigger);
