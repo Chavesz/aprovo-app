@@ -63,7 +63,7 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),
   ("questoes-educa-pb", "Questões da banca EDUCA PB com gabarito", lambda q: "educa" in q["banca"].lower()),
-  ("questoes-cebraspe", "Questões da Cebraspe (CAIXA e UERN) com gabarito oficial", lambda q: q["banca"] == "Cebraspe"),
+  ("questoes-cebraspe", "Questões da Cebraspe (CAIXA, UERN e SEMAD São Luís) com gabarito oficial", lambda q: q["banca"] == "Cebraspe"),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),

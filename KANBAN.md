@@ -20,6 +20,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+1.061 itens oficiais da Cebraspe** (SEMAD São Luís 2008, 38 cadernos de saúde, Certo ou Errado) com gabarito definitivo e fonte; importador `scripts/importar-cebraspe-ce.py` + lote `scripts/importar-semad-slz-2008.sh`
 - [P1] **Supabase fase 1**: escrita dupla Blobs → Supabase (perfis/Auth, respostas, simulados, plano do mentor, uso da IA, comentários), service role só nas funções, sem perder dados
 - [P3] **Prova oficial UERN 2010 (Cebraspe)**: +24 questões com gabarito definitivo e fonte; importador aceita gabarito, matérias por faixa e ano
 - [P2] **Filtro "Mais difíceis"** no Praticar (menos de 40% de acerto da comunidade, 5+ respostas)
