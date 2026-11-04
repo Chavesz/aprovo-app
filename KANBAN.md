@@ -20,6 +20,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+3.294 itens oficiais do MPU 2010 (Cebraspe)**, 54 cadernos (analista e técnico), Certo ou Errado, gabarito definitivo e fonte; `scripts/importar-mpu-2010.sh` + `ajustar-mpu-2010.py`; página de SEO nova
 - [P2] **Filtro por tipo** (múltipla escolha × Certo ou Errado) e ícone próprio para a aba Edital
 - [P2] **Polimento visual no celular** (menu numa linha, topo sem cortes, sem tag repetida), com prints em `notas/`
 - [P1] **+1.061 itens oficiais da Cebraspe** (SEMAD São Luís 2008, 38 cadernos de saúde, Certo ou Errado) com gabarito definitivo e fonte; importador `scripts/importar-cebraspe-ce.py` + lote `scripts/importar-semad-slz-2008.sh`
