@@ -191,7 +191,7 @@ img { max-width: 100%; height: auto; }
 
 /* ---------- Filtros ---------- */
 .praticar { display: grid; gap: 16px; }
-.filtros { border: 1px solid var(--linha); border-radius: var(--raio); background: var(--superficie); }
+.filtros { border: 1px solid var(--linha); border-radius: var(--raio); background: var(--papel); }
 .filtros-toggle {
   display: flex;
   align-items: center;
@@ -273,7 +273,7 @@ select {
   padding: 12px 14px;
   border: 1px solid var(--linha);
   border-radius: var(--raio);
-  background: var(--superficie);
+  background: var(--papel);
   text-align: left;
   line-height: 1.5;
   transition: border-color 0.2s var(--ease), background 0.2s var(--ease), opacity 0.2s;
@@ -454,7 +454,7 @@ textarea {
   padding: 12px 14px;
   border: 1px solid var(--linha);
   border-radius: var(--raio);
-  background: var(--superficie);
+  background: var(--papel);
   line-height: 1.55;
   resize: vertical;
 }
@@ -481,7 +481,7 @@ textarea {
 .assunto-chip.ativo button { color: var(--papel); }
 .assunto-qtd { padding: 1px 6px; border-radius: 6px; background: var(--papel-2); color: var(--tinta); font-size: 0.6875rem; }
 .assunto-novo input { min-height: 38px; width: 120px; padding: 6px 12px; border: 1px dashed var(--linha); border-radius: 999px; background: none; font-size: 0.875rem; }
-.painel-gerar { margin-top: 14px; padding: 16px; border-radius: var(--raio); background: var(--superficie); border: 1px solid var(--linha); animation: entra 0.3s var(--ease); }
+.painel-gerar { margin-top: 14px; padding: 16px; border-radius: var(--raio); background: var(--papel); border: 1px solid var(--linha); animation: entra 0.3s var(--ease); }
 .painel-titulo { margin: 0 0 12px; font: 500 1.125rem/1.3 var(--serif); }
 .painel-opcoes { display: grid; gap: 14px; }
 .ok-texto { color: var(--ok); }
@@ -549,7 +549,7 @@ textarea {
 .login { max-width: 420px; margin: 0 auto; padding: 48px 16px; min-height: 100vh; }
 .login-marca { margin-bottom: 40px; }
 .login-form { display: grid; gap: 16px; margin-bottom: 12px; }
-.login input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 8px; background: var(--superficie); }
+.login input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 8px; background: var(--papel); }
 .conta-btn { font-size: 0.8125rem; color: var(--tinta-2); border: 1px solid var(--linha); border-radius: var(--raio); background: none; min-height: 44px; padding: 0 10px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sync.ok { color: var(--ok); }
 .sync.offline { color: var(--nok); }
@@ -719,3 +719,25 @@ textarea {
 .mentor-planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 28px 0; }
 .mentor-planos article { padding: 14px; border: 1px solid var(--linha); border-radius: var(--raio); }
 .mentor-planos article.atual { border-color: var(--acento); }
+
+/* Aba Concursos: radar, bancas, dicas e trilhas */
+.descobrir { display: grid; gap: 16px; }
+.sub-abas { display: flex; flex-wrap: wrap; gap: 8px; }
+.cartao { background: var(--papel); border: 1px solid var(--linha); border-radius: var(--raio); padding: 18px; display: grid; gap: 10px; }
+.cartao h2 { margin: 0; font-size: 1.15rem; }
+.mudo { color: var(--tinta-2); }
+.pequeno { font-size: .85rem; }
+.radar-form { display: grid; grid-template-columns: 6rem 1fr auto; gap: 10px; align-items: end; }
+.radar-form label { display: grid; gap: 4px; font-size: .9rem; }
+.radar-form select, .radar-form input { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; background: inherit; color: inherit; font: inherit; }
+.radar-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.radar-lista li { border-top: 1px solid var(--linha); padding-top: 10px; }
+.radar-lista p { margin: 4px 0; font-size: .9rem; }
+.bancas details, .trilha { border-top: 1px solid var(--linha); padding: 8px 0; }
+.bancas summary, .trilha summary { cursor: pointer; }
+.trilha ol { display: grid; gap: 6px; padding-left: 1.2rem; }
+.trilha li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; }
+.trilha li.feito label { text-decoration: line-through; opacity: .7; }
+.trilha-links { display: flex; gap: 10px; font-size: .9rem; }
+.dica-dia p { font-size: 1.1rem; margin: 0; }
+@media (max-width: 560px) { .radar-form { grid-template-columns: 1fr; } }

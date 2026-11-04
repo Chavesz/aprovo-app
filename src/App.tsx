@@ -1,4 +1,5 @@
 import Mentor from './Mentor';
+import Descobrir from './Descobrir';
 import { useEffect, useMemo, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
@@ -8,7 +9,7 @@ import Login from './Login';
 import Ranking from './Ranking';
 import { baixar, contaSalva, enviar, sairDaConta, type Conta } from './nuvem';
 
-type Aba = 'mentor' | 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
+type Aba = 'mentor' | 'concursos' | 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
 
 const FILTROS_VAZIOS: Filtros = { banca: '', orgao: '', disciplina: '', assunto: '', ano: '', status: 'todas' };
 
@@ -96,7 +97,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       opcional('/data/educa-ace.json'),
       opcional('/data/educa-site.json'),
       opcional('/data/privado/educa.json'),
-      ...['/data/ace-cuite.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
+      ...['/data/ace-cuite.json', '/data/comuns.json', '/data/oab.json', '/data/questoes.json'].map((u) => fetch(u).then((r) => r.json() as Promise<Questao[]>)),
     ])
       .then((partes) => setOficiais(partes.flat()))
       .catch(() => setErro(true));
@@ -212,6 +213,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
 
   const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
     { id: 'mentor', rotulo: 'Mentor', icone: <IconSpark /> },
+    { id: 'concursos', rotulo: 'Concursos', icone: <IconBook /> },
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
     { id: 'edital', rotulo: 'Edital', icone: <IconSpark /> },
@@ -312,6 +314,15 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
           <Mentor
             questoes={questoes}
             historico={historico}
+            onPraticar={(disciplina, assunto) => {
+              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
+              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+              setAba('praticar');
+            }}
+          />
+        )}
+        {questoes && aba === 'concursos' && (
+          <Descobrir
             onPraticar={(disciplina, assunto) => {
               const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
               setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
