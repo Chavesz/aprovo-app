@@ -401,6 +401,10 @@ function Meta({
   hoje0.setHours(0, 0, 0, 0);
   const dias = meta.data ? Math.round((new Date(`${meta.data}T00:00:00`).getTime() - hoje0.getTime()) / 86400000) : null;
   const batida = feitas >= meta.porDia;
+  // Sequência: dias seguidos (até hoje ou ontem) com pelo menos uma questão respondida.
+  const diasComEstudo = new Set(historico.map((h) => diaChave(h.em)));
+  let sequencia = 0;
+  for (let d = diasComEstudo.has(hojeK) ? 0 : 1; diasComEstudo.has(diaChave(Date.now() - d * 86400000)); d++) sequencia++;
 
   return (
     <section className="coluna meta-dia">
@@ -420,7 +424,10 @@ function Meta({
       </div>
       <div className="meta-progresso">
         <div className="assunto-linha">
-          <span>{batida ? 'Meta de hoje batida! 🔥' : `Meta de hoje: ${meta.porDia} questões`}</span>
+          <span>
+            {batida ? 'Meta de hoje batida! 🔥' : `Meta de hoje: ${meta.porDia} questões`}
+            {sequencia > 0 && <strong className="sequencia"> · {sequencia} {sequencia === 1 ? 'dia' : 'dias'} seguidos</strong>}
+          </span>
           <span className="mono">
             {feitas}/{meta.porDia}
             {feitas > 0 && ` · ${pct(certas, feitas)}%`}
@@ -1119,6 +1126,14 @@ function Simulado(props: {
                 ))}
               </tbody>
             </table>
+            <a
+              className="btn btn-sec compartilhar"
+              target="_blank"
+              rel="noreferrer"
+              href={`https://wa.me/?text=${encodeURIComponent(`Tirei ${nota} de 100 no simulado do Aprovô (${acertos}/${prova.length} acertos). Duvido você bater! Treine grátis: https://aprovoapp.netlify.app/aprovo`)}`}
+            >
+              Desafiar no WhatsApp
+            </a>
             <p className={`aviso-nota ${nota >= 50 && !zerou.length ? 'ok' : 'nok'}`}>
               {zerou.length
                 ? `Zerou ${zerou.map((b) => b.nome).join(', ')}: na prova real, nota zero em uma matéria elimina.`

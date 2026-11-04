@@ -747,3 +747,11 @@ textarea {
 .comentarios summary { cursor: pointer; font-weight: 600; }
 .comentarios textarea { width: 100%; min-height: 4rem; padding: 8px; border: 1px solid var(--linha); border-radius: 8px; font: inherit; background: inherit; color: inherit; box-sizing: border-box; }
 .comentario-aluno { margin: 0; padding: 8px; background: var(--papel-2); border-radius: 8px; }
+.teste-cta { margin: 0 0 16px; width: 100%; }
+.teste-rapido { display: grid; gap: 10px; }
+.teste-alts { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.teste-alt { width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel); color: inherit; font: inherit; cursor: pointer; }
+.teste-alt.ok { border-color: var(--ok, #2e7d32); background: color-mix(in srgb, var(--ok, #2e7d32) 12%, transparent); }
+.teste-alt.nok { border-color: var(--nok); background: color-mix(in srgb, var(--nok) 12%, transparent); }
+.sequencia { color: var(--acento); }
+.compartilhar { display: inline-block; margin: 10px 0; text-decoration: none; }

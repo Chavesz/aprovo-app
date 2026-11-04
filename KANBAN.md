@@ -8,17 +8,18 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+- [P3] Lembrete diário por notificação push (precisa de chaves VAPID e de um agendador)
 - [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
 - [P3] Mais provas oficiais de outras bancas (FGV, FCC, Vunesp, IBFC). Atenção: vários PDFs da Cebraspe vêm com fonte embaralhada e não dão para extrair texto (ex.: CAIXA NM2 2010)
-- [P1] Onboarding que converte: tela de boas-vindas com escolha do concurso e primeiro mini-simulado de 5 questões antes do cadastro
-- [P2] Compartilhar resultado do simulado (imagem/link para WhatsApp) com convite, para crescer por indicação
-- [P2] Metas e sequência de dias (streak) com lembrete diário
 
 ## Fazendo
 - (nenhum)
 
 ## Feito
+- [P1] **Onboarding que converte**: teste de 5 questões comentadas sem cadastro na tela de entrada, terminando no cadastro
+- [P2] **Desafiar no WhatsApp**: botão no resultado do simulado com a nota e o link da landing
+- [P2] **Sequência de dias seguidos** na meta diária
 - [P1] **Modo celular / PWA**: instala como app, abre offline com as questões já baixadas
 - [P1] **Landing de vendas** em /aprovo, com benefícios, planos e questões de exemplo
 - [P1] **SEO por concurso**: 10 páginas /concursos/* com questões de amostra, sitemap.xml e robots.txt (`scripts/gerar-paginas.py`)

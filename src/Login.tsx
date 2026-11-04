@@ -1,4 +1,63 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { Questao } from './types';
+
+/** Mini-teste sem cadastro: 5 questões comentadas para a pessoa sentir o app antes de criar a conta. */
+function TesteRapido({ onFim }: { onFim: (acertos: number) => void }) {
+  const [qs, setQs] = useState<Questao[] | null>(null);
+  const [i, setI] = useState(0);
+  const [marcada, setMarcada] = useState('');
+  const [acertos, setAcertos] = useState(0);
+  useEffect(() => {
+    fetch('/data/comuns.json')
+      .then((r) => r.json())
+      .then((l: Questao[]) => setQs(l.sort(() => Math.random() - 0.5).slice(0, 5)))
+      .catch(() => onFim(0));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  if (!qs) {
+    return <p className="nota">Carregando questões…</p>;
+  }
+  const q = qs[i];
+  return (
+    <div className="teste-rapido">
+      <p className="rotulo">Questão {i + 1} de 5 · {q.disciplina}</p>
+      <p>{q.comando}</p>
+      <ol className="teste-alts">
+        {q.alternativas.map((a) => (
+          <li key={a.letra}>
+            <button
+              className={`teste-alt ${marcada && a.letra === q.gabarito ? 'ok' : ''} ${marcada === a.letra && a.letra !== q.gabarito ? 'nok' : ''}`}
+              disabled={!!marcada}
+              onClick={() => {
+                setMarcada(a.letra);
+                if (a.letra === q.gabarito) setAcertos((n) => n + 1);
+              }}
+            >
+              <strong>{a.letra}</strong> {a.texto}
+            </button>
+          </li>
+        ))}
+      </ol>
+      {marcada && (
+        <>
+          <p className="feedback-extra">{q.comentario}</p>
+          {q.macete && <p className="feedback-extra macete">💡 {q.macete}</p>}
+          <button
+            className="btn"
+            onClick={() => {
+              if (i === 4) return onFim(acertos);
+              setI(i + 1);
+              setMarcada('');
+            }}
+          >
+            {i === 4 ? 'Ver meu resultado' : 'Próxima'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 import { autenticar, type Conta } from './nuvem';
 
 export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
@@ -8,6 +67,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [teste, setTeste] = useState<'nao' | 'fazendo' | number>('nao');
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +89,25 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
         </span>
         <span className="marca-nome">Aprovô</span>
       </div>
-      <h1 className="titulo">{modo === 'entrar' ? 'Bem-vindo de volta.' : 'Crie sua conta.'}</h1>
+      {teste === 'fazendo' ? (
+        <TesteRapido
+          onFim={(n) => {
+            setTeste(n);
+            setModo('criar');
+          }}
+        />
+      ) : (
+        <>
+      {typeof teste === 'number' ? (
+        <h1 className="titulo">Você acertou {teste} de 5. Crie sua conta grátis para ganhar seu plano de estudos.</h1>
+      ) : (
+        <>
+          <h1 className="titulo">{modo === 'entrar' ? 'Bem-vindo de volta.' : 'Crie sua conta.'}</h1>
+          <button className="btn btn-sec teste-cta" onClick={() => setTeste('fazendo')}>
+            Testar 5 questões grátis, sem cadastro
+          </button>
+        </>
+      )}
       <p className="lead">Seu progresso fica salvo na conta: comece no celular e continue no computador.</p>
       <form className="login-form" onSubmit={enviar}>
         {modo === 'criar' && (
@@ -77,6 +155,8 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
       >
         {modo === 'entrar' ? 'Não tem conta? Criar agora' : 'Já tenho conta. Entrar'}
       </button>
+        </>
+      )}
     </div>
   );
 }
