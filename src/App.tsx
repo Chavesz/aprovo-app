@@ -207,7 +207,11 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questoes, historico]);
 
-  const registrar = (r: Resposta) =>setHistorico((h) => [...h, r]);
+  const registrar = (r: Resposta) => {
+    setHistorico((h) => [...h, r]);
+    // Conta a resposta no % de acerto da comunidade (sem esperar).
+    fetch('/api/estatisticas', { method: 'POST', headers: { authorization: `Bearer ${conta.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ id: r.id, certa: r.certa }) }).catch(() => {});
+  };
   const alternarRevisar = (id: string) =>
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
 
@@ -751,6 +755,7 @@ function QuestaoCard(props: {
           )}
         </div>
       )}
+      {revelar && marcada && <Comunidade id={q.id} />}
       {revelar && marcada && <Comentarios id={q.id} />}
     </article>
   );
@@ -860,6 +865,27 @@ function Foco() {
     <p className={`foco ${pausa ? 'pausa' : ''}`}>
       {pausa ? 'Pausa' : 'Foco'} {String(Math.floor(resta / 60)).padStart(2, '0')}:{String(resta % 60).padStart(2, '0')}{' '}
       <button className="link" onClick={() => setFim(0)}>parar</button>
+    </p>
+  );
+}
+
+/** "62% dos alunos acertam esta questão", como nos grandes bancos de questões. */
+function Comunidade({ id }: { id: string }) {
+  const [s, setS] = useState<{ a: number; t: number } | null>(null);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetch(`/api/estatisticas?id=${encodeURIComponent(id)}`, { headers: { authorization: `Bearer ${contaSalva()?.token ?? ''}` } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then(setS)
+        .catch(() => {});
+    }, 600);
+    return () => clearTimeout(t);
+  }, [id]);
+  if (!s || s.t < 3) return null;
+  const p = pct(s.a, s.t);
+  return (
+    <p className="comunidade">
+      <strong>{p}%</strong> dos alunos acertam esta questão ({s.t} respostas){p < 40 ? ' · questão difícil' : ''}
     </p>
   );
 }

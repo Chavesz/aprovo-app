@@ -66,6 +66,16 @@ function iaDeExemplo(): Plugin {
         res.end(progresso.get(u) ?? '{}');
       });
 
+      const estat = new Map<string, { a: number; t: number }>();
+      server.middlewares.use('/api/estatisticas', async (req, res) => {
+        res.setHeader('content-type', 'application/json');
+        const id = new URL(req.url ?? '', 'http://x').searchParams.get('id') ?? '';
+        if (req.method === 'GET') return res.end(JSON.stringify(estat.get(id) ?? { a: 0, t: 0 }));
+        const p = JSON.parse((await lerCorpo(req)) || '{}');
+        const v = estat.get(p.id) ?? { a: 0, t: 0 };
+        estat.set(p.id, { a: v.a + (p.certa ? 1 : 0), t: v.t + 1 });
+        res.end(JSON.stringify(estat.get(p.id)));
+      });
       const comentarios = new Map<string, unknown[]>();
       server.middlewares.use('/api/comentarios', async (req, res) => {
         res.setHeader('content-type', 'application/json');

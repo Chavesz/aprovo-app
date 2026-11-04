@@ -766,3 +766,4 @@ textarea {
 .flash-verso { margin: 0; padding-top: 10px; border-top: 1px dashed var(--linha); }
 .flash-botoes { display: flex; gap: 10px; }
 .flash-filtro { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; background: inherit; color: inherit; font: inherit; }
+.comunidade { margin: 10px 0 0; font-size: .95rem; color: var(--tinta-2); } .comunidade strong { color: var(--acento); }
