@@ -4,9 +4,9 @@ import json, re, pathlib
 p = pathlib.Path(__file__).resolve().parent.parent / "public/data/cebraspe.json"
 d = json.loads(p.read_text(encoding="utf-8"))
 CAB = re.compile(
-    r"\S*N\d{5,}\s+CEBRASPE\s*–[^\n]{0,80}?Edital: \d{4}"
-    r"|\d{10,}\s+CEBRASPE\s*–[^\n]{0,80}?Edital: \d{4}"
-    r"|CEBRASPE\s*–\s*[A-Z/ ]{2,30}\s*–\s*Edital: \d{4}"
+    r"\S*N\d{5,}\s+CEBRASPE\s*–[^\n]{0,80}?(?:Edital|Aplicação): \d{4}"
+    r"|\d{10,}\s+CEBRASPE\s*–[^\n]{0,80}?(?:Edital|Aplicação): \d{4}"
+    r"|CEBRASPE\s*–\s*[A-Z/ ]{2,30}\s*–\s*(?:Edital|Aplicação): \d{4}"
     r"|"
     r"|UnB/CESPE\s*–[^\n]{0,160}?–\s?\d+\s?–"
     r"|^[^\n]{0,160}?(?:Caderno|Cargo)[^\n]{0,80}?–\s?\d+\s?–"
