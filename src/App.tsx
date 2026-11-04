@@ -1,4 +1,4 @@
-import Mentor, { PlanoDeHoje } from './Mentor';
+import Mentor, { PlanoDeHoje, resolverDisciplina } from './Mentor';
 import Descobrir from './Descobrir';
 import { useEffect, useMemo, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
@@ -69,6 +69,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
   const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
+  /** Leva a matéria do plano/edital para o filtro, mesmo quando o nome não é idêntico ao do banco. */
+  const praticarMateria = (materia: string, assunto: string) => {
+    const lista = questoes ?? [];
+    const disciplina = resolverDisciplina(materia, lista);
+    const temAssunto = lista.some((q) => q.disciplina === disciplina && q.assunto === assunto);
+    setFiltros({ ...FILTROS_VAZIOS, disciplina, assunto: temAssunto ? assunto : '', status: 'inteligente' });
+  };
   const [provas, setProvas] = usePersist<ProvaFeita[]>('cq:provas', []);
   // Provas apagadas (pelo horário de entrega): não voltam pela nuvem nem pela reconstrução a partir do histórico.
   const [excluidas, setExcluidas] = usePersist<number[]>('cq:provas-excluidas', []);
@@ -301,8 +308,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             historico={historico}
             onMentor={() => setAba('mentor')}
             onPraticar={(disciplina, assunto) => {
-              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
-              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+              praticarMateria(disciplina, assunto);
             }}
           />
         )}
@@ -349,8 +355,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             questoes={questoes}
             historico={historico}
             onPraticar={(disciplina, assunto) => {
-              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
-              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+              praticarMateria(disciplina, assunto);
               setAba('praticar');
             }}
           />
@@ -358,8 +363,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && aba === 'concursos' && (
           <Descobrir
             onPraticar={(disciplina, assunto) => {
-              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
-              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+              praticarMateria(disciplina, assunto);
               setAba('praticar');
             }}
           />

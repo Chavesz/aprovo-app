@@ -10,8 +10,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P2] Mais provas oficiais da Cebraspe pelo site novo (PF 2021, STJ 2018, PC PB 2021): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
-- [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
-- [P3] Provas de Consulplan e IDECAN (ainda não verificadas). Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
+- [P2] Importar provas da Consulplan: caderno e gabarito definitivo são públicos no CDN (`cdnsite.institutoconsulplan.org.br/concursos/...`), links na página de cada concurso (montada por JS, usar o navegador). Ex.: TJ CE Juiz Leigo 2019
+- [P3] Provas de outras bancas. Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -24,6 +24,9 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lighthouse mobile (03/11/2026, Node 22): home 96/100/100/100 e /aprovo 99/100/100/100 (desempenho/acessibilidade/boas práticas/SEO). Fontes do Google passaram a carregar sem bloquear a renderização (app e páginas geradas)
+- Mentor leva a matéria do plano/edital para o filtro certo mesmo com nome diferente do banco (`resolverDisciplina`: "Conhecimentos Específicos" → "Específicos ACE", ignora "Professor de…" se não pedido)
+- Verificação Consulplan/IDECAN (03/11/2026): **Consulplan** publica caderno + gabarito definitivo sem login; **IDECAN** bloqueia com verificação anti-robô (Cloudflare), fica fora
 - [P2] **Aviso "carregando mais provas"** no Praticar enquanto Cebraspe, OAB e ENEM chegam (some sozinho; o aluno já pode começar)
 - [P1] **Auditoria das questões**: `scripts/auditar-questoes.py` (ids e textos duplicados, gabarito sem alternativa, alternativas vazias, restos de PDF); 75 removidas e 46 textos limpos; relatório em `notas/auditoria-qualidade.md`
 - [P1] **Auditoria de desempenho no celular**: OAB e ENEM (1,1 MB comprimidos) também carregam depois da abertura; medições em `notas/auditoria-qualidade.md`

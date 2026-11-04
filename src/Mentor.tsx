@@ -84,6 +84,17 @@ const casa = (perfil: string, banco: string) => {
   return a === b || a.includes(b) || b.includes(a) || (a.includes('espec') && b.includes('espec')) || (a.includes('portug') && b.includes('portug'));
 };
 
+/** Acha a disciplina do banco que melhor corresponde à matéria do edital (ex.: "Enfermagem" do MPU/FUB, "Conhecimentos Específicos" → "Específicos ACE"). */
+export function resolverDisciplina(nome: string, questoes: Questao[]): string {
+  if (!nome) return '';
+  const cont = new Map<string, number>();
+  for (const q of questoes) cont.set(q.disciplina, (cont.get(q.disciplina) ?? 0) + 1);
+  if (cont.has(nome)) return nome;
+  const prof = /professor/i.test(nome);
+  const cands = [...cont].filter(([d]) => casa(nome, d) && (prof || !/professor/i.test(d)));
+  return cands.sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
+}
+
 /* ---------- Plano: prioridade = peso na prova × dificuldade (declarada e real) ---------- */
 
 function montarPlano(perfil: PerfilMentor, historico: Resposta[], questoes: Questao[]) {
