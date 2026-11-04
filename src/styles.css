@@ -790,3 +790,8 @@ textarea {
   .topo .conta-btn { max-width: 80px; padding: 0 8px; font-size: .75rem; flex-shrink: 0; }
   .topo .marca-nome { font-size: 1.05rem; }
 }
+
+/* Ranking com um aluno só: cartão compacto em vez do pódio */
+.ranking-solo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--linha); border-radius: 12px; margin: 8px 0 16px; }
+.ranking-solo strong { font-size: 1.4rem; color: var(--acento); margin-right: 4px; }
+.ranking-solo .ranking-detalhe { display: block; }

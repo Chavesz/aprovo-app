@@ -14,3 +14,4 @@ for f in $(curl -sL -m 40 https://cdn.cebraspe.org.br/concursos/MPU2010 | grep -
   python -I "$R/scripts/importar-cebraspe-ce.py" "c_$k.txt" "$G" "mpu-2010-$k" "MPU 2010 · $C (Cebraspe)" cdn.cebraspe.org.br/concursos/MPU2010 "${F:-50}:Conhecimentos Básicos,200:$C" 2010
 done
 python -I "$R/scripts/ajustar-mpu-2010.py"
+python -I "$R/scripts/limpar-cabecalhos.py"

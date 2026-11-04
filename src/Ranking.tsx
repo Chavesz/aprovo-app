@@ -132,11 +132,15 @@ export default function Ranking({ conta }: { conta: Conta }) {
     else window.open(`https://wa.me/?text=${encodeURIComponent(`${texto} ${url}`)}`, '_blank');
   };
 
+  const sozinho = ordenadas.length === 1 && !!ordenadas[0].eu;
+
   return (
     <section className="coluna estreita ranking">
       <p className="sobretitulo">Ranking da galera</p>
       <h1 className="titulo">
-        {minhaPos >= 0 ? (
+        {sozinho ? (
+          'Só você por aqui, por enquanto'
+        ) : minhaPos >= 0 ? (
           <>
             Você está em {minhaPos + 1}º <span className="titulo-sub">de {ordenadas.length} · {c.rotulo}</span>
           </>
@@ -165,7 +169,17 @@ export default function Ranking({ conta }: { conta: Conta }) {
 
       {linhas && ordenadas.length === 0 && <p className="ranking-vazio">Ninguém pontuou aqui ainda. Seja o primeiro!</p>}
 
-      {ordenadas.length > 0 && (
+      {sozinho && (
+        <p className="ranking-solo">
+          <span className="avatar pequeno">{inicial(ordenadas[0].nome)}</span>
+          <span>
+            <strong className="mono">{c.destaque(ordenadas[0])}</strong> {c.unidade}
+            <span className="nota ranking-detalhe">{c.detalhe(ordenadas[0])}</span>
+          </span>
+        </p>
+      )}
+
+      {ordenadas.length > 0 && !sozinho && (
         <ol className="podio">
           {ordenadas.slice(0, 3).map((l, i) => (
             <li key={l.usuario} className={`podio-${i + 1} ${l.eu ? 'eu' : ''}`}>

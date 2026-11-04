@@ -8,6 +8,9 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+- [P2] Polimento visual do Praticar no celular: o cartão da meta ocupa a tela toda e empurra a questão para baixo da dobra (recolher depois de definido)
+- [P2] Filtro de matéria agrupado por área (Saúde, Engenharia, Informática, Direito...), porque com o MPU passaram de 80 matérias
+- [P3] Mais concursos da Cebraspe no mesmo formato (pastas com caderno + `Gab_definitivo`): FUB 2009, SEDUC AM 2011
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -20,6 +23,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Limpeza dos enunciados**: 684 comandos sem cabeçalho/rodapé de página do caderno (`scripts/limpar-cabecalhos.py`)
+- [P2] **Polimento do ranking no celular**: sozinho no ranking vira um cartão compacto (sem pódio de "1º de 1"), e o desempenho sobe para a primeira tela; prints em `notas/antes|depois-desempenho-celular.jpg`
 - [P1] **+3.294 itens oficiais do MPU 2010 (Cebraspe)**, 54 cadernos (analista e técnico), Certo ou Errado, gabarito definitivo e fonte; `scripts/importar-mpu-2010.sh` + `ajustar-mpu-2010.py`; página de SEO nova
 - [P2] **Filtro por tipo** (múltipla escolha × Certo ou Errado) e ícone próprio para a aba Edital
 - [P2] **Polimento visual no celular** (menu numa linha, topo sem cortes, sem tag repetida), com prints em `notas/`
