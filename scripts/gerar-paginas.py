@@ -6,7 +6,7 @@ RAIZ = pathlib.Path(__file__).resolve().parent.parent
 PUB = RAIZ / "public"
 SITE = "https://aprovoapp.netlify.app"
 qs = []
-for f in ["ace-cuite", "comuns", "cebraspe", "educa-ace", "educa-site"]:
+for f in ["ace-cuite", "comuns", "cebraspe", "educa-ace", "educa-site", "oab", "questoes"]:
     p = PUB / "data" / f"{f}.json"
     if p.exists():
         qs += json.loads(p.read_text(encoding="utf-8"))
@@ -19,6 +19,7 @@ h1{font-size:clamp(2rem,6vw,3.2rem);margin:.2em 0}a.cta{display:inline-block;bac
 .grade{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.caixa{border:1px solid var(--linha);border-radius:12px;padding:16px}
 nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}nav a{color:inherit;text-decoration:none;font-weight:500}nav .marca{font-family:Fraunces,Georgia,serif;font-size:1.3rem;font-weight:650;margin-right:auto}nav .entrar{border:1px solid var(--linha);padding:6px 14px;border-radius:999px}
 a.sec{display:inline-block;margin-left:14px;color:inherit}.selo{font-size:.9rem;opacity:.8;margin-top:10px}
+.numeros{text-align:center;margin:28px 0}.numeros strong{font-family:Fraunces,Georgia,serif;font-size:2rem;color:var(--acento)}
 .q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;opacity:.75}"""
 
 def pagina(caminho, titulo, desc, corpo):
@@ -46,6 +47,7 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
   "Questões oficiais com fonte, simulado no estilo da banca, plano de estudos com IA, revisão espaçada e radar de concursos abertos.",
   f"""<h1>Estude o que cai. Passe no concurso.</h1>
 <p>O Aprovô monta seu plano de estudos a partir do edital, treina você com questões oficiais da banca e revisa o que você erra até virar acerto.</p>{CTA}
+<div class="grade numeros"><div><strong>{len(qs)}</strong><br>questões com gabarito</div><div><strong>{len({q['banca'] for q in qs})}</strong><br>bancas</div><div><strong>{len({q['disciplina'] for q in qs})}</strong><br>matérias</div><div><strong>{sum(1 for q in qs if q.get('comentario'))}</strong><br>comentadas</div></div>
 <h2>Por que funciona</h2><div class="grade">
 <div class="caixa"><strong>Mentor com IA</strong><br>Lê o edital, monta o plano da semana e tira dúvidas com base nos seus erros.</div>
 <div class="caixa"><strong>Questões oficiais</strong><br>Provas reais e públicas das bancas, sempre com a fonte, mais questões comentadas.</div>
@@ -62,6 +64,8 @@ GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),
   ("questoes-educa-pb", "Questões da banca EDUCA PB com gabarito", lambda q: "educa" in q["banca"].lower()),
   ("questoes-cebraspe-caixa", "Questões Cebraspe CAIXA (nível médio) com gabarito oficial", lambda q: q["banca"] == "Cebraspe"),
+  ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
+  ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),
   ("raciocinio-logico-para-concurso", "Questões de Raciocínio Lógico para concurso", lambda q: q["disciplina"] == "Raciocínio Lógico"),
   ("informatica-para-concurso", "Questões de Informática para concurso", lambda q: q["disciplina"] == "Informática"),

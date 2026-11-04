@@ -761,3 +761,8 @@ textarea {
 .foco-btn { margin: 0 0 12px; }
 .foco { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; margin: 0 0 12px; color: var(--acento); }
 .foco.pausa { color: var(--tinta-2); }
+.flash { border: 1px solid var(--linha); border-radius: var(--raio); padding: 18px; display: grid; gap: 10px; cursor: pointer; }
+.flash-frente { font-size: 1.15rem; font-weight: 600; margin: 0; }
+.flash-verso { margin: 0; padding-top: 10px; border-top: 1px dashed var(--linha); }
+.flash-botoes { display: flex; gap: 10px; }
+.flash-filtro { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; background: inherit; color: inherit; font: inherit; }

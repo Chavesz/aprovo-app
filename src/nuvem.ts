@@ -23,6 +23,7 @@ const CHAVES = [
   'cq:anuladas',
   'cq:mentor',
   'cq:resumos',
+  'cq:flash',
 ] as const;
 
 const ler = <T,>(k: string, padrao: T): T => {
@@ -124,6 +125,7 @@ export async function baixar(conta: Conta) {
   if (bloco.length && !ler<string[]>('cq:bloco', []).length) gravar('cq:bloco', bloco);
   gravar('cq:anuladas', Array.from(new Set([...ler<string[]>('cq:anuladas', []), ...remoto<string[]>('cq:anuladas', [])])));
   if (!ler('cq:mentor', null) && r['cq:mentor']) gravar('cq:mentor', r['cq:mentor']);
+  gravar('cq:flash', { ...remoto<Record<string, unknown>>('cq:flash', {}), ...ler<Record<string, unknown>>('cq:flash', {}) });
   gravar('cq:resumos', { ...remoto<Record<string, string>>('cq:resumos', {}), ...ler<Record<string, string>>('cq:resumos', {}) });
   const cargo = remoto<string>('cq:cargo', '');
   if (cargo && !ler<string>('cq:cargo', '')) gravar('cq:cargo', cargo);

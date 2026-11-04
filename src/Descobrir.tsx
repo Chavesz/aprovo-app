@@ -1,6 +1,7 @@
 // Aba "Concursos": radar de editais nos diários oficiais (API pública do Querido Diário), páginas das bancas,
 // dica do dia e trilhas de aulas. Só fontes públicas e oficiais; nada de material pago copiado.
 import { useEffect, useState } from 'react';
+import Flashcards from './Flashcards';
 
 const QD = 'https://api.queridodiario.org.br';
 const UFS = 'AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO'.split(' ');
@@ -264,16 +265,17 @@ function Trilhas({ onPraticar }: { onPraticar: (d: string, a: string) => void })
 }
 
 export default function Descobrir({ onPraticar }: { onPraticar: (d: string, a: string) => void }) {
-  const [sub, setSub] = useState<'radar' | 'bancas' | 'trilhas'>('trilhas');
+  const [sub, setSub] = useState<'radar' | 'bancas' | 'trilhas' | 'flash'>('trilhas');
   return (
     <div className="descobrir">
       <div className="sub-abas">
-        {([['trilhas', 'Dicas e trilhas'], ['radar', 'Concursos abertos'], ['bancas', 'Bancas']] as const).map(([id, r]) => (
+        {([['trilhas', 'Dicas e trilhas'], ['flash', 'Flashcards'], ['radar', 'Concursos abertos'], ['bancas', 'Bancas']] as const).map(([id, r]) => (
           <button key={id} className={sub === id ? 'btn' : 'btn btn-sec'} onClick={() => setSub(id)}>{r}</button>
         ))}
       </div>
       {sub === 'radar' && <Radar />}
       {sub === 'bancas' && <Bancas />}
+      {sub === 'flash' && <Flashcards />}
       {sub === 'trilhas' && <Trilhas onPraticar={onPraticar} />}
     </div>
   );
