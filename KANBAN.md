@@ -10,7 +10,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro (hoje ele já carrega depois da abertura)
 - [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
-- [P3] Provas de outras bancas (FCC, Vunesp, IBFC, AOCP, Consulplan, IDECAN): os sites delas montam a lista de provas com JavaScript; precisa achar os PDFs oficiais por outro caminho
+- [P3] Provas de Consulplan e IDECAN (ainda não verificadas). Verificado em 03/11/2026: **AOCP** e **FCC** não publicam o caderno (só editais/gabaritos); **Vunesp** e **IBFC** só liberam a prova com login de candidato. Não dá para importar sem conta, então ficam fora
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -23,6 +23,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P2] **Mentor: modelo "Polícia e Bombeiros (FGV)"** em 1 toque, usando as matérias das provas da PM SP e do CBMERJ
+- [P2] **Pesquisa das bancas FCC, Vunesp, IBFC e AOCP** pelo navegador: nenhuma deixa a prova pública (detalhes no card de Consulplan/IDECAN)
 - [P1] **+73 questões oficiais da FGV: CBMERJ Cadete 2022** (Português, Matemática, Física, Química, Biologia, Geografia, História e Sociologia), gabarito definitivo e fonte; importador FGV agora separa questões coladas na mesma linha e limpa rodapés
 - [P2] **Landing no celular sem botão duplicado**: o botão fixo "Fazer 5 questões grátis" só aparece depois que o botão do topo sai da tela
 - [P2] **Abertura mais rápida**: o app abre com os bancos menores e o da Cebraspe (5+ MB) entra logo depois, sem travar a primeira tela
