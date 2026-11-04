@@ -6,6 +6,8 @@ d = json.loads(p.read_text(encoding="utf-8"))
 FIG = re.compile(r"\bde \d para \d|\bponto [A-Z0-9]\b|\bestado \d\b|\bcurva\b|\bdiagrama|\bcircuito\b", re.I)
 PEQ = {"De", "Do", "Da", "Dos", "Das", "E"}
 def nome(c):
+    if c.startswith("Professor - "):
+        return "Professor de " + c[12:].split(" (")[0].replace("Primeiro Ciclo - ", "")
     c = re.sub(r"^(ANALISTA|TÉCNICO)( -)? (DE )?(ESPECIALIDADE: )?", "", c).replace("/ PERITO", "")
     c = c.split("/")[-1].strip() or c
     return " ".join(w.lower() if w.title() in PEQ | {"Em"} else w.title() for w in c.split())

@@ -82,6 +82,7 @@ GRUPOS = [
   ("questoes-cebraspe", "Questões da Cebraspe (MPU, FUB, CAIXA, UERN e SEMAD São Luís) com gabarito oficial", lambda q: q["banca"] == "Cebraspe"),
   ("questoes-mpu-cebraspe", "Questões do MPU 2010 (Cebraspe) com gabarito oficial", lambda q: q["id"].startswith("cebraspe-mpu")),
   ("questoes-fub-cebraspe", "Questões da FUB 2009 (UnB, Cebraspe) com gabarito oficial", lambda q: q["id"].startswith("cebraspe-fub")),
+  ("questoes-seduc-am-cebraspe", "Questões da SEDUC AM 2011 (professores, Cebraspe) com gabarito oficial", lambda q: "seduc-am" in q["id"]),
   ("questoes-oab-fgv", "Questões da OAB (Exame de Ordem, FGV) com gabarito oficial", lambda q: q["prova"].startswith("OAB")),
   ("questoes-enem", "Questões do ENEM com gabarito oficial (INEP)", lambda q: q["banca"] == "INEP"),
   ("portugues-para-concurso", "Questões de Português para concurso comentadas", lambda q: q["disciplina"] == "Português"),

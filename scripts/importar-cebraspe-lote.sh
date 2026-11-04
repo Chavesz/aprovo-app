@@ -13,6 +13,7 @@ for f in $(echo "$PAG" | grep -oE "${PFX}_0[0-9]{2}_[0-9]+\.pdf" | sort -u); do
   G=$(python -I "$R/scripts/gabarito-cebraspe.py" "g_$k.txt" 2>/dev/null)
   C=$(grep -A4 -m1 "^CARGO" "c_$k.txt" | tail -4 | tr '\n' ' ' | sed -E 's/Provas? Objetiva.*//; s/LEIA COM.*//; s/^ *[0-9]+ *//; s/ +[0-9]+ *$//; s/ +$//; s/\/ */\/ /g' | cut -c1-70)
   [ -n "$C" ] || C=$(grep -m1 -oE "^Cargo [0-9]+: .*" "c_$k.txt" | sed -E 's/^Cargo [0-9]+: //; s/ *– *[0-9]+ *–.*//' | cut -c1-70)
+  [ -n "$C" ] || C=$(echo "$PAG" | grep -B3 -A3 "${PFX}_$k.pdf" | sed 's/<[^>]*>//g' | grep -oE "Caderno de quest&otilde;es - .*" | head -1 | sed -E 's/Caderno de quest&otilde;es - //; s/ - [0-9]+ horas.*//' | python -I -c 'import html,sys;print(html.unescape(sys.stdin.read()).strip())' | cut -c1-70)
   I=$(grep -m1 -oE "^[0-9]{1,3} [A-ZÀ-Ú]" "c_$k.txt" | cut -d' ' -f1)
   F=$(awk '/^CONHECIMENTOS ESPEC/{print n; exit} /^[0-9]{1,3} [A-ZÀ-Ú]/{n=$1}' "c_$k.txt")
   [ ${#G} -ge 50 ] && [ -n "$C" ] || { echo "pula $k"; continue; }

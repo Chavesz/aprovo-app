@@ -1996,7 +1996,7 @@ const AREAS: [string, RegExp][] = [
   ['Tecnologia', /sistemas|banco de dados|suporte|program|computa|tecnologia/i],
   ['Gestão e contas', /contab|contador|bancári|caixa|vendas|economi|orçamento|controle|auditor|administra|gestão|secretári|arquiv|bibliotec/i],
 ];
-const areaDe = (m: string) => AREAS.find(([, r]) => r.test(m))?.[0] ?? 'Outras';
+const areaDe = (m: string) => (/^professor|pedagog/i.test(m) ? 'Educação e comunicação' : undefined) ?? AREAS.find(([, r]) => r.test(m))?.[0] ?? 'Outras';
 
 /** Resumo dos últimos 7 dias, com botão para mandar no WhatsApp (ou no compartilhar do celular). */
 function ResumoSemana({ historico, questoes }: { historico: Resposta[]; questoes: Questao[] }) {

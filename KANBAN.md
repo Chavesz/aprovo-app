@@ -10,7 +10,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 - [P2] Carregar as questões sob demanda (o `cebraspe.json` passou de 5 MB): dividir por concurso e baixar só o do filtro
 - [P2] Mentor usa as matérias do edital para sugerir o filtro certo (ex.: "Enfermagem" do MPU/FUB)
-- [P3] Mais concursos da Cebraspe no mesmo formato: SEDUC AM 2011 (`scripts/importar-cebraspe-lote.sh`)
+- [P3] Provas de outras bancas (FCC, Vunesp, IBFC, AOCP, Consulplan, IDECAN): os sites delas montam a lista de provas com JavaScript; precisa achar os PDFs oficiais por outro caminho
 - [P1] Supabase fase 2: trocar as leituras do Blobs para o Supabase (depois da `SUPABASE_SERVICE_ROLE_KEY` na Netlify, **Kauã**)
 - [P2] Depoimentos reais na landing (coletar com os primeiros alunos, **Kauã**)
 - [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
@@ -23,6 +23,9 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **+703 itens oficiais da SEDUC AM 2011 (Cebraspe)**: professores de 18 áreas, pedagogo, merendeiro e apoio; nome do cargo tirado da página oficial; página de SEO nova
+- [P2] **Resumo semanal compartilhável** no Desempenho: questões, % de acerto, dias de estudo, ponto forte e o que focar, com botão para WhatsApp
+- [P2] **Revisão espaçada 1-3-7-30** (antes 1-7-30) e aviso de quantas voltam amanhã
 - [P1] **Landing /aprovo mais vendedora**: número real de questões no topo (9.592), "Como funciona" em 3 passos, lista das provas oficiais no banco, perguntas frequentes e botão fixo no celular; print em `notas/depois-landing-celular.jpg`
 - [P1] **Plano do dia na home**: faixa no topo do Praticar com o primeiro bloco do plano ("Hoje: 45 min de Direito Administrativo · Treinar agora") ou o convite para montar o plano
 - [P1] **Mentor em 1 toque**: 5 modelos prontos (ACS, ACE, Técnico Cebraspe, Prefeitura nível médio, Enfermagem) geram o plano na hora, sem gastar a IA nem colar o edital
