@@ -795,3 +795,9 @@ textarea {
 .ranking-solo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--linha); border-radius: 12px; margin: 8px 0 16px; }
 .ranking-solo strong { font-size: 1.4rem; color: var(--acento); margin-right: 4px; }
 .ranking-solo .ranking-detalhe { display: block; }
+
+.mentor-modelos { margin: 8px 0 20px; padding: 14px 16px; border: 1px solid var(--linha); border-radius: 12px; }
+.mentor-modelos .mentor-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+
+.plano-hoje { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--linha); border-radius: 12px; margin-top: 12px; margin-bottom: 0; }
+.plano-hoje .link { flex-shrink: 0; font-weight: 600; }

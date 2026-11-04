@@ -23,6 +23,8 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **Plano do dia na home**: faixa no topo do Praticar com o primeiro bloco do plano ("Hoje: 45 min de Direito Administrativo · Treinar agora") ou o convite para montar o plano
+- [P1] **Mentor em 1 toque**: 5 modelos prontos (ACS, ACE, Técnico Cebraspe, Prefeitura nível médio, Enfermagem) geram o plano na hora, sem gastar a IA nem colar o edital
 - [P2] **Filtro de matéria agrupado por área** (Básicas, Direito, Saúde, Engenharia e exatas, Educação e comunicação, Tecnologia, Gestão e contas)
 - [P2] **Praticar no celular**: o cartão da meta começa recolhido e a questão aparece na primeira tela; prints em `notas/antes|depois-meta-praticar.jpg`
 - [P1] **+1.180 itens oficiais da FUB 2009 (Cebraspe)**, 49 cargos, gabarito definitivo e fonte; importador genérico `scripts/importar-cebraspe-lote.sh` (qualquer pasta da Cebraspe) e filtro de texto colado no PDF

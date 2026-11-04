@@ -229,6 +229,16 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
   );
 }
 
+/** Modelos prontos: o aluno começa em 1 toque, sem gastar a IA, e ajusta depois. Nomes iguais às matérias do banco. */
+const d = (nome: string, questoes: number, peso = 1) => ({ nome, questoes, peso, assuntos: [] as string[] });
+const MODELOS: { rotulo: string; cargo: string; banca: string; disciplinas: PerfilMentor['disciplinas'] }[] = [
+  { rotulo: 'Agente de Saúde (ACS)', cargo: 'Agente Comunitário de Saúde', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 5), d('Saúde Pública', 10, 2), d('Específicos ACS', 15, 2)] },
+  { rotulo: 'Agente de Endemias (ACE)', cargo: 'Agente de Combate às Endemias', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 5), d('Saúde Pública', 10, 2), d('Específicos ACE', 15, 2)] },
+  { rotulo: 'Técnico nível médio (Cebraspe)', cargo: 'Técnico Administrativo', banca: 'Cebraspe', disciplinas: [d('Português', 20), d('Informática', 10), d('Direito Constitucional', 10), d('Direito Administrativo', 15, 2), d('Raciocínio Lógico', 10)] },
+  { rotulo: 'Prefeitura (nível médio)', cargo: 'Assistente Administrativo', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 10), d('Informática', 5), d('Atualidades', 5), d('Direito Administrativo', 10, 2)] },
+  { rotulo: 'Enfermagem', cargo: 'Técnico de Enfermagem', banca: '', disciplinas: [d('Português', 10), d('Saúde Pública', 10), d('Enfermagem', 20, 2)] },
+];
+
 function Onboarding({ inicial, onPronto, onUso }: { inicial: PerfilMentor | null; onPronto: (p: PerfilMentor) => void; onUso: (u: Uso) => void }) {
   const [p, setP] = useState<PerfilMentor>(
     inicial ?? { concurso: '', cargo: '', banca: '', editalAberto: true, dataProva: '', horasDia: 2, disciplinas: [], faceis: [], dificeis: [] }
@@ -271,6 +281,20 @@ function Onboarding({ inicial, onPronto, onUso }: { inicial: PerfilMentor | null
       <p className="sobretitulo">Mentor com IA</p>
       <h1 className="titulo">Vamos montar seu plano.</h1>
       <p className="lead">Responda rapidinho. O Mentor usa isso e o seu desempenho nas questões para dizer o que estudar a cada dia.</p>
+
+      {!p.disciplinas.length && (
+        <div className="mentor-modelos">
+          <p className="rotulo">Comece em 1 toque</p>
+          <div className="mentor-chips">
+            {MODELOS.map((m) => (
+              <button key={m.rotulo} className="chip" onClick={() => set({ cargo: p.cargo || m.cargo, banca: p.banca || m.banca, concurso: p.concurso || m.rotulo, disciplinas: m.disciplinas })}>
+                {m.rotulo}
+              </button>
+            ))}
+          </div>
+          <p className="nota">Ou leia o seu edital com a IA aí embaixo para o plano sair sob medida.</p>
+        </div>
+      )}
 
       <div className="mentor-form">
         <label>
@@ -344,7 +368,7 @@ function Onboarding({ inicial, onPronto, onUso }: { inicial: PerfilMentor | null
         <button className="btn" disabled={!p.cargo || !p.disciplinas.length} onClick={() => onPronto(p)}>
           Gerar meu plano
         </button>
-        {!p.disciplinas.length && <p className="nota">Leia o edital com a IA para preencher as matérias.</p>}
+        {!p.disciplinas.length && <p className="nota">Escolha um modelo acima ou leia o edital com a IA para preencher as matérias.</p>}
       </div>
     </section>
   );
@@ -522,5 +546,37 @@ function Planos({ uso }: { uso: Uso | null }) {
         {uso?.plano !== 'pro' && <p className="nota">A assinatura ainda não está aberta.</p>}
       </article>
     </div>
+  );
+}
+
+/** Faixa curta no topo do Praticar: o primeiro bloco do plano de hoje, ou o convite para montar o plano. */
+export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { questoes: Questao[]; historico: Resposta[]; onPraticar: (disciplina: string, assunto: string) => void; onMentor: () => void }) {
+  const perfil = useMemo<PerfilMentor | null>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('cq:mentor') ?? 'null');
+    } catch {
+      return null;
+    }
+  }, []);
+  const bloco = useMemo(() => (perfil?.disciplinas?.length ? montarPlano(perfil, historico, questoes).semana[0]?.blocos[0] : null), [perfil, historico, questoes]);
+  if (!bloco)
+    return (
+      <p className="coluna plano-hoje">
+        <span>Sem plano ainda. O Mentor monta o seu em 1 toque.</span>
+        <button className="link" onClick={onMentor}>
+          Montar plano
+        </button>
+      </p>
+    );
+  return (
+    <p className="coluna plano-hoje">
+      <span>
+        <strong>Hoje:</strong> {bloco.min} min de {bloco.nome}
+        {bloco.assunto && <span className="nota"> · {bloco.assunto}</span>}
+      </span>
+      <button className="link" onClick={() => onPraticar(bloco.nome, bloco.assunto)}>
+        Treinar agora
+      </button>
+    </p>
   );
 }

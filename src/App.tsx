@@ -1,4 +1,4 @@
-import Mentor from './Mentor';
+import Mentor, { PlanoDeHoje } from './Mentor';
 import Descobrir from './Descobrir';
 import { useEffect, useMemo, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
@@ -290,6 +290,17 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
+        {questoes && aba === 'praticar' && (
+          <PlanoDeHoje
+            questoes={questoes}
+            historico={historico}
+            onMentor={() => setAba('mentor')}
+            onPraticar={(disciplina, assunto) => {
+              const temAssunto = questoes.some((q) => q.disciplina === disciplina && q.assunto === assunto);
+              setFiltros({ ...FILTROS_VAZIOS, disciplina: questoes.some((q) => q.disciplina === disciplina) ? disciplina : '', assunto: temAssunto ? assunto : '', status: 'inteligente' });
+            }}
+          />
+        )}
         {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
         {questoes && aba === 'praticar' && <Foco />}
         {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
