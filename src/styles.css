@@ -755,3 +755,6 @@ textarea {
 .teste-alt.nok { border-color: var(--nok); background: color-mix(in srgb, var(--nok) 12%, transparent); }
 .sequencia { color: var(--acento); }
 .compartilhar { display: inline-block; margin: 10px 0; text-decoration: none; }
+.teste-veredito { font-weight: 600; margin: 0; }
+.teste-veredito.ok { color: var(--ok, #2e7d32); }
+.teste-veredito.nok { color: var(--nok); }

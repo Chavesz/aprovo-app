@@ -245,10 +245,10 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {cargo && (
           <button
             className="conta-btn"
-            onClick={() => confirm(`Trocar o cargo de ${cargo} para ${cargo === 'ACE' ? 'ACS' : 'ACE'}?`) && setCargo(cargo === 'ACE' ? 'ACS' : 'ACE')}
+            onClick={() => confirm('Trocar o cargo? Você vai escolher de novo.') && setCargo('')}
             title={CARGOS[cargo]}
           >
-            {cargo}
+            {cargo === 'OUTRO' ? 'Geral' : cargo}
           </button>
         )}
         <button
@@ -274,11 +274,11 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       <main className="conteudo">
         {!cargo && (
           <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
-            <p className="rotulo">Para qual cargo você vai fazer a prova?</p>
+            <p className="rotulo">Para qual concurso você está estudando?</p>
             <p className="nota">As questões de conhecimentos específicos mudam conforme o cargo. Dá para trocar depois no topo.</p>
             {(Object.keys(CARGOS) as Cargo[]).map((c) => (
               <button key={c} className="btn" onClick={() => setCargo(c)}>
-                {c} · {CARGOS[c]}
+                {c === 'OUTRO' ? CARGOS[c] : `${c} · ${CARGOS[c]}`}
               </button>
             ))}
           </div>
@@ -783,8 +783,8 @@ const ANULADAS = new Set([
   'educa-site-juripiranga-2024-10',
 ]);
 
-type Cargo = 'ACE' | 'ACS';
-const CARGOS: Record<Cargo, string> = { ACE: 'Agente de Combate às Endemias', ACS: 'Agente Comunitário de Saúde' };
+type Cargo = 'ACE' | 'ACS' | 'OUTRO';
+const CARGOS: Record<Cargo, string> = { ACE: 'Agente de Combate às Endemias', ACS: 'Agente Comunitário de Saúde', OUTRO: 'Outro concurso (todas as matérias)' };
 
 const FORMATO_ACE: { nome: string; n: number; peso: number; filtro: (q: Questao) => boolean }[] = [
   { nome: 'Português', n: 15, peso: 2, filtro: (q) => q.disciplina === 'Português' || q.disciplina === 'Língua Portuguesa' },
@@ -1051,7 +1051,7 @@ function Simulado(props: {
         </div>
         <div className="prova-estilo">
           <p className="rotulo">Prova no estilo da banca</p>
-          <p className="prova-estilo-titulo">{props.cargo} Cuité de Mamanguape · EDUCA PB</p>
+          <p className="prova-estilo-titulo">{props.cargo === 'OUTRO' ? 'Prova modelo' : props.cargo} Cuité de Mamanguape · EDUCA PB</p>
           <p className="nota">
             40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
             Nota de 0 a 100, começando pelos assuntos em que você mais erra.

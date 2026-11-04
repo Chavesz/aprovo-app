@@ -8,6 +8,11 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+- [P1] Exportar o plano de estudos da semana para a agenda do celular (.ics)
+- [P1] Modo foco: cronômetro Pomodoro 25/5 integrado ao Praticar
+- [P2] Flashcards de lei seca (artigos-chave da CF, 8.080, 11.350) com revisão espaçada
+- [P2] Depoimentos e números reais na landing (questões resolvidas, alunos)
+- [P2] Tirar o selo "Powered by Netlify" (configuração do site na Netlify, **Kauã**)
 - [P3] Lembrete diário por notificação push (precisa de chaves VAPID e de um agendador)
 - [P2] Cobrança real do plano Pro (Mercado Pago / Stripe), **depende do Kauã** (conta e chave)
 - [P3] Notificação/e-mail de concurso novo na cidade escolhida
@@ -17,6 +22,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- [P1] **Crítica de UX do funil**: botão da landing leva direto ao teste (/?teste=1), menu da landing estilizado, teste com veredito, barra de progresso e "pular e criar conta"; cadastro aceita "Outro concurso" (não só ACE/ACS)
 - [P1] **Onboarding que converte**: teste de 5 questões comentadas sem cadastro na tela de entrada, terminando no cadastro
 - [P2] **Desafiar no WhatsApp**: botão no resultado do simulado com a nota e o link da landing
 - [P2] **Sequência de dias seguidos** na meta diária

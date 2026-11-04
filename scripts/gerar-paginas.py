@@ -17,15 +17,17 @@ CSS = """:root{--papel:#f4efe6;--tinta:#1d1a16;--acento:#173f35;--linha:#d9d0c1}
 main{max-width:760px;margin:0 auto;padding:32px 16px 64px}h1,h2{font-family:Fraunces,Georgia,serif;line-height:1.15}
 h1{font-size:clamp(2rem,6vw,3.2rem);margin:.2em 0}a.cta{display:inline-block;background:var(--acento);color:var(--papel);padding:14px 22px;border-radius:10px;text-decoration:none;font-weight:600}
 .grade{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.caixa{border:1px solid var(--linha);border-radius:12px;padding:16px}
-.q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;opacity:.75}nav a{margin-right:12px}"""
+nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}nav a{color:inherit;text-decoration:none;font-weight:500}nav .marca{font-family:Fraunces,Georgia,serif;font-size:1.3rem;font-weight:650;margin-right:auto}nav .entrar{border:1px solid var(--linha);padding:6px 14px;border-radius:999px}
+a.sec{display:inline-block;margin-left:14px;color:inherit}.selo{font-size:.9rem;opacity:.8;margin-top:10px}
+.q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;opacity:.75}"""
 
 def pagina(caminho, titulo, desc, corpo):
     (PUB / caminho).parent.mkdir(parents=True, exist_ok=True)
     (PUB / caminho).write_text(f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(titulo)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{SITE}/{caminho.replace('.html','')}">
 <meta property="og:title" content="{html.escape(titulo)}"><meta property="og:description" content="{html.escape(desc)}">
-<link rel="icon" href="/icons/icone.svg"><style>{CSS}</style></head><body><main>
-<nav><a href="/aprovo">Aprovô</a><a href="/concursos/">Concursos</a><a href="/">Entrar</a></nav>{corpo}</main></body></html>""", encoding="utf-8")
+<link rel="icon" href="/icons/icone.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet"><style>{CSS}</style></head><body><main>
+<nav><a class="marca" href="/aprovo">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/">Entrar</a></nav>{corpo}</main></body></html>""", encoding="utf-8")
     return caminho
 
 def amostra(filtro, n=5):
@@ -37,7 +39,7 @@ def amostra(filtro, n=5):
 <p>{html.escape(q['comando'])}</p><ol type="A">{alts}</ol><p class="fonte">Gabarito e comentário no app. Fonte: {html.escape(q['prova'])}</p></div>"""
     return out
 
-CTA = '<p><a class="cta" href="/">Treinar grátis agora</a></p>'
+CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
 paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no concurso",

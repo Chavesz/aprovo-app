@@ -21,6 +21,7 @@ function TesteRapido({ onFim }: { onFim: (acertos: number) => void }) {
   return (
     <div className="teste-rapido">
       <p className="rotulo">Questão {i + 1} de 5 · {q.disciplina}</p>
+      <div className="barra" aria-hidden><span style={{ width: `${(i + (marcada ? 1 : 0)) * 20}%` }} /></div>
       <p>{q.comando}</p>
       <ol className="teste-alts">
         {q.alternativas.map((a) => (
@@ -40,6 +41,9 @@ function TesteRapido({ onFim }: { onFim: (acertos: number) => void }) {
       </ol>
       {marcada && (
         <>
+          <p className={`teste-veredito ${marcada === q.gabarito ? 'ok' : 'nok'}`}>
+            {marcada === q.gabarito ? '✓ Acertou!' : `✗ Errou. A certa é a ${q.gabarito}.`}
+          </p>
           <p className="feedback-extra">{q.comentario}</p>
           {q.macete && <p className="feedback-extra macete">💡 {q.macete}</p>}
           <button
@@ -52,6 +56,7 @@ function TesteRapido({ onFim }: { onFim: (acertos: number) => void }) {
           >
             {i === 4 ? 'Ver meu resultado' : 'Próxima'}
           </button>
+          <button className="link" onClick={() => onFim(acertos)}>Pular e criar conta</button>
         </>
       )}
     </div>
@@ -67,7 +72,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
-  const [teste, setTeste] = useState<'nao' | 'fazendo' | number>('nao');
+  const [teste, setTeste] = useState<'nao' | 'fazendo' | number>(() => (new URLSearchParams(location.search).has('teste') ? 'fazendo' : 'nao'));
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
