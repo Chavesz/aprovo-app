@@ -12,7 +12,7 @@ Nunca mande nenhuma dessas chaves por chat, e-mail ou commit. Elas só vão no p
 | # | O quê | Libera | Tempo |
 |---|---|---|---|
 | 1 | `ANTHROPIC_API_KEY` | O Mentor com IA: conversa, leitura do edital, resumos e geração de questões | 5 min |
-| 2 | Mercado Pago (`MP_ACCESS_TOKEN` + webhook) **ou** link pronto (`CHECKOUT_URL` + `ADMIN_TOKEN`) | A assinatura do Pro, R$ 50/mês | 20 min |
+| 2 | Cakto (`CAKTO_CHECKOUT_URL`, `CAKTO_WEBHOOK_SECRET`, `ADMIN_TOKEN` + webhook) | A assinatura do Pro, R$ 50/mês, com Pix | 20 min |
 | 3 | Contato e responsável | Rodapé e termos com CNPJ/CPF e e-mail de suporte (me passe os dados) | 5 min |
 | 4 | Resend (`RESEND_API_KEY`, `EMAIL_DE`, `EMAIL_SEGREDO`) | E-mail de boas-vindas, lembrete diário de revisão e alerta semanal de concurso na cidade | 30 min |
 | 5 | `SUPABASE_SERVICE_ROLE_KEY` | Cópia de segurança dos dados no Supabase (o app já funciona sem) | 5 min |
@@ -31,22 +31,22 @@ Nunca mande nenhuma dessas chaves por chat, e-mail ou commit. Elas só vão no p
   2. Abra a aba **Mentor** e mande "Oi".
   3. A resposta deve chegar e o contador de mensagens do dia deve subir (ex.: 1/15). Se aparecer erro de IA indisponível, a chave ou o crédito estão faltando.
 
-### 2. Cobrança do Pro (R$ 50/mês, recorrente)
+### 2. Cobrança do Pro pela Cakto (R$ 50/mês, Pix ou cartão)
 
-Escolha **um** dos dois caminhos. O botão "Assinar" da landing e do app usa o que estiver configurado.
+O Pro libera e renova sozinho pelo webhook. Cancelamento, estorno ou chargeback voltam o aluno para o grátis.
 
-**Caminho A: Mercado Pago automático (recomendado).** O Pro libera e renova sozinho.
-- **Onde pegar:** em [mercadopago.com.br/developers](https://www.mercadopago.com.br/developers) → *Suas integrações* → *Criar aplicação* (produto **Assinaturas**). Em *Credenciais de produção*, copie o **Access Token** (`APP_USR-...`).
-- **Onde colar (Netlify):** `MP_ACCESS_TOKEN` = o Access Token. Opcional: `PRO_PRECO` (padrão `50`).
-- **Webhook:** no painel do Mercado Pago → *Webhooks* → *Configurar notificações*. URL `https://aprovoapp.netlify.app/api/mp-webhook`, eventos **Planos e assinaturas** (assinaturas e pagamentos autorizados) e **Pagamentos**. Copie a **assinatura secreta** para `MP_WEBHOOK_SECRET`.
-- **Como testar:** abra `https://aprovoapp.netlify.app/api/assinar`: deve vir `"modo":"mercadopago"`. No app, Mentor → Planos → **Assinar**. Depois do pagamento, o contador do Mentor passa a `/300` em até 1 minuto. O aluno cancela em Mentor → Planos → *Cancelar assinatura*.
+1. **Na Cakto:** crie o produto **Aprovô Pro**, tipo **assinatura mensal**, R$ 50, com Pix e cartão. Copie o link da oferta (ex.: `https://pay.cakto.com.br/abc123`).
+2. **Na Cakto → Webhooks:** cadastre a URL `https://aprovoapp.netlify.app/api/cakto-webhook`. Marque os eventos de compra aprovada, recusada, reembolso, chargeback e todos os de assinatura (criada, renovada, cancelada, atrasada). Copie o **segredo** do webhook.
+3. **Na Netlify** (Site configuration → Environment variables):
+   - `CAKTO_CHECKOUT_URL` = o link da oferta.
+   - `CAKTO_WEBHOOK_SECRET` = o segredo do webhook (16+ caracteres).
+   - `ADMIN_TOKEN` = um texto aleatório com 32+ caracteres (para liberar o Pro à mão em `/admin.html`).
+4. Faça **Deploys → Trigger deploy** para valer.
 
-**Caminho B: link pronto (Mercado Pago ou Cakto), liberação à mão.** Mais rápido para começar.
-- **Onde pegar:** crie um **link de assinatura** de R$ 50/mês no Mercado Pago (*Assinaturas* → *Criar plano*) ou na Cakto, e copie o link `https://...`.
-- **Onde colar (Netlify):** `CHECKOUT_URL` = o link. Também vale `VITE_CHECKOUT_URL`.
-- **Liberar o Pro:** quem paga informa o usuário do Aprovô no checkout. Crie `ADMIN_TOKEN` na Netlify (texto aleatório com 32+ caracteres), abra `https://aprovoapp.netlify.app/admin.html`, cole a chave e o usuário e toque em **Liberar Pro** (31 dias).
-
-Sem nenhuma das duas variáveis, o botão mostra "Quero o Pro quando abrir" e nada é cobrado.
+- **Como o aluno é achado:** o botão "Assinar" do app manda para a Cakto com uma referência do aluno (`sck`) e o e-mail já preenchido. Sem referência, vale o e-mail do comprador. Quem paga antes de criar conta fica pendente e vira Pro ao criar a conta (ou salvar o e-mail) com o mesmo endereço.
+- **Plano B, se algo falhar:** em `/admin.html`, cole o `ADMIN_TOKEN`, digite o **usuário ou o e-mail** do aluno e clique em liberar o Pro.
+- **Como testar:** abra `https://aprovoapp.netlify.app/api/assinar`. Deve mostrar `"modo":"cakto"`. Depois, na Cakto, use **Enviar teste** do webhook: a resposta deve ser `200` com `"ok":true`.
+- Mercado Pago (`MP_ACCESS_TOKEN`) continua suportado, mas a Cakto tem prioridade quando `CAKTO_CHECKOUT_URL` existe.
 
 ### 3. Preço do Pro
 

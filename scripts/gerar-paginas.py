@@ -96,7 +96,7 @@ FAIXA = "".join(f'<li><strong>{html.escape(o)}</strong><span>{n:,} questões</sp
 BANCAS = sorted({q["banca"] for q in qs if not re.search(r"aprov|autoral|estilo|elaborad", q["banca"], re.I)})
 NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
 # Preço do Pro (mensal, recorrente). O botão "Assinar" passa por /api/assinar?ir=1, que manda para o
-# checkout configurado na Netlify (Mercado Pago ou link pronto) ou para a criação de conta.
+# checkout configurado na Netlify (Cakto, Mercado Pago ou link pronto) ou para a criação de conta.
 PRO_PRECO = "50"
 
 CSS_LANDING = """.hero h1{font-size:clamp(2rem,7vw,3.2rem)}.beneficios{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:0}.beneficios li{background:var(--sup);border:1px solid var(--linha);border-radius:16px;padding:20px}.beneficios strong{display:block;font-size:1.15rem;margin-bottom:4px}
@@ -152,9 +152,9 @@ paginas.append(pagina("termos.html", "Termos de uso | Aprovô", "Termos de uso d
 
 paginas.append(pagina("privacidade.html", "Política de privacidade | Aprovô", "Quais dados o Aprovô guarda, para quê e como pedir a exclusão.",
   """<article class="legal"><h1>Política de privacidade</h1><p>Atualizado em 05/11/2026.</p>
-<h2>O que guardamos</h2><ul><li>Conta: usuário, nome e senha (guardada só como hash, nunca em texto).</li><li>E-mail, se você informar: para recibos, lembretes de revisão e avisos de concurso.</li><li>Seu estudo: respostas, simulados, anotações, plano do Mentor e mensagens enviadas ao Mentor.</li><li>Assinatura: situação do plano e identificador do pagamento. Dados de cartão ficam só com o meio de pagamento (Mercado Pago ou similar); o Aprovô não vê nem guarda o número do cartão.</li></ul>
+<h2>O que guardamos</h2><ul><li>Conta: usuário, nome e senha (guardada só como hash, nunca em texto).</li><li>E-mail, se você informar: para recibos, lembretes de revisão e avisos de concurso.</li><li>Seu estudo: respostas, simulados, anotações, plano do Mentor e mensagens enviadas ao Mentor.</li><li>Assinatura: situação do plano e identificador do pagamento. Dados de cartão ficam só com o meio de pagamento (Cakto); o Aprovô não vê nem guarda o número do cartão.</li></ul>
 <h2>Para que usamos</h2><p>Para o app funcionar (salvar o progresso e sincronizar aparelhos), montar o seu plano, mostrar estatísticas e ranking (com seu nome de exibição) e cobrar o plano Pro. Não vendemos seus dados.</p>
-<h2>Com quem compartilhamos</h2><p>Só com os serviços que fazem o app funcionar: hospedagem (Netlify), banco de dados (Supabase), inteligência artificial (Anthropic, para responder ao Mentor), e-mail (Resend) e pagamento (Mercado Pago). Cada um recebe só o necessário.</p>
+<h2>Com quem compartilhamos</h2><p>Só com os serviços que fazem o app funcionar: hospedagem (Netlify), banco de dados (Supabase), inteligência artificial (Anthropic, para responder ao Mentor), e-mail (Resend) e pagamento (Cakto). Cada um recebe só o necessário.</p>
 <h2>Seus direitos (LGPD)</h2><p>Você pode pedir acesso, correção ou exclusão dos seus dados e cancelar e-mails a qualquer momento pelo link no rodapé de cada e-mail. Para excluir a conta, fale com o suporte pelo app.</p>
 <p><a href="/termos">Termos de uso</a></p></article>"""))
 
