@@ -49,6 +49,8 @@ export default function App() {
       .finally(() => setPronto(true));
   }, [conta]);
 
+  // Visitante sem conta abrindo a raiz vê a landing; o "Entrar" da landing usa /?entrar=1.
+  if (!conta && location.pathname === '/' && !location.search) { location.replace('/aprovo'); return null; }
   if (!conta) return <Login onEntrar={setConta} />;
   if (!pronto) return <Carregando />;
   return (

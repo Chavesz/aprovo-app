@@ -65,7 +65,7 @@ def pagina(caminho, titulo, desc, corpo):
 <title>{html.escape(titulo)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{SITE}/{caminho.replace('.html','')}">
 <meta name="theme-color" content="#4a2f7a"><meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Aprovô"><meta property="og:url" content="{SITE}/{caminho.replace('index.html','').replace('.html','')}"><meta property="og:title" content="{html.escape(titulo)}"><meta property="og:description" content="{html.escape(desc)}"><meta property="og:image" content="{SITE}/img/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{SITE}/img/og.png">
 <link rel="icon" href="/icons/icone.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet"></noscript><style>{CSS}{CSS_LANDING}</style></head><body><main>
-<nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/">Entrar</a></nav>{corpo}<footer>Aprovô · questões oficiais com fonte e gabarito definitivo. Questões marcadas como estilo são autorais.<nav class="rodape" aria-label="Rodapé"><a href="/aprovo#planos">Preço</a><a href="/termos">Termos de uso</a><a href="/privacidade">Privacidade</a><a href="/concursos/">Questões por concurso</a></nav></footer></main></body></html>""", encoding="utf-8")
+<nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/?entrar=1">Entrar</a></nav>{corpo}<footer>Aprovô · questões oficiais com fonte e gabarito definitivo. Questões marcadas como estilo são autorais.<nav class="rodape" aria-label="Rodapé"><a href="/aprovo#planos">Preço</a><a href="/termos">Termos de uso</a><a href="/privacidade">Privacidade</a><a href="/concursos/">Questões por concurso</a></nav></footer></main></body></html>""", encoding="utf-8")
     return caminho
 
 def amostra(filtro, n=5):
@@ -79,7 +79,7 @@ def amostra(filtro, n=5):
 
 NQ = f"{len(qs):,}".replace(",", ".")
 PROVAS = sorted({("OAB (FGV)" if q["prova"].startswith("OAB") else "ENEM (INEP)" if q["banca"] == "INEP" else re.sub(r" ·.*| \(.*", "", q["prova"])) for q in qs if q["banca"] in ("Cebraspe", "FGV", "INEP", "Consulplan")})
-CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
+CTA = '<p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/?entrar=1">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p>'
 paginas = []
 
 def _orgao(q):
@@ -99,7 +99,8 @@ NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
 # checkout configurado na Netlify (Cakto, Mercado Pago ou link pronto) ou para a criação de conta.
 PRO_PRECO = "50"
 
-CSS_LANDING = """.hero h1{font-size:clamp(2rem,7vw,3.2rem)}.beneficios{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:0}.beneficios li{background:var(--sup);border:1px solid var(--linha);border-radius:16px;padding:20px}.beneficios strong{display:block;font-size:1.15rem;margin-bottom:4px}
+CSS_LANDING = """.hero-print{margin:0;display:flex;justify-content:center}.hero-print img{width:min(300px,60vw);height:auto;border-radius:30px;border:8px solid #1d1530;box-shadow:0 30px 60px -30px rgba(74,47,122,.7);transform:rotate(2deg)}.numeros{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.numeros li{border:1px solid var(--linha);border-radius:14px;padding:14px 16px;color:var(--tinta2);font-size:.92rem}.numeros strong{display:block;font-size:1.35rem;color:var(--tinta)}
+.hero h1{font-size:clamp(2rem,7vw,3.2rem)}.beneficios{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:0}.beneficios li{background:var(--sup);border:1px solid var(--linha);border-radius:16px;padding:20px}.beneficios strong{display:block;font-size:1.15rem;margin-bottom:4px}
 .prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(72%,260px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;margin:0 -2px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}}.prints figure{margin:0;scroll-snap-align:start}.prints img{width:100%;height:auto;aspect-ratio:375/812;border-radius:22px;border:1px solid var(--linha);box-shadow:0 18px 40px -28px rgba(42,31,61,.5);background:var(--sup)}.prints figcaption{font-size:.9rem;color:var(--tinta2);margin-top:8px}
 .preco-bloco{max-width:440px;margin:0 auto;background:var(--sup);border:2px solid var(--marca);border-radius:22px;padding:28px 22px;text-align:center}.preco-bloco h3{margin:0;font-size:1.3rem}.preco-bloco .preco{font-size:3rem;margin:8px 0 0}.preco-bloco .check{text-align:left;margin:18px 0}.preco-bloco .cta{width:100%}.cancele{margin:10px 0 0;font-weight:600}.gratis{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--linha);font-size:.95rem;color:var(--tinta2)}.gratis a{font-weight:700;color:var(--marca)}
 .rodape{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}.rodape a{color:var(--tinta2)}.legal h2{font-size:1.2rem;margin-top:28px}.legal p,.legal li{color:var(--tinta2)}"""
@@ -116,10 +117,8 @@ paginas.append(pagina("aprovo.html", "Aprovô: questões de concurso, simulados 
 <h1>Estude o que <span class="grifo">cai na sua prova</span>, todo dia.</h1>
 <p class="lead">Questões com gabarito, simulados no estilo da banca e um mentor com IA que monta o seu plano e explica cada erro. Você estuda com método; o resto é com você.</p>
 <p><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a><a class="sec" href="/?teste=1">Testar grátis</a></p><p class="selo">Cancele quando quiser. Teste 5 questões sem cadastro.</p></div>
-<div class="demo" aria-hidden="true"><p class="meta">Direito Administrativo · Certo ou Errado</p>
-<p class="cmd">A administração pública pode anular os próprios atos quando eivados de vício de legalidade.</p>
-<div class="alt nok"><b>E</b>Errado<small>✕ Sua resposta</small></div><div class="alt ok"><b>C</b>Certo<small>✓ Correta</small></div>
-<div class="mentor-bal"><strong>Mentor:</strong> é a autotutela (Súmula 473 do STF). Vou trazer essa de volta amanhã.</div></div></div>
+<figure class="hero-print"><img src="/img/print-questao.jpg" width="375" height="812" alt="Questão respondida no Aprovô com o gabarito e o botão Por que errei"></figure></div>
+<ul class="numeros"><li><strong>{NQ}</strong>questões com gabarito</li><li><strong>Cebraspe, FGV</strong>e outras bancas</li><li><strong>IA</strong>que explica cada erro</li><li><strong>R$ {PRO_PRECO}</strong>por mês, sem fidelidade</li></ul>
 <section><p class="kicker">Por que o Aprovô</p><h2>Três coisas, bem feitas.</h2><ul class="beneficios">
 <li><strong>{NQ} questões com gabarito</strong>Provas oficiais com fonte e gabarito definitivo (Cebraspe, FGV, Consulplan e outras) e questões autorais marcadas como "estilo".</li>
 <li><strong>Simulados no estilo da banca</strong>Cronômetro, Certo/Errado com a nota que desconta o erro, simulado da semana com ranking e revisão do que você errou.</li>
