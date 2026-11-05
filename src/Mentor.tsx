@@ -579,58 +579,101 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
 }
 
 const COMPARA: [string, string, string][] = [
-  ['Questões oficiais com gabarito', 'Todas', 'Todas'],
-  ['Simulado da semana e ranking', '✓', '✓'],
+  ['Questões oficiais com gabarito', '✓', '✓'],
+  ['Simulados no estilo da banca e ranking', '✓', '✓'],
   ['Revisão espaçada (1, 3, 7 e 30 dias)', '✓', '✓'],
-  ['Plano do dia pelo edital', '✓', '✓ revisado toda semana'],
-  ['Mentor IA: conversa, explicação e resumo', '15 por dia', '300 por dia'],
-  ['Resumo do assunto para baixar em PDF', '✓ (conta nas 15)', '✓ (conta nas 300)'],
+  ['Mentor IA: conversa e "Por que errei?"', '15 por dia', '300 por dia'],
+  ['Plano até a prova, revisado toda semana', 'Plano do dia', '✓'],
+  ['Resumo do assunto em PDF', 'Conta nas 15', '✓'],
 ];
 
-/** Comparação Grátis x Pro. A assinatura ainda não abriu: o botão só registra o interesse neste aparelho. */
+type Venda = { disponivel: boolean; modo: 'mercadopago' | 'link' | 'nenhum'; preco: number; link?: string; plano?: 'gratis' | 'pro'; status?: string; ate?: number; recorrente?: boolean };
+const LINK_CHECKOUT = String(import.meta.env.VITE_CHECKOUT_URL ?? '').trim();
+const reais = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ','));
+
+/** Plano Pro mensal: assinatura recorrente (Mercado Pago), link pronto de checkout ou, sem nada configurado, lista de interesse. */
 function Planos({ uso }: { uso: Uso | null }) {
-  const pro = uso?.plano === 'pro';
-  const [quer, setQuer] = useState(() => { try { return !!localStorage.getItem('cq:quer-pro'); } catch { return false; } });
-  const [venda, setVenda] = useState<{ disponivel: boolean; preco: number | null; dias: number } | null>(null);
+  const [venda, setVenda] = useState<Venda | null>(null);
   const [abrindo, setAbrindo] = useState(false);
   const [erroPg, setErroPg] = useState('');
-  useEffect(() => { fetch('/api/assinar').then((r) => r.json()).then(setVenda).catch(() => setVenda(null)); }, []);
+  const [pedirEmail, setPedirEmail] = useState(false);
+  const [email, setEmail] = useState('');
+  const [quer, setQuer] = useState(() => { try { return !!localStorage.getItem('cq:quer-pro'); } catch { return false; } });
+  const auth = { authorization: `Bearer ${contaSalva()?.token ?? ''}` };
+  const carregar = () => fetch('/api/assinar', { headers: auth }).then((r) => r.json()).then(setVenda).catch(() => setVenda(null));
+  useEffect(() => { carregar(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pro = venda?.plano === 'pro' || uso?.plano === 'pro';
+  const preco = venda?.preco ?? 50;
+  const link = venda?.modo === 'link' ? venda.link : venda?.modo !== 'mercadopago' ? LINK_CHECKOUT : '';
+  const podeAssinar = venda?.modo === 'mercadopago' || !!link;
+
   async function assinar() {
-    setAbrindo(true); setErroPg('');
+    setErroPg('');
+    if (link) { window.open(link, '_blank', 'noopener'); return; }
+    setAbrindo(true);
     try {
-      const r = await fetch('/api/assinar', { method: 'POST', headers: { authorization: `Bearer ${contaSalva()?.token ?? ''}` } });
-      const j = (await r.json()) as { url?: string; erro?: string };
+      const r = await fetch('/api/assinar', { method: 'POST', headers: { ...auth, 'content-type': 'application/json' }, body: JSON.stringify(email ? { email } : {}) });
+      const j = (await r.json()) as { url?: string; erro?: string; precisaEmail?: boolean };
       if (j.url) { location.href = j.url; return; }
+      if (j.precisaEmail) setPedirEmail(true);
       setErroPg(j.erro ?? 'Não foi possível abrir o pagamento.');
     } catch { setErroPg('Sem conexão. Tente de novo.'); }
     setAbrindo(false);
   }
+
+  async function cancelar() {
+    if (!confirm('Cancelar a assinatura? Você continua Pro até o fim do período já pago e não será cobrado de novo.')) return;
+    setAbrindo(true); setErroPg('');
+    try {
+      const r = await fetch('/api/assinar', { method: 'DELETE', headers: auth });
+      const j = (await r.json()) as { erro?: string };
+      if (j.erro) setErroPg(j.erro); else await carregar();
+    } catch { setErroPg('Sem conexão. Tente de novo.'); }
+    setAbrindo(false);
+  }
+
   return (
-    <section className="planos-pro" aria-labelledby="planos-titulo">
+    <section className="planos-pro" id="planos" aria-labelledby="planos-titulo">
       <p className="rotulo">Planos</p>
       <h2 id="planos-titulo">{pro ? 'Você é Pro: o Mentor está do seu lado até o dia da prova.' : 'Pro: o Mentor do seu lado até o dia da prova.'}</h2>
-      {!pro && venda?.disponivel && (
-        <p className="planos-preco"><strong>R$ {venda.preco!.toFixed(2).replace('.', ',')}</strong> <span>por {venda.dias} dias</span></p>
+      {!pro && (
+        <p className="planos-preco"><strong>R$ {reais(preco)}</strong> <span>por mês · cancele quando quiser</span></p>
       )}
       <div className="planos-tabela" role="table" aria-label="Comparação entre os planos Grátis e Pro">
-        <div className="pt-linha pt-cab" role="row"><span role="columnheader">Recurso</span><span role="columnheader" className={!pro ? 'atual' : ''}>Grátis{!pro && <small>seu plano</small>}</span><span role="columnheader" className={pro ? 'atual' : ''}>Pro{pro ? <small>seu plano</small> : !venda?.disponivel && <small>em breve</small>}</span></div>
+        <div className="pt-linha pt-cab" role="row"><span role="columnheader">Recurso</span><span role="columnheader" className={!pro ? 'atual' : ''}>Grátis{!pro && <small>seu plano</small>}</span><span role="columnheader" className={pro ? 'atual' : ''}>Pro{pro && <small>seu plano</small>}</span></div>
         {COMPARA.map(([r, g, p]) => (
           <div className="pt-linha" role="row" key={r}><span role="cell">{r}</span><span role="cell">{g}</span><span role="cell" className="pt-pro">{p}</span></div>
         ))}
       </div>
-      {!pro && venda?.disponivel && (
+
+      {pro && (
+        <p className="nota">
+          {venda?.ate ? `Acesso Pro até ${new Date(venda.ate).toLocaleDateString('pt-BR')}${venda.recorrente ? ', renovando todo mês' : ''}.` : 'Acesso Pro ativo.'}{' '}
+          {venda?.recorrente && <button className="link" disabled={abrindo} onClick={cancelar}>Cancelar assinatura</button>}
+          {venda?.status === 'cancelada' && ' Assinatura cancelada: não haverá nova cobrança.'}
+        </p>
+      )}
+
+      {!pro && podeAssinar && (
         <>
-          <button className="btn btn-grande" disabled={abrindo} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : 'Assinar o Pro'}</button>
-          <p className="selos-pro"><span>Pix ou cartão</span><span>Sem renovação automática</span><span>Mercado Pago</span></p>
+          {pedirEmail && (
+            <label className="email-recibo">
+              <span className="rotulo">E-mail para o recibo</span>
+              <input type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />
+            </label>
+          )}
+          <button className="btn btn-grande" disabled={abrindo || (pedirEmail && !email)} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : `Assinar · R$ ${reais(preco)}/mês`}</button>
+          <p className="selos-pro"><span>Pix ou cartão</span><span>Cancele quando quiser</span><span>Pagamento seguro</span></p>
+          {link && <p className="nota">Depois de pagar, seu Pro é liberado em até 24 h. No pagamento, informe seu usuário do Aprovô: <strong>{contaSalva()?.usuario}</strong>.</p>}
           {erroPg && <p className="aviso" role="alert">{erroPg}</p>}
         </>
       )}
-      {!pro && !venda?.disponivel && (
+      {!pro && venda && !podeAssinar && (
         quer ? <p className="aviso-nota ok">Anotado! Quando o Pro abrir, você vê o aviso aqui no app primeiro.</p> : (
           <button className="btn" onClick={() => { try { localStorage.setItem('cq:quer-pro', '1'); } catch { /* sem armazenamento */ } setQuer(true); }}>Quero o Pro quando abrir</button>
         )
       )}
-      {!venda?.disponivel && <p className="nota">O preço será anunciado no lançamento. Nada é cobrado hoje.</p>}
     </section>
   );
 }

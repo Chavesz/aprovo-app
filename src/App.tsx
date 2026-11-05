@@ -67,6 +67,18 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [geradas, setGeradas] = usePersist<Questao[]>('cq:geradas', []);
   const [erro, setErro] = useState(false);
   const [aba, setAba] = usePersist<Aba>('cq:aba', 'praticar');
+  // ?assinar=1 (botão da landing) abre os Planos; ?pro=ok é a volta do pagamento.
+  const [aviso, setAvisoPro] = useState(() => (new URLSearchParams(location.search).get('pro') === 'ok' ? 'Pagamento recebido! Seu Pro é liberado em instantes: se o contador do Mentor ainda mostrar /15, recarregue em 1 minuto.' : ''));
+  useEffect(() => {
+    if (!conta) return;
+    const q = new URLSearchParams(location.search);
+    if (!q.has('assinar') && !q.has('pro')) return;
+    if (q.has('assinar')) {
+      setAba('mentor');
+      setTimeout(() => document.getElementById('planos')?.scrollIntoView({ block: 'start' }), 600);
+    }
+    history.replaceState(null, '', location.pathname);
+  }, [conta, setAba]);
   useEffect(() => {
     const ir = (e: Event) => { setAba((e as CustomEvent<Aba>).detail); scrollTo(0, 0); };
     window.addEventListener('aprovo:aba', ir);
@@ -297,6 +309,11 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       </header>
 
       <main className="conteudo">
+        {aviso && (
+          <p className="aviso-nota ok aviso-pro" role="status">
+            {aviso} <button className="link" onClick={() => setAvisoPro('')}>Fechar</button>
+          </p>
+        )}
         {!cargo && (
           <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
             <p className="rotulo">Para qual concurso você está estudando?</p>

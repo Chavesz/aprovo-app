@@ -873,3 +873,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .selos-pro{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}.selos-pro span{font-size:.8rem;border:1px solid var(--linha);border-radius:999px;padding:3px 10px}
 .limite-card{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:8px 0;padding:12px 14px;border-radius:12px;background:var(--grifo)}
 .porque-errei{margin:10px 0 4px}
+.aviso-pro{margin:0 0 16px}.email-recibo{display:grid;gap:6px;margin:0 0 10px}.email-recibo input{font:inherit;min-height:48px;padding:0 12px;border:1px solid var(--linha);border-radius:10px;background:var(--papel);color:var(--tinta)}

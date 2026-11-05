@@ -66,7 +66,9 @@ function TesteRapido({ onFim }: { onFim: (acertos: number) => void }) {
 import { autenticar, type Conta } from './nuvem';
 
 export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
-  const [modo, setModo] = useState<'entrar' | 'criar'>('entrar');
+  // Veio do botão "Assinar" da landing: vai direto para criar a conta (sem o teste grátis no caminho).
+  const querAssinar = new URLSearchParams(location.search).has('assinar');
+  const [modo, setModo] = useState<'entrar' | 'criar'>(querAssinar ? 'criar' : 'entrar');
   const [usuario, setUsuario] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -77,7 +79,9 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
     // Primeira visita (ou link ?teste): cai direto na 1ª questão, sem tela de login no caminho.
     let veio = false;
     try { veio = !!localStorage.getItem('cq:ja-entrou'); } catch { /* sem armazenamento */ }
-    return new URLSearchParams(location.search).has('teste') || !veio ? 'fazendo' : 'nao';
+    const q = new URLSearchParams(location.search);
+    if (q.has('assinar')) return 'nao';
+    return q.has('teste') || !veio ? 'fazendo' : 'nao';
   });
 
   const enviar = async (e: React.FormEvent) => {
@@ -119,6 +123,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
       ) : (
         <>
           <h1 className="titulo">{modo === 'entrar' ? 'Bem-vindo de volta.' : 'Crie sua conta.'}</h1>
+          {querAssinar && <p className="lead">{modo === 'criar' ? 'Primeiro a conta (1 minuto). Depois você assina o Pro com Pix ou cartão.' : 'Entre para assinar o Pro.'}</p>}
           <button className="btn btn-sec teste-cta" onClick={() => setTeste('fazendo')}>
             Testar 5 questões grátis, sem cadastro
           </button>

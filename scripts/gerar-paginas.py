@@ -41,11 +41,6 @@ details{border-top:1px solid var(--linha);padding:6px 0}summary{cursor:pointer;f
 footer{color:var(--tinta2);font-size:.88rem;padding-top:28px}
 .q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;color:var(--tinta2)}"""
 
-# Preço do Pro na landing. Fica None enquanto a cobrança estiver desligada: sem preço, a landing não mostra o Pro
-# (anunciar um plano "em breve" e sem preço na página de vendas tira credibilidade). Ex.: PRO_PRECO_LANDING = "19,90".
-PRO_PRECO_LANDING = None
-PRO_DIAS_LANDING = 30
-
 def juntar_linhas(t):
     """Junta as quebras de linha que vieram do PDF no meio da frase; parágrafo (linha em branco) fica."""
     return re.sub(r"([^.:;?!\n])\n(?=[a-zà-ú(\"“])", r"\1 ", t)
@@ -64,21 +59,13 @@ def texto_ok(c):
 def markdown_simples(c):
     return re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", html.escape(c))
 
-def secao_planos():
-    gratis = '<div class="plano"><h3>Grátis</h3><p class="preco">R$ 0</p><ul class="check"><li>Todas as questões oficiais, simulados e estatísticas</li><li>Revisão espaçada e plano do dia</li><li>15 mensagens por dia com o Mentor</li></ul><a class="cta%s" href="/?teste=1">Começar grátis</a></div>'
-    if not PRO_PRECO_LANDING:
-        return '<p class="kicker">Preço</p><h2>Comece de graça, sem cartão.</h2><div class="planos planos-um">' + gratis % '' + '</div>'
-    pro = ('<div class="plano pro"><h3>Pro</h3><p class="preco">R$ %s <small>por %d dias</small></p><ul class="check"><li>Tudo do Grátis</li><li>300 mensagens por dia com o Mentor</li><li>Explicação de toda questão que você errar</li><li>Plano até o dia da prova, revisado toda semana</li></ul>'
-           '<a class="cta" href="/?teste=1">Assinar o Pro</a><p class="selos"><span>Pix ou cartão</span><span>Sem renovação automática</span></p></div>') % (PRO_PRECO_LANDING, PRO_DIAS_LANDING)
-    return '<p class="kicker">Planos</p><h2>Pro: o Mentor do seu lado até o dia da prova.</h2><div class="planos">' + gratis % ' contorno' + pro + '</div>'
-
 def pagina(caminho, titulo, desc, corpo):
     (PUB / caminho).parent.mkdir(parents=True, exist_ok=True)
     (PUB / caminho).write_text(f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(titulo)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{SITE}/{caminho.replace('.html','')}">
-<meta name="theme-color" content="#4a2f7a"><meta property="og:title" content="{html.escape(titulo)}"><meta property="og:description" content="{html.escape(desc)}">
-<link rel="icon" href="/icons/icone.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet"></noscript><style>{CSS}</style></head><body><main>
-<nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/">Entrar</a></nav>{corpo}<footer>Aprovô · questões oficiais com fonte e gabarito definitivo. Questões marcadas como estilo são autorais.</footer></main></body></html>""", encoding="utf-8")
+<meta name="theme-color" content="#4a2f7a"><meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Aprovô"><meta property="og:url" content="{SITE}/{caminho.replace('index.html','').replace('.html','')}"><meta property="og:title" content="{html.escape(titulo)}"><meta property="og:description" content="{html.escape(desc)}"><meta property="og:image" content="{SITE}/img/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{SITE}/img/og.png">
+<link rel="icon" href="/icons/icone.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400&display=optional" rel="stylesheet"></noscript><style>{CSS}{CSS_LANDING}</style></head><body><main>
+<nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/">Entrar</a></nav>{corpo}<footer>Aprovô · questões oficiais com fonte e gabarito definitivo. Questões marcadas como estilo são autorais.<nav class="rodape" aria-label="Rodapé"><a href="/aprovo#planos">Preço</a><a href="/termos">Termos de uso</a><a href="/privacidade">Privacidade</a><a href="/concursos/">Questões por concurso</a></nav></footer></main></body></html>""", encoding="utf-8")
     return caminho
 
 def amostra(filtro, n=5):
@@ -108,45 +95,69 @@ TOPO = sorted(_cont.items(), key=lambda x: -x[1])[:12]
 FAIXA = "".join(f'<li><strong>{html.escape(o)}</strong><span>{n:,} questões</span></li>'.replace(",", ".") for o, n in TOPO)
 BANCAS = sorted({q["banca"] for q in qs if not re.search(r"aprov|autoral|estilo|elaborad", q["banca"], re.I)})
 NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
-paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no concurso",
-  "Questões oficiais com fonte, plano de estudos com IA a partir do edital, simulado da semana e revisão espaçada. Comece grátis.",
-  f"""<div class="hero"><div><p class="kicker">Mentor de concurso com IA</p>
-<h1>Estude o que <span class="grifo">cai na sua prova</span>.</h1>
-<p class="lead">O Aprovô lê o seu edital, monta o plano do dia e treina você com <strong>{NQ} questões</strong> com gabarito, de provas oficiais. O que você erra volta até virar acerto.</p>{CTA}</div>
-<div class="demo" aria-hidden="true"><p class="meta">Direito Administrativo · exemplo no formato Certo/Errado</p>
+# Preço do Pro (mensal, recorrente). O botão "Assinar" passa por /api/assinar?ir=1, que manda para o
+# checkout configurado na Netlify (Mercado Pago ou link pronto) ou para a criação de conta.
+PRO_PRECO = "50"
+
+CSS_LANDING = """.hero h1{font-size:clamp(2rem,7vw,3.2rem)}.beneficios{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:0}.beneficios li{background:var(--sup);border:1px solid var(--linha);border-radius:16px;padding:20px}.beneficios strong{display:block;font-size:1.15rem;margin-bottom:4px}
+.prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(72%,260px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;margin:0 -2px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}}.prints figure{margin:0;scroll-snap-align:start}.prints img{width:100%;height:auto;aspect-ratio:375/812;border-radius:22px;border:1px solid var(--linha);box-shadow:0 18px 40px -28px rgba(42,31,61,.5);background:var(--sup)}.prints figcaption{font-size:.9rem;color:var(--tinta2);margin-top:8px}
+.preco-bloco{max-width:440px;margin:0 auto;background:var(--sup);border:2px solid var(--marca);border-radius:22px;padding:28px 22px;text-align:center}.preco-bloco h3{margin:0;font-size:1.3rem}.preco-bloco .preco{font-size:3rem;margin:8px 0 0}.preco-bloco .check{text-align:left;margin:18px 0}.preco-bloco .cta{width:100%}.cancele{margin:10px 0 0;font-weight:600}.gratis{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--linha);font-size:.95rem;color:var(--tinta2)}.gratis a{font-weight:700;color:var(--marca)}
+.rodape{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}.rodape a{color:var(--tinta2)}.legal h2{font-size:1.2rem;margin-top:28px}.legal p,.legal li{color:var(--tinta2)}"""
+
+def bloco_preco():
+    return f"""<div class="preco-bloco"><h3>Plano Pro</h3><p class="preco">R$ {PRO_PRECO}<small>/mês</small></p>
+<ul class="check"><li>Banco com {NQ} questões e simulados no estilo da banca</li><li>Mentor com IA: 300 mensagens por dia e "Por que errei?" em toda questão</li><li>Plano de estudos até o dia da prova, revisado toda semana</li><li>Resumo do assunto em PDF</li></ul>
+<a class="cta" href="/api/assinar?ir=1">Assinar</a><p class="cancele">Cancele quando quiser. Pix ou cartão.</p>
+<p class="gratis">Quer testar antes? <a href="/?teste=1">Comece grátis</a>: 5 questões sem cadastro e, com conta, 15 mensagens por dia com o Mentor.</p></div>"""
+
+paginas.append(pagina("aprovo.html", "Aprovô: questões de concurso, simulados e mentor com IA",
+  f"Estude para concurso com {NQ} questões com gabarito, simulados no estilo da banca e um mentor com IA que monta o seu plano. Plano Pro R$ {PRO_PRECO}/mês, cancele quando quiser.",
+  f"""<div class="hero"><div><p class="kicker">Estudo para concurso, do edital à prova</p>
+<h1>Estude o que <span class="grifo">cai na sua prova</span>, todo dia.</h1>
+<p class="lead">Questões com gabarito, simulados no estilo da banca e um mentor com IA que monta o seu plano e explica cada erro. Você estuda com método; o resto é com você.</p>
+<p><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a><a class="sec" href="/?teste=1">Testar grátis</a></p><p class="selo">Cancele quando quiser. Teste 5 questões sem cadastro.</p></div>
+<div class="demo" aria-hidden="true"><p class="meta">Direito Administrativo · Certo ou Errado</p>
 <p class="cmd">A administração pública pode anular os próprios atos quando eivados de vício de legalidade.</p>
 <div class="alt nok"><b>E</b>Errado<small>✕ Sua resposta</small></div><div class="alt ok"><b>C</b>Certo<small>✓ Correta</small></div>
 <div class="mentor-bal"><strong>Mentor:</strong> é a autotutela (Súmula 473 do STF). Vou trazer essa de volta amanhã.</div></div></div>
-<section class="faixa-provas" aria-label="Provas oficiais no banco"><p class="kicker">Questões de provas reais de</p><ul>{FAIXA}</ul><p class="selo">Cada questão traz a fonte e o gabarito definitivo publicado pela banca.</p></section>
-<section><p class="kicker">Banco de questões</p><h2>Provas reais, com fonte e gabarito definitivo.</h2>
-<div class="numeros"><div><strong>{NQ}</strong>questões com gabarito</div><div><strong>{len(BANCAS)}</strong>bancas</div><div><strong>{len({q['disciplina'] for q in qs})}</strong>matérias</div><div><strong>{NCOM}</strong>com comentário</div></div>
-<div class="bancas">{"".join(f"<span>{html.escape(b)}</span>" for b in BANCAS)}</div>
-<p class="selo">Inclui {" · ".join(PROVAS[:10])} e outras.</p></section>
-<section><p class="kicker">Como funciona</p><h2>Do edital à prova em 3 passos.</h2><ol class="passos">
-<li><strong>Escolha o concurso.</strong><br>Cole o edital ou comece por um modelo pronto: ACS, ACE, INSS, polícia, prefeitura, enfermagem.</li>
-<li><strong>Receba o plano do dia.</strong><br>O Mentor diz o que estudar hoje e por quanto tempo, e ajusta pelo que você erra.</li>
-<li><strong>Treine e revise.</strong><br>Questões da banca, simulado da semana com ranking e revisão em 1, 3, 7 e 30 dias.</li></ol></section>
-<section class="ia-bloco"><div><p class="kicker">Mentor IA</p><h2>Um professor particular que conhece o seu edital.</h2>
-<ul class="check"><li>Lê o edital e separa matérias e pesos</li><li>Monta o plano da semana pelo tempo que você tem</li><li>Explica a questão que você errou</li><li>Gera resumo do assunto que mais derruba você</li></ul></div>
-<div class="chat" aria-hidden="true"><p class="eu">Tenho 2h por dia e a prova é em 60 dias. Por onde começo?</p>
-<p class="ia">Comece por Seguridade Social: tem o maior peso no seu edital e é onde você mais erra. Hoje: 60 min de benefícios e 30 questões da Cebraspe.</p>
-<p class="eu">E Português?</p><p class="ia">30 min amanhã. Você já vai bem, então entra mais na revisão.</p></div></section>
-<section><p class="kicker">Tudo num lugar só</p><h2>O que vem junto.</h2><div class="grade">
-<div class="caixa"><strong>Simulado da semana</strong><br>Mesma prova para todos, ranking e nota de corte estimada.</div>
-<div class="caixa"><strong>Revisão espaçada</strong><br>A questão errada volta em 1, 3, 7 e 30 dias.</div>
-<div class="caixa"><strong>Concursos abertos</strong><br>Editais nos diários oficiais da sua cidade e do seu estado.</div>
-<div class="caixa"><strong>Funciona no celular</strong><br>Instale como app e estude até sem internet.</div></div></section>
-<section id="planos">{secao_planos()}</section>
-<section><p class="kicker">Veja na prática</p><h2>Como são as questões.</h2>{amostra(lambda q: q.get('comentario'), 3)}</section>
+<section><p class="kicker">Por que o Aprovô</p><h2>Três coisas, bem feitas.</h2><ul class="beneficios">
+<li><strong>{NQ} questões com gabarito</strong>Provas oficiais com fonte e gabarito definitivo (Cebraspe, FGV, Consulplan e outras) e questões autorais marcadas como "estilo".</li>
+<li><strong>Simulados no estilo da banca</strong>Cronômetro, Certo/Errado com a nota que desconta o erro, simulado da semana com ranking e revisão do que você errou.</li>
+<li><strong>Mentor com IA</strong>Lê o seu edital, monta o plano do dia pelo tempo que você tem e explica por que você errou cada questão.</li></ul></section>
+<section><p class="kicker">Por dentro do app</p><h2>É assim no seu celular.</h2><div class="prints">
+<figure><img src="/img/print-questao.jpg" width="375" height="812" loading="lazy" alt="Questão respondida com o gabarito e o botão Por que errei? Perguntar ao Mentor"><figcaption>Errou? O Mentor explica o porquê.</figcaption></figure>
+<figure><img src="/img/print-simulado.jpg" width="375" height="812" loading="lazy" alt="Simulado com cronômetro, mapa de questões e item oficial da Cebraspe"><figcaption>Simulado cronometrado, no formato da banca.</figcaption></figure>
+<figure><img src="/img/print-mentor.jpg" width="375" height="812" loading="lazy" alt="Plano de estudos do Mentor com as matérias por prioridade"><figcaption>Plano pelo peso de cada matéria no edital.</figcaption></figure></div></section>
+<section id="planos"><p class="kicker">Preço</p><h2>Um plano só, sem pegadinha.</h2>{bloco_preco()}</section>
 <section><p class="kicker">Dúvidas</p><h2>Perguntas frequentes</h2>
-<details><summary>É grátis mesmo?</summary><p>Sim. Questões, simulados, estatísticas, revisão e 15 mensagens por dia com o Mentor não custam nada e não pedem cartão.</p></details>
-<details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas das bancas, com a fonte em cada questão, e de questões autorais marcadas como "estilo". Nada copiado de material pago.</p></details>
-<details><summary>Funciona no celular?</summary><p>Funciona. Dá para instalar como app pela tela inicial e estudar até sem internet com as questões já baixadas.</p></details>
-<details><summary>Meu concurso não está na lista. Serve para mim?</summary><p>Serve. Cole o edital no Mentor e ele monta o plano com as matérias e pesos do seu concurso. Português, RLM, Informática e Direito caem em quase todos.</p></details>
-<details><summary>Preciso criar conta?</summary><p>Para testar, não: faça 5 questões direto. A conta serve para salvar o progresso e continuar em outro aparelho.</p></details></section>
-<section class="final"><h2>Sua vaga começa na próxima questão.</h2><p>5 questões grátis, sem cadastro e sem cartão.</p><p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></p></section>
-<div class="cta-fixa" hidden><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a></div>
-<script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script><script src="/js/motion.js" defer></script>"""))
+<details><summary>O Aprovô garante a aprovação?</summary><p>Não. Ninguém garante. O Aprovô organiza o seu estudo: o que estudar, quanto treinar e o que revisar. A constância é sua.</p></details>
+<details><summary>Como cancelo?</summary><p>No app, em Mentor → Planos → Cancelar assinatura. Não há multa nem fidelidade: você segue Pro até o fim do mês já pago e não é cobrado de novo.</p></details>
+<details><summary>Dá para usar de graça?</summary><p>Dá. Teste 5 questões sem cadastro. Com conta grátis, você treina questões e simulados e tem 15 mensagens por dia com o Mentor.</p></details>
+<details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas, com a fonte em cada questão, e de questões autorais marcadas como "estilo". Nada copiado de material pago.</p></details>
+<details><summary>Funciona no celular?</summary><p>Funciona. Dá para instalar como app pela tela inicial do navegador.</p></details></section>
+<section class="final"><h2>Comece hoje. Amanhã você já revisa o que errou.</h2><p>R$ {PRO_PRECO}/mês · cancele quando quiser</p><p><a class="cta" href="/api/assinar?ir=1">Assinar o Pro</a></p></section>
+<div class="cta-fixa" hidden><a class="cta" href="/api/assinar?ir=1">Assinar · R$ {PRO_PRECO}/mês</a></div>
+<script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script>"""))
+
+paginas.append(pagina("termos.html", "Termos de uso | Aprovô", "Termos de uso do Aprovô: plano grátis, plano Pro mensal, cancelamento e regras de uso.",
+  f"""<article class="legal"><h1>Termos de uso</h1><p>Atualizado em 05/11/2026.</p>
+<h2>1. O que é o Aprovô</h2><p>Um app de estudo para concursos públicos: questões com gabarito, simulados, revisão e um mentor com inteligência artificial. O Aprovô ajuda a organizar o estudo; não garante aprovação em nenhum concurso.</p>
+<h2>2. Conta</h2><p>Você cria a conta com usuário e senha e é responsável por guardá-los. Uma conta é pessoal: não compartilhe.</p>
+<h2>3. Plano grátis e plano Pro</h2><p>O plano grátis tem limites, como o número de mensagens diárias com o Mentor. O plano Pro custa R$ {PRO_PRECO} por mês, cobrado por Pix ou cartão pelo meio de pagamento indicado no checkout, e amplia esses limites.</p>
+<h2>4. Renovação e cancelamento</h2><p>O Pro renova todo mês até você cancelar. Cancele quando quiser no app (Mentor → Planos) ou pelo próprio meio de pagamento. Não há multa nem fidelidade: o acesso continua até o fim do mês já pago. Pelo Código de Defesa do Consumidor, você pode desistir em até 7 dias da primeira contratação e receber o valor de volta.</p>
+<h2>5. Conteúdo</h2><p>Questões de provas oficiais trazem a fonte. Questões autorais aparecem como "estilo" da banca. As respostas do Mentor são geradas por IA e podem conter erros: confira sempre com a lei e o edital.</p>
+<h2>6. Uso correto</h2><p>Não é permitido copiar o banco de questões em massa, revender o acesso ou tentar burlar os limites do plano. Contas que fizerem isso podem ser suspensas.</p>
+<h2>7. Mudanças</h2><p>Podemos atualizar estes termos. Mudança de preço é avisada antes da próxima cobrança.</p>
+<p><a href="/privacidade">Política de privacidade</a></p></article>"""))
+
+paginas.append(pagina("privacidade.html", "Política de privacidade | Aprovô", "Quais dados o Aprovô guarda, para quê e como pedir a exclusão.",
+  """<article class="legal"><h1>Política de privacidade</h1><p>Atualizado em 05/11/2026.</p>
+<h2>O que guardamos</h2><ul><li>Conta: usuário, nome e senha (guardada só como hash, nunca em texto).</li><li>E-mail, se você informar: para recibos, lembretes de revisão e avisos de concurso.</li><li>Seu estudo: respostas, simulados, anotações, plano do Mentor e mensagens enviadas ao Mentor.</li><li>Assinatura: situação do plano e identificador do pagamento. Dados de cartão ficam só com o meio de pagamento (Mercado Pago ou similar); o Aprovô não vê nem guarda o número do cartão.</li></ul>
+<h2>Para que usamos</h2><p>Para o app funcionar (salvar o progresso e sincronizar aparelhos), montar o seu plano, mostrar estatísticas e ranking (com seu nome de exibição) e cobrar o plano Pro. Não vendemos seus dados.</p>
+<h2>Com quem compartilhamos</h2><p>Só com os serviços que fazem o app funcionar: hospedagem (Netlify), banco de dados (Supabase), inteligência artificial (Anthropic, para responder ao Mentor), e-mail (Resend) e pagamento (Mercado Pago). Cada um recebe só o necessário.</p>
+<h2>Seus direitos (LGPD)</h2><p>Você pode pedir acesso, correção ou exclusão dos seus dados e cancelar e-mails a qualquer momento pelo link no rodapé de cada e-mail. Para excluir a conta, fale com o suporte pelo app.</p>
+<p><a href="/termos">Termos de uso</a></p></article>"""))
+
 
 GRUPOS = [
   ("ace-cuite-de-mamanguape", "Concurso ACE Cuité de Mamanguape (EDUCA PB): questões e simulado", lambda q: q["id"].startswith(("educa", "ace-")) or "Cuité" in q.get("assunto", "")),

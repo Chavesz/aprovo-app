@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin · Aprovô</title>
+<style>
+:root{--bg:#f8f8fa;--sup:#fff;--tinta:#2a1f3d;--tinta2:#5c5370;--linha:#ddd8e6;--marca:#4a2f7a;--acao:#ffd43b;--ok:#1b5e20;--nok:#b71c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#15111c;--sup:#1e1828;--tinta:#efeaf7;--tinta2:#b9b0c9;--linha:#352d44;--marca:#c9b3f0;--ok:#7bd88f;--nok:#ff8a80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tinta);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:520px;margin:0 auto;padding:24px 16px 48px}h1{font-size:1.4rem;margin:0 0 4px}p.nota{color:var(--tinta2);font-size:.9rem;margin:0 0 20px}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}input,select{width:100%;font:inherit;padding:12px;border:1px solid var(--linha);border-radius:10px;background:var(--sup);color:var(--tinta);min-height:48px}
+.linha{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}button{font:inherit;font-weight:700;min-height:48px;padding:0 18px;border-radius:10px;border:2px solid var(--tinta);background:transparent;color:var(--tinta);cursor:pointer}button.pri{background:var(--acao);border-color:var(--acao);color:#2a1f3d}
+pre{background:var(--sup);border:1px solid var(--linha);border-radius:10px;padding:12px;white-space:pre-wrap;word-break:break-word;font-size:.85rem;margin-top:20px;min-height:3em}.ok{color:var(--ok)}.nok{color:var(--nok)}
+</style>
+</head>
+<body>
+<main>
+<h1>Liberar o Pro à mão</h1>
+<p class="nota">Use quando a venda veio pelo link pronto (Mercado Pago ou Cakto), por Pix direto ou como cortesia. A chave de admin fica só nesta aba do navegador.</p>
+<form id="f" autocomplete="off">
+<label for="token">Chave de admin (ADMIN_TOKEN)</label>
+<input id="token" type="password" required minlength="32">
+<label for="usuario">Usuário do aluno</label>
+<input id="usuario" required placeholder="ex.: maria.silva" autocapitalize="none" spellcheck="false">
+<label for="dias">Dias de Pro</label>
+<select id="dias"><option value="31">31 dias (1 mês)</option><option value="93">93 dias (3 meses)</option><option value="366">366 dias (1 ano)</option><option value="0">Sem prazo</option></select>
+<div class="linha">
+<button type="button" data-acao="ver">Ver plano</button>
+<button type="button" class="pri" data-acao="pro">Liberar Pro</button>
+<button type="button" data-acao="gratis">Voltar ao grátis</button>
+</div>
+</form>
+<pre id="saida" aria-live="polite"></pre>
+</main>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  try { $('token').value = sessionStorage.getItem('aprovo-admin') || ''; } catch (e) {}
+  document.querySelectorAll('[data-acao]').forEach(function (b) {
+    b.addEventListener('click', async function () {
+      var token = $('token').value.trim(), usuario = $('usuario').value.trim(), acao = b.dataset.acao;
+      if (!token || !usuario) { $('saida').textContent = 'Preencha a chave e o usuário.'; return; }
+      if (acao === 'gratis' && !confirm('Voltar ' + usuario + ' para o plano grátis?')) return;
+      try { sessionStorage.setItem('aprovo-admin', token); } catch (e) {}
+      var init = { headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' } };
+      var url = '/api/admin';
+      if (acao === 'ver') url += '?usuario=' + encodeURIComponent(usuario);
+      else { init.method = 'POST'; init.body = JSON.stringify({ usuario: usuario, acao: acao, dias: Number($('dias').value) }); }
+      $('saida').textContent = 'Enviando…'; $('saida').className = '';
+      try {
+        var r = await fetch(url, init), d = await r.json();
+        $('saida').className = r.ok ? 'ok' : 'nok';
+        var reg = d.registro || {};
+        $('saida').textContent = r.ok
+          ? (d.usuario + ': plano ' + (d.plano || reg.plano) + (reg.ate ? ' até ' + new Date(reg.ate).toLocaleDateString('pt-BR') : reg.plano === 'pro' ? ' sem prazo' : '') + (reg.status ? ' · ' + reg.status : ''))
+          : (d.erro || 'Erro ' + r.status);
+      } catch (e) { $('saida').className = 'nok'; $('saida').textContent = 'Sem conexão.'; }
+    });
+  });
+})();
+</script>
+</body>
+</html>

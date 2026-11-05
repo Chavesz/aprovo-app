@@ -92,3 +92,21 @@ export async function espelharComentario(usuario: string, questao: string, texto
     console.error('espelharComentario', e);
   }
 }
+
+/** Espelha a assinatura: perfis.plano e a linha em assinaturas (uma por referência do provedor). Falha em silêncio. */
+export async function espelharAssinatura(
+  usuario: string,
+  a: { plano: 'gratis' | 'pro'; provedor: 'mercadopago' | 'manual'; referencia: string; status: 'ativa' | 'cancelada' | 'pendente' | 'expirada'; fim?: number },
+) {
+  if (!supabaseLigado()) return;
+  try {
+    const aluno = await alunoId(usuario);
+    await sb(`/rest/v1/perfis?id=eq.${aluno}`, { method: 'PATCH', body: JSON.stringify({ plano: a.plano }) });
+    const linha = { aluno, provedor: a.provedor, referencia: a.referencia, status: a.status, fim: a.fim ? new Date(a.fim).toISOString() : null };
+    const ja = (await sb(`/rest/v1/assinaturas?aluno=eq.${aluno}&referencia=eq.${encodeURIComponent(a.referencia)}&select=id`)) as { id: number }[];
+    if (ja?.length) await sb(`/rest/v1/assinaturas?id=eq.${ja[0].id}`, { method: 'PATCH', body: JSON.stringify(linha) });
+    else await sb('/rest/v1/assinaturas', { method: 'POST', body: JSON.stringify(linha) });
+  } catch (e) {
+    console.error('espelharAssinatura', (e as Error).message);
+  }
+}

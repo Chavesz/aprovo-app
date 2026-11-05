@@ -1,44 +1,77 @@
-// /api/assinar: cobrança do plano Pro pelo Mercado Pago (Checkout Pro: Pix e cartão).
-// Fica DESLIGADA até existirem na Netlify: MP_ACCESS_TOKEN (credencial de produção) e PRO_PRECO (ex.: "19.90").
-// Opcional: PRO_DIAS (dias de acesso por pagamento, padrão 30) e SITE_URL (padrão https://aprovoapp.netlify.app).
-// GET  → { disponivel, preco, dias }   ·   POST (logado) → { url } do checkout.
+// /api/assinar: assinatura mensal do Pro.
+// Com MP_ACCESS_TOKEN: assinatura recorrente do Mercado Pago (preapproval), PRO_PRECO por mês (padrão 50).
+// Sem token, mas com CHECKOUT_URL (link pronto do Mercado Pago ou da Cakto): manda o aluno para o link; o admin libera o Pro à mão.
+// GET              → { disponivel, modo, preco, link?, plano?, status?, ate?, recorrente? }
+// GET ?ir=1        → redireciona (botão "Assinar" da landing, que é página estática)
+// POST (logado)    → { url } do checkout · body opcional { email } (o Mercado Pago exige o e-mail do pagador)
+// DELETE (logado)  → cancela a assinatura no Mercado Pago (o acesso segue até o fim do período pago)
 import { json, usuarioDaRequisicao } from '../lib/contas';
+import { emails, emailValido, type Contato } from '../lib/email';
+import { aplicarPreapproval, cfgAssinatura, lerPlano, mp, type Preapproval } from '../lib/assinatura';
 import { planoDe } from '../lib/uso';
 
-const cfg = () => {
-  const token = process.env.MP_ACCESS_TOKEN ?? '';
-  const preco = Number(String(process.env.PRO_PRECO ?? '').replace(',', '.'));
-  const dias = Number(process.env.PRO_DIAS ?? 30) || 30;
-  const site = (process.env.SITE_URL ?? 'https://aprovoapp.netlify.app').replace(/\/$/, '');
-  return { token, preco, dias, site, ok: !!token && preco > 0 };
-};
-
 export default async (req: Request) => {
-  const c = cfg();
-  if (req.method === 'GET') return json({ disponivel: c.ok, preco: c.ok ? c.preco : null, dias: c.dias });
-  if (!c.ok) return json({ erro: 'A assinatura do Pro ainda não está aberta.' }, 503);
-  const usuario = await usuarioDaRequisicao(req);
-  if (!usuario) return json({ erro: 'Entre na sua conta para assinar.' }, 401);
-  if ((await planoDe(usuario)) === 'pro') return json({ erro: 'Sua conta já é Pro.' }, 409);
+  const c = cfgAssinatura();
+  const url = new URL(req.url);
 
-  const r = await fetch('https://api.mercadopago.com/checkout/preferences', {
-    method: 'POST',
-    headers: { authorization: `Bearer ${c.token}`, 'content-type': 'application/json' },
-    body: JSON.stringify({
-      items: [{ id: 'aprovo-pro', title: `Aprovô Pro (${c.dias} dias)`, quantity: 1, unit_price: c.preco, currency_id: 'BRL' }],
-      external_reference: usuario,
-      metadata: { usuario, dias: c.dias },
-      // Pix e cartão ficam liberados; boleto sai porque demora dias para compensar.
-      payment_methods: { excluded_payment_types: [{ id: 'ticket' }], installments: 1 },
-      back_urls: { success: `${c.site}/?pro=ok`, pending: `${c.site}/?pro=pendente`, failure: `${c.site}/?pro=erro` },
-      auto_return: 'approved',
-      notification_url: `${c.site}/api/mp-webhook`,
-      statement_descriptor: 'APROVO PRO',
-    }),
-  });
-  const p = (await r.json().catch(() => ({}))) as { init_point?: string; message?: string };
-  if (!r.ok || !p.init_point) return json({ erro: 'Não foi possível abrir o pagamento agora. Tente de novo em instantes.' }, 502);
-  return json({ url: p.init_point });
+  if (req.method === 'GET' && url.searchParams.has('ir')) {
+    const destino = c.modo === 'link' ? c.link : `${c.site}/?assinar=1`;
+    return new Response(null, { status: 302, headers: { location: destino, 'cache-control': 'no-store' } });
+  }
+
+  const usuario = await usuarioDaRequisicao(req);
+
+  if (req.method === 'GET') {
+    const base = { disponivel: c.modo !== 'nenhum', modo: c.modo, preco: c.preco, link: c.modo === 'link' ? c.link : undefined };
+    if (!usuario) return json(base);
+    const p = await lerPlano(usuario);
+    return json({ ...base, plano: await planoDe(usuario), status: p.status, ate: p.ate, recorrente: p.provedor === 'mercadopago' && p.status === 'ativa' });
+  }
+
+  if (!usuario) return json({ erro: 'Entre na sua conta para assinar.' }, 401);
+
+  if (req.method === 'DELETE') {
+    const p = await lerPlano(usuario);
+    if (!c.token || p.provedor !== 'mercadopago' || !p.assinatura) return json({ erro: 'Não há assinatura recorrente para cancelar por aqui. Fale com o suporte.' }, 404);
+    try {
+      const pre = await mp<Preapproval>(`/preapproval/${p.assinatura}`, { method: 'PUT', body: JSON.stringify({ status: 'cancelled' }) });
+      await aplicarPreapproval({ ...pre, external_reference: usuario });
+      return json({ ok: true, ate: (await lerPlano(usuario)).ate });
+    } catch {
+      return json({ erro: 'Não foi possível cancelar agora. Tente de novo em instantes.' }, 502);
+    }
+  }
+
+  if (req.method !== 'POST') return json({ erro: 'Método não permitido.' }, 405);
+  if (c.modo === 'link') return json({ url: c.link });
+  if (c.modo === 'nenhum') return json({ erro: 'A assinatura do Pro ainda não está aberta.' }, 503);
+  const atual = await lerPlano(usuario);
+  if ((await planoDe(usuario)) === 'pro' && atual.status === 'ativa') return json({ erro: 'Sua conta já é Pro.' }, 409);
+
+  const corpo = (await req.json().catch(() => ({}))) as { email?: string };
+  const salvo = (await emails().get(usuario, { type: 'json' })) as Contato | null;
+  const email = (corpo.email ?? salvo?.email ?? '').trim().toLowerCase();
+  if (!emailValido(email)) return json({ erro: 'Informe seu e-mail para receber o recibo da assinatura.', precisaEmail: true }, 400);
+  if (!salvo?.email) await emails().setJSON(usuario, { email, optin: true, criadoEm: Date.now() });
+
+  try {
+    const p = await mp<Preapproval>('/preapproval', {
+      method: 'POST',
+      body: JSON.stringify({
+        reason: 'Aprovô Pro (mensal)',
+        external_reference: usuario,
+        payer_email: email,
+        back_url: `${c.site}/?pro=ok`,
+        status: 'pending',
+        auto_recurring: { frequency: 1, frequency_type: 'months', transaction_amount: c.preco, currency_id: 'BRL' },
+      }),
+    });
+    if (!p.init_point) throw new Error('sem init_point');
+    await aplicarPreapproval({ ...p, external_reference: usuario });
+    return json({ url: p.init_point });
+  } catch {
+    return json({ erro: 'Não foi possível abrir o pagamento agora. Tente de novo em instantes.' }, 502);
+  }
 };
 
 export const config = { path: '/api/assinar' };
