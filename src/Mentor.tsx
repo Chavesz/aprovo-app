@@ -21,6 +21,9 @@ export interface PerfilMentor {
   disciplinas: DisciplinaPerfil[];
   faceis: string[];
   dificeis: string[];
+  cidade?: string;
+  uf?: string;
+  nivel?: 'iniciante' | 'intermediario' | 'avancado';
 }
 
 type Msg = { role: 'user' | 'assistant'; content: string };
@@ -147,6 +150,7 @@ function contexto(perfil: PerfilMentor, historico: Resposta[], questoes: Questao
     .filter(Boolean);
   return [
     `Concurso: ${perfil.concurso} · Cargo: ${perfil.cargo} · Banca: ${perfil.banca}`,
+    `Local: ${[perfil.cidade, perfil.uf].filter(Boolean).join('/') || '—'} · Nível declarado: ${perfil.nivel ?? '—'} (ajuste a profundidade das explicações a esse nível)`,
     `Prova: ${perfil.dataProva || 'data não definida'}${plano.dias !== null ? ` (faltam ${plano.dias} dias)` : ''} · Estuda ${perfil.horasDia}h por dia`,
     `Tem facilidade em: ${perfil.faceis.join(', ') || '—'} · Dificuldade em: ${perfil.dificeis.join(', ') || '—'}`,
     `Edital: ${perfil.disciplinas.map((d) => `${d.nome} (${d.questoes} questões, peso ${d.peso}): ${d.assuntos.slice(0, 15).join('; ')}`).join('\n')}`,
@@ -193,6 +197,8 @@ table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #
 export default function Mentor({ questoes, historico, onPraticar }: { questoes: Questao[]; historico: Resposta[]; onPraticar: (disciplina: string, assunto: string) => void }) {
   const ehKaua = /^(kaua|chavin)/.test(contaSalva()?.usuario ?? '');
   const [perfil, setPerfil] = usePersist<PerfilMentor | null>('cq:mentor', null);
+  // Avisa o app (filtro "Meu concurso") quando o perfil muda por aqui.
+  useEffect(() => { window.dispatchEvent(new CustomEvent('aprovo:perfil')); }, [perfil]);
   const [editando, setEditando] = useState(false);
   const [uso, setUso] = useState<Uso | null>(null);
   const [aviso, setAviso] = useState('');
@@ -252,7 +258,7 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
 
 /** Modelos prontos: o aluno começa em 1 toque, sem gastar a IA, e ajusta depois. Nomes iguais às matérias do banco. */
 const d = (nome: string, questoes: number, peso = 1) => ({ nome, questoes, peso, assuntos: [] as string[] });
-const MODELOS: { rotulo: string; cargo: string; banca: string; disciplinas: PerfilMentor['disciplinas'] }[] = [
+export const MODELOS: { rotulo: string; cargo: string; banca: string; disciplinas: PerfilMentor['disciplinas'] }[] = [
   { rotulo: 'Agente de Saúde (ACS)', cargo: 'Agente Comunitário de Saúde', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 5), d('Saúde Pública', 10, 2), d('Específicos ACS', 15, 2)] },
   { rotulo: 'Agente de Endemias (ACE)', cargo: 'Agente de Combate às Endemias', banca: '', disciplinas: [d('Português', 10), d('Raciocínio Lógico', 5), d('Saúde Pública', 10, 2), d('Específicos ACE', 15, 2)] },
   { rotulo: 'Técnico nível médio (Cebraspe)', cargo: 'Técnico Administrativo', banca: 'Cebraspe', disciplinas: [d('Português', 20), d('Informática', 10), d('Direito Constitucional', 10), d('Direito Administrativo', 15, 2), d('Raciocínio Lógico', 10)] },

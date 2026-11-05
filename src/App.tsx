@@ -1,4 +1,5 @@
-import Mentor, { PlanoDeHoje, resolverDisciplina } from './Mentor';
+import Mentor, { PlanoDeHoje, resolverDisciplina, type PerfilMentor } from './Mentor';
+import Comecar from './Comecar';
 import Descobrir from './Descobrir';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
@@ -151,11 +152,31 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const escuroAgora = () =>
     tema ? tema === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+  // Perfil do aluno (boas-vindas ou Mentor): concurso, banca, cidade, data, nível e horas.
+  const lerPerfil = () => { try { return JSON.parse(localStorage.getItem('cq:mentor') ?? 'null') as PerfilMentor | null; } catch { return null; } };
+  const [perfil, setPerfilApp] = useState<PerfilMentor | null>(lerPerfil);
+  useEffect(() => {
+    const ler = () => setPerfilApp(lerPerfil());
+    window.addEventListener('aprovo:perfil', ler);
+    return () => window.removeEventListener('aprovo:perfil', ler);
+  }, []);
+  const [pulouComecar, setPulouComecar] = usePersist('cq:comecar-pulado', false);
+  const comecar = !perfil && !pulouComecar;
+  const salvarPerfil = (p: PerfilMentor) => {
+    try { localStorage.setItem('cq:mentor', JSON.stringify(p)); } catch { /* sem armazenamento */ }
+    setPerfilApp(p);
+    if (!cargo) setCargo(/ACS|Comunit/i.test(p.cargo + p.concurso) ? 'ACS' : /ACE|Endemia/i.test(p.cargo + p.concurso) ? 'ACE' : 'OUTRO');
+    setFiltros({ ...FILTROS_VAZIOS, meuConcurso: true });
+    scrollTo(0, 0);
+  };
+
   const questoes = useMemo(() => {
     if (!oficiais) return null;
     const deOutroCargo = cargo === 'ACS' ? 'Específicos ACE' : cargo === 'ACE' ? 'Específicos ACS' : '';
     return [...geradas, ...oficiais].filter((q) => q.disciplina !== deOutroCargo && !anuladas.has(q.id));
   }, [oficiais, geradas, cargo, anuladas]);
+  const questoesPerfil = useMemo(() => (perfil && questoes ? doConcurso(questoes, perfil) : null), [perfil, questoes]);
+  const meuConcurso = !!(filtros.meuConcurso && questoesPerfil && questoesPerfil !== questoes);
 
   // Envia o progresso para a conta pouco depois de cada mudança e quando o app vai para segundo plano.
   const [sync, setSync] = useState<'ok' | 'salvando' | 'offline'>('ok');
@@ -167,7 +188,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         .catch(() => setSync('offline'));
     }, 1500);
     return () => clearTimeout(t);
-  }, [conta, historico, revisar, bloco, geradas, provas, anotacoes, meta, aba]);
+  }, [conta, historico, revisar, bloco, geradas, provas, anotacoes, meta, aba, perfil]);
   useEffect(() => {
     const aoSair = () => document.visibilityState === 'hidden' && enviar(conta).catch(() => undefined);
     document.addEventListener('visibilitychange', aoSair);
@@ -314,7 +335,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             {aviso} <button className="link" onClick={() => setAvisoPro('')}>Fechar</button>
           </p>
         )}
-        {!cargo && (
+        {questoes && comecar && <Comecar questoes={questoes} onPronto={salvarPerfil} onPular={() => setPulouComecar(true)} />}
+        {!cargo && !comecar && (
           <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
             <p className="rotulo">Para qual concurso você está estudando?</p>
             <p className="nota">As questões de conhecimentos específicos mudam conforme o cargo. Dá para trocar depois no topo.</p>
@@ -327,7 +349,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
-        {questoes && aba === 'praticar' && (
+        {questoes && !comecar && aba === 'praticar' && (
           <PlanoDeHoje
             questoes={questoes}
             historico={historico}
@@ -337,25 +359,27 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             }}
           />
         )}
-        {questoes && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
-        {questoes && aba === 'praticar' && <Foco />}
-        {questoes && aba === 'praticar' && carregandoMais && (
+        {questoes && !comecar && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
+        {questoes && !comecar && aba === 'praticar' && <Foco />}
+        {questoes && !comecar && aba === 'praticar' && carregandoMais && (
           <p className="nota coluna carregando-mais" role="status">Carregando as provas da Cebraspe, OAB e ENEM… você já pode começar.</p>
         )}
-        {questoes && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
+        {questoes && !comecar && aba === 'praticar' && filtros.status !== 'hoje' && revisaoDoDia(historico).size > 0 && (
           <div className="aviso revisao-dia">
             <span>🔁 {revisaoDoDia(historico).size} questões que você errou estão no dia de revisar (1, 3, 7 e 30 dias).</span>
             <button className="btn" onClick={() => setFiltros({ ...FILTROS_VAZIOS, status: 'hoje' })}>Revisar agora</button>
           </div>
         )}
-        {questoes && aba === 'praticar' && revisaoDoDia(historico).size === 0 && revisaoDoDia(historico, Date.now() + 86400_000).size > 0 && (
+        {questoes && !comecar && aba === 'praticar' && revisaoDoDia(historico).size === 0 && revisaoDoDia(historico, Date.now() + 86400_000).size > 0 && (
           <p className="nota coluna revisao-amanha">🔁 Revisão em dia. Amanhã voltam {revisaoDoDia(historico, Date.now() + 86400_000).size} questões que você errou.</p>
         )}
-        {questoes && aba === 'praticar' && (
+        {questoes && !comecar && aba === 'praticar' && (
           <Praticar
             questoes={questoes}
             filtros={filtros}
             setFiltros={setFiltros}
+            perfilQs={questoesPerfil !== questoes ? questoesPerfil : null}
+            perfilNome={perfil?.cargo || perfil?.concurso || ''}
             historico={historico}
             revisar={revisar}
             bloco={bloco}
@@ -363,11 +387,12 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             onRevisar={alternarRevisar}
           />
         )}
-        {questoes && aba !== 'simulado' && <SimuladoEmAndamento onVoltar={() => setAba('simulado')} />}
-        {questoes && aba === 'simulado' && (
+        {questoes && !comecar && aba !== 'simulado' && <SimuladoEmAndamento onVoltar={() => setAba('simulado')} />}
+        {questoes && !comecar && aba === 'simulado' && (
           <Simulado
             cargo={cargo || 'ACE'}
             questoes={questoes}
+            pool={meuConcurso ? questoesPerfil : null}
             historico={historico}
             onResponder={registrar}
             onProva={(p) => setProvas((l) => [...l, p])}
@@ -376,7 +401,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             onRevisar={alternarRevisar}
           />
         )}
-        {questoes && aba === 'mentor' && (
+        {questoes && !comecar && aba === 'mentor' && (
           <Mentor
             questoes={questoes}
             historico={historico}
@@ -386,7 +411,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             }}
           />
         )}
-        {questoes && aba === 'concursos' && (
+        {questoes && !comecar && aba === 'concursos' && (
           <Descobrir
             questoes={questoes}
             historico={historico}
@@ -396,7 +421,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             }}
           />
         )}
-        {questoes && aba === 'edital' && (
+        {questoes && !comecar && aba === 'edital' && (
           <Edital
             questoes={questoes}
             geradas={geradas}
@@ -412,14 +437,14 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             }}
           />
         )}
-        {questoes && aba === 'desempenho' && (
+        {questoes && !comecar && aba === 'desempenho' && (
           <>
             <ResumoSemana historico={historico} questoes={questoes} />
             <Ranking conta={conta} />
             <Desempenho questoes={oficiais ?? questoes} onAnular={anular} anuladas={anuladas} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
         )}
-        {questoes && aba === 'revisar' && (
+        {questoes && !comecar && aba === 'revisar' && (
           <Revisar
             questoes={questoes}
             historico={historico}
@@ -578,6 +603,20 @@ export function revisaoDoDia(historico: Resposta[], agora = Date.now()) {
   return devidas;
 }
 
+/** Questões do concurso do perfil: as matérias dele e, se houver bastante, só da banca dele. Poucas demais → banco inteiro. */
+function doConcurso(qs: Questao[], perfil: PerfilMentor) {
+  const norm = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const discs = new Set(perfil.disciplinas.map((d) => resolverDisciplina(d.nome, qs)));
+  if (/ACE|Endemia/i.test(perfil.cargo + perfil.concurso)) discs.add('Específicos ACE');
+  if (/ACS|Comunit/i.test(perfil.cargo + perfil.concurso)) discs.add('Específicos ACS');
+  if (discs.has('Português')) discs.add('Língua Portuguesa');
+  const porMateria = qs.filter((q) => discs.has(q.disciplina));
+  const b = norm(perfil.banca ?? '').trim();
+  const daBanca = b.length >= 3 ? porMateria.filter((q) => norm(q.banca).includes(b)) : [];
+  if (daBanca.length >= 40) return daBanca;
+  return porMateria.length >= 20 ? porMateria : qs;
+}
+
 function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[], bloco: string[]) {
   const respondidas = new Set(historico.map((h) => h.id));
   const ultimas = new Map<string, boolean>();
@@ -616,8 +655,12 @@ function Praticar(props: {
   bloco: string[];
   onResponder: (r: Resposta) => void;
   onRevisar: (id: string) => void;
+  perfilQs?: Questao[] | null;
+  perfilNome?: string;
 }) {
-  const { questoes, filtros, setFiltros, historico, revisar, bloco } = props;
+  const { filtros, setFiltros, historico, revisar, bloco, perfilQs } = props;
+  // "Meu concurso": as matérias e a banca do perfil; desmarcando, volta o banco inteiro.
+  const questoes = filtros.meuConcurso && perfilQs ? perfilQs : props.questoes;
   // A lista é congelada ao mudar filtros, para a questão atual não sumir ao ser respondida.
   const [lista, setLista] = useState<Questao[]>([]);
   const [i, setI] = useState(0);
@@ -655,6 +698,12 @@ function Praticar(props: {
           <span className="filtros-total">{lista.length} questões</span>
         </button>
         <div className="filtros-corpo">
+          {perfilQs && (
+            <label className="meu-concurso">
+              <input type="checkbox" checked={!!filtros.meuConcurso} onChange={(e) => setFiltros({ ...FILTROS_VAZIOS, status: filtros.status, meuConcurso: e.target.checked })} />
+              <span>Só do meu concurso{props.perfilNome ? ` (${props.perfilNome})` : ''}<small>{perfilQs.length} questões · desmarque para ver o banco inteiro</small></span>
+            </label>
+          )}
           <Select rotulo="Banca" valor={filtros.banca} opcoes={unicos(questoes, 'banca')} onChange={(v) => set('banca', v)} />
           <Select rotulo="Órgão" valor={filtros.orgao} opcoes={unicos(questoes, 'orgao')} onChange={(v) => set('orgao', v)} />
           <Select rotulo="Disciplina" agrupar valor={filtros.disciplina} opcoes={unicos(questoes, 'disciplina')} onChange={(v) => set('disciplina', v)} />
@@ -1209,6 +1258,8 @@ function SimuladoEmAndamento({ onVoltar }: { onVoltar: () => void }) {
 
 function Simulado(props: {
   cargo: Cargo;
+  /** Questões do concurso do perfil para o simulado livre (null = banco inteiro). */
+  pool?: Questao[] | null;
   historico: Resposta[];
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
@@ -1247,7 +1298,7 @@ function Simulado(props: {
   }, [restante]);
 
   const iniciar = () => {
-    const pool = props.questoes.filter((q) => !config.disciplina || q.disciplina === config.disciplina);
+    const pool = (props.pool ?? props.questoes).filter((q) => !config.disciplina || q.disciplina === config.disciplina);
     setProva(embaralhar(pool).slice(0, config.total));
     setRespostas({});
     setDuvidas([]);

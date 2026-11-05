@@ -63,6 +63,8 @@ export interface Filtros {
   /** '' todas, 'me' múltipla escolha, 'ce' Certo ou Errado. */
   tipo?: string;
   origem?: string;
+  /** Só as questões do concurso do perfil (matérias e banca do onboarding/Mentor). */
+  meuConcurso?: boolean;
   status: 'todas' | 'ineditas' | 'erradas' | 'revisar' | 'bloco' | 'inteligente' | 'hoje' | 'dificeis';
 }
 
