@@ -8,6 +8,23 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+_Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-2026-11-04.md`). Os números entre parênteses são os achados do relatório._
+- [P1] (3) Recortar Grátis × Pro (explicação de erro, plano até a prova, PDFs no Pro) com lista única `RECURSOS_PRO` usada pelo app e pela landing; ajustar cota em `mentor.mts`
+- [P1] (4) Concurso ativo único: edital começa vazio (não Cuité para todos), simulado da semana, resumão e flashcards seguem o concurso escolhido
+- [P1] (5) Confiança: rodapé com responsável/contato, páginas /termos e /privacidade, e-mail obrigatório antes de pagar, recuperar senha por e-mail (**Kauã**: CNPJ/contato)
+- [P2] (7) Teste grátis com 5 questões oficiais com banca e ano, sorteadas pelo concurso da página de origem (`?c=slug`)
+- [P2] (8) Resultado do teste grátis sem muro: mostrar o resultado e só então pedir cadastro
+- [P2] (9) Plano da semana variado por peso das matérias, com "Começar" em cada bloco
+- [P2] (10) Formulário de pesos do Mentor estoura 375 px (grid `1fr 64px 64px`)
+- [P2] (11) "Aula" das trilhas é só busca no YouTube: trocar por vídeos escolhidos ou rotular como busca
+- [P2] (12) 7 abas não cabem em 375 px: agrupar (ex.: Estudar / Simulado / Mentor / Eu)
+- [P3] (13) Praticar: questão começa no meio da tela e o botão principal é "Pular"
+- [P3] (14) Selo da Netlify cobre CTAs (**Kauã**, já listado)
+- [P3] (15-16) Landing: prova social real e números que não exponham o acervo pequeno
+- [P3] (17) Desempenho conversar com o "Mentor que te conhece"
+- [P3] (18-19) Landing pesada no celular barato; app logado baixa ~12,9 MB de JSON (dividir/podar)
+- [P3] (20) "Quero o Pro quando abrir" precisa avisar de verdade (lista de e-mail)
+- [P3] (21-24) Flashcards de erro, diálogos nativos (confirm), distrações no simulado, "Entrar" da landing levando ao teste
 - [P2] Mais provas oficiais da Cebraspe pelo site novo. **Bloqueado em 04/11/2026:** a Cebraspe retirou os links de cadernos e gabaritos do STJ 2018 ("Comunicado - Retirada de links") e da PC PB 2021; procurar outros concursos com caderno ainda no ar (antes: demais cargos do STJ 2018 e da PC PB 2021; PF 2021 Escrivão/Papiloscopista têm fonte embaralhada, não rendem): `scripts/importar-cebraspe-site.sh` (Certo/Errado) e `importar-cebraspe-questao.py` (múltipla escolha)
 - [P3] Dividir o `cebraspe.json` por concurso e baixar só o do filtro. Avaliado em 04/11/2026: ganho pequeno hoje (já carrega depois da abertura, ~700 KB comprimido) e exige mudar todos os importadores; refazer quando passar de ~2 MB. Reavaliado: a 1ª carga baixa só ~137 KB (bancos pequenos); o cebraspe.json (794 KB comprimido) já vem depois, então dividir não melhora a 1ª carga
 - [P3] Mais provas da Consulplan (importador pronto: `scripts/importar-consulplan.py`). Verificado em 04/11/2026: dos 296 concursos listados, só o TJ CE 2019 tem caderno + gabarito pós-recurso; os de 2026 (TJMG, Bálsamo, Potirendaba, SAAEB, CRA/PR...) publicaram cadernos mas só gabarito preliminar, tentar de novo quando sair o pós-recurso. caderno e gabarito definitivo são públicos no CDN (`cdnsite.institutoconsulplan.org.br/concursos/...`), links na página de cada concurso (montada por JS, usar o navegador). Ex.: TJ CE Juiz Leigo 2019
@@ -24,6 +41,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 - (nenhum)
 
 ## Feito
+- Lote 04/11/2026 (13), da crítica de conversão: **"Por que errei? Perguntar ao Mentor"** em toda questão errada (abre o Mentor com a pergunta pronta, inclusive antes de montar o perfil); **card de cota esgotada** com "Ver o Pro" no lugar do balão de erro; **Planos visível também sem perfil**; tela de venda com título "Pro: o Mentor do seu lado até o dia da prova", preço em destaque e selos Pix/cartão e sem renovação; **landing sem o card "Pro em breve"** enquanto a cobrança estiver desligada (`PRO_PRECO_LANDING` em `gerar-paginas.py` liga o card com preço); **texto das questões**: quebras de linha do PDF juntadas, comando Cebraspe cortado no "**Item:**" (3.211 questões), páginas de SEO sem markdown cru, crédito de autor vazado removido, `scripts/qa-textos.py` para conferir
 - Lote 04/11/2026 (12), experiência: **filtro no resultado do simulado** (Todas / Erradas / Em branco / Com dúvida, com contagem); **aviso de simulado em andamento** nas outras abas (minutos restantes, respondidas e "Voltar ao simulado"); **tamanho do texto da questão** (botão Aa no topo da questão: 100%, 115%, 130%, guardado no aparelho)
 - Lote 04/11/2026 (11), experiência: **atalhos no Praticar** (letra responde, Enter/→ próxima, ← volta); **marcar dúvida no simulado** (botão ou tecla ?, aparece no mapa e no aviso de entrega: "9 em branco e 1 com dúvida"); **aviso de 5 minutos finais** (faixa + relógio vermelho); barra do simulado corrigida no celular (o botão Entregar saía da tela)
 - Lote 04/11/2026 (10), experiência: lote 9 testado na tela em tamanho de celular (refazer as erradas: 3 itens, 6 min; WhatsApp: texto certo; caderno .txt conferido) e corrigido o .txt, que não trazia as alternativas na múltipla escolha; **entregar com aviso de quantas estão em branco**; **atalhos de teclado no simulado** (letra marca, C/E no Certo/Errado, ← → trocam; dica só aparece em computador); **contador "N/M respondidas"** ao lado do mapa

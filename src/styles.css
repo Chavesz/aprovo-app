@@ -869,3 +869,7 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .filtro-resultado .chip[aria-pressed="true"] { background: var(--acao); color: #2a1f3d; border-color: transparent; font-weight: 700; }
 .sim-andamento { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; background: var(--grifo); }
 .questao-meta .tamanho-texto{margin-left:auto}.questao-meta .tamanho-texto + .bandeira{margin-left:0}
+.planos-preco{margin:4px 0 12px;display:flex;align-items:baseline;gap:8px}.planos-preco strong{font-size:2.2rem;font-weight:800;color:var(--tinta)}.planos-preco span{color:var(--tinta-2)}
+.selos-pro{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}.selos-pro span{font-size:.8rem;border:1px solid var(--linha);border-radius:999px;padding:3px 10px}
+.limite-card{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:8px 0;padding:12px 14px;border-radius:12px;background:var(--grifo)}
+.porque-errei{margin:10px 0 4px}

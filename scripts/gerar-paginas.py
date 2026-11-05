@@ -34,12 +34,43 @@ section{padding:56px 0;border-top:1px solid var(--linha)}.kicker{font-size:.8rem
 .passos{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));counter-reset:p;list-style:none;padding:0}.passos li{background:var(--sup);border:1px solid var(--linha);border-radius:14px;padding:20px;counter-increment:p}.passos li::before{content:counter(p);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--acao);color:var(--acaot);font-weight:800;margin-bottom:10px}
 .ia-bloco{display:grid;gap:28px;align-items:center}@media (min-width:880px){.ia-bloco{grid-template-columns:1fr 1fr}}.chat{background:var(--sup);border:1px solid var(--linha);border-radius:18px;padding:16px;display:grid;gap:10px}.chat p{margin:0;padding:10px 14px;border-radius:12px;max-width:88%;font-size:.94rem}.chat .eu{justify-self:end;background:var(--marca);color:var(--sup)}.chat .ia{background:var(--ia)}
 .check{list-style:none;padding:0}.check li{padding-left:28px;position:relative;margin:.45em 0}.check li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
-.planos{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.plano{background:var(--sup);border:1px solid var(--linha);border-radius:18px;padding:24px;display:flex;flex-direction:column}.plano.pro{border:2px solid var(--marca)}.plano h3{margin:0;font-size:1.3rem}.preco{font-size:2.4rem;font-weight:800;margin:6px 0 2px}.preco small{font-size:1rem;font-weight:600;color:var(--tinta2)}.plano .check{flex:1}.plano a.cta{width:100%}.etq{display:inline-block;background:var(--ia);color:var(--marca);font-weight:700;font-size:.78rem;border-radius:999px;padding:3px 10px;margin-left:8px;vertical-align:middle}
+.planos{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.plano{background:var(--sup);border:1px solid var(--linha);border-radius:18px;padding:24px;display:flex;flex-direction:column}.plano.pro{border:2px solid var(--marca)}.plano h3{margin:0;font-size:1.3rem}.preco{font-size:2.4rem;font-weight:800;margin:6px 0 2px}.preco small{font-size:1rem;font-weight:600;color:var(--tinta2)}.plano .check{flex:1}.plano a.cta{width:100%}.planos-um{grid-template-columns:minmax(0,420px);justify-content:center}.plano a.cta.contorno{background:transparent;border:2px solid var(--tinta);color:var(--tinta)}.selos{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 0;font-size:.85rem}.selos span{border:1px solid var(--linha);border-radius:999px;padding:3px 10px}.etq{display:inline-block;background:var(--ia);color:var(--marca);font-weight:700;font-size:.78rem;border-radius:999px;padding:3px 10px;margin-left:8px;vertical-align:middle}
 details{border-top:1px solid var(--linha);padding:6px 0}summary{cursor:pointer;font-weight:700;min-height:48px;display:flex;align-items:center}details p{margin:0 0 12px;color:var(--tinta2)}
 .final{text-align:center;background:var(--marca);color:#fff;border-radius:22px;padding:44px 20px;border:0;margin-top:24px}.final h2{color:#fff}.final p{color:#e9e2f7}@media (prefers-color-scheme:dark){.final{background:var(--ia)}.final h2{color:var(--tinta)}.final p{color:var(--tinta2)}}
 .cta-fixa{display:none}.cta-fixa[hidden]{display:none!important}@media (max-width:640px){.cta-fixa{display:block;position:fixed;left:0;right:0;bottom:0;padding:10px 16px;background:var(--bg);border-top:1px solid var(--linha)}.cta-fixa .cta{display:flex;width:100%}main{padding-bottom:96px}a.sec{margin-left:8px}}
 footer{color:var(--tinta2);font-size:.88rem;padding-top:28px}
 .q{border-top:1px solid var(--linha);padding:14px 0}.q ol{padding-left:1.4rem}.fonte{font-size:.85rem;color:var(--tinta2)}"""
+
+# Preço do Pro na landing. Fica None enquanto a cobrança estiver desligada: sem preço, a landing não mostra o Pro
+# (anunciar um plano "em breve" e sem preço na página de vendas tira credibilidade). Ex.: PRO_PRECO_LANDING = "19,90".
+PRO_PRECO_LANDING = None
+PRO_DIAS_LANDING = 30
+
+def juntar_linhas(t):
+    """Junta as quebras de linha que vieram do PDF no meio da frase; parágrafo (linha em branco) fica."""
+    return re.sub(r"([^.:;?!\n])\n(?=[a-zà-ú(\"“])", r"\1 ", t)
+
+def comando_limpo(c):
+    """Cebraspe: o comando traz o fim do texto associado antes de **Item:**; na amostra fica só o item."""
+    c = juntar_linhas(c)
+    if "**Item:**" in c:
+        c = "Julgue o item. " + c.split("**Item:**", 1)[1].strip()
+    return re.sub(r"\s+", " ", c).strip()
+
+def texto_ok(c):
+    """Fora da amostra: comando que começa no meio da frase ou com negrito sem fechar."""
+    return bool(c) and not c[0].islower() and c.count("**") % 2 == 0
+
+def markdown_simples(c):
+    return re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", html.escape(c))
+
+def secao_planos():
+    gratis = '<div class="plano"><h3>Grátis</h3><p class="preco">R$ 0</p><ul class="check"><li>Todas as questões oficiais, simulados e estatísticas</li><li>Revisão espaçada e plano do dia</li><li>15 mensagens por dia com o Mentor</li></ul><a class="cta%s" href="/?teste=1">Começar grátis</a></div>'
+    if not PRO_PRECO_LANDING:
+        return '<p class="kicker">Preço</p><h2>Comece de graça, sem cartão.</h2><div class="planos planos-um">' + gratis % '' + '</div>'
+    pro = ('<div class="plano pro"><h3>Pro</h3><p class="preco">R$ %s <small>por %d dias</small></p><ul class="check"><li>Tudo do Grátis</li><li>300 mensagens por dia com o Mentor</li><li>Explicação de toda questão que você errar</li><li>Plano até o dia da prova, revisado toda semana</li></ul>'
+           '<a class="cta" href="/?teste=1">Assinar o Pro</a><p class="selos"><span>Pix ou cartão</span><span>Sem renovação automática</span></p></div>') % (PRO_PRECO_LANDING, PRO_DIAS_LANDING)
+    return '<p class="kicker">Planos</p><h2>Pro: o Mentor do seu lado até o dia da prova.</h2><div class="planos">' + gratis % ' contorno' + pro + '</div>'
 
 def pagina(caminho, titulo, desc, corpo):
     (PUB / caminho).parent.mkdir(parents=True, exist_ok=True)
@@ -51,12 +82,12 @@ def pagina(caminho, titulo, desc, corpo):
     return caminho
 
 def amostra(filtro, n=5):
-    sel = [q for q in qs if filtro(q) and q.get("comando") and not q.get("enunciado")][:n]
+    sel = [q for q in qs if filtro(q) and q.get("comando") and not q.get("enunciado") and texto_ok(comando_limpo(q["comando"]))][:n]
     out = ""
     for q in sel:
         alts = "".join(f"<li>{html.escape(re.sub('<[^>]+>', '', a['texto']))}</li>" for a in q["alternativas"])
         out += f"""<div class="q"><p><strong>{html.escape(q['disciplina'])}</strong> · {html.escape(q['banca'])} {q['ano']}</p>
-<p>{html.escape(q['comando'])}</p><ol type="A">{alts}</ol><p class="fonte">Gabarito e comentário no app. Fonte: {html.escape(q['prova'])}</p></div>"""
+<p>{markdown_simples(comando_limpo(q['comando']))}</p><ol type="A">{alts}</ol><p class="fonte">Gabarito e comentário no app. Fonte: {html.escape(q['prova'])}</p></div>"""
     return out
 
 NQ = f"{len(qs):,}".replace(",", ".")
@@ -105,10 +136,7 @@ paginas.append(pagina("aprovo.html", "Aprovô: o mentor que te ajuda a passar no
 <div class="caixa"><strong>Revisão espaçada</strong><br>A questão errada volta em 1, 3, 7 e 30 dias.</div>
 <div class="caixa"><strong>Concursos abertos</strong><br>Editais nos diários oficiais da sua cidade e do seu estado.</div>
 <div class="caixa"><strong>Funciona no celular</strong><br>Instale como app e estude até sem internet.</div></div></section>
-<section id="planos"><p class="kicker">Planos</p><h2>Comece grátis. Assine quando quiser mais Mentor.</h2><div class="planos">
-<div class="plano"><h3>Grátis</h3><p class="preco">R$ 0</p><ul class="check"><li>Todas as questões, simulados e estatísticas</li><li>Revisão espaçada e plano do dia</li><li>15 mensagens por dia com o Mentor</li></ul><a class="cta" href="/?teste=1">Começar grátis</a></div>
-<div class="plano pro"><h3>Pro <span class="etq">em breve</span></h3><p class="preco">Mentor <small>para todo dia</small></p><ul class="check"><li>Tudo do Grátis</li><li>300 mensagens por dia com o Mentor</li><li>Resumos em PDF ilimitados</li><li>Plano completo até o dia da prova</li></ul><a class="cta" href="/?teste=1">Testar grátis primeiro</a></div></div>
-<p class="selo">O preço do Pro será anunciado no lançamento.</p></section>
+<section id="planos">{secao_planos()}</section>
 <section><p class="kicker">Veja na prática</p><h2>Como são as questões.</h2>{amostra(lambda q: q.get('comentario'), 3)}</section>
 <section><p class="kicker">Dúvidas</p><h2>Perguntas frequentes</h2>
 <details><summary>É grátis mesmo?</summary><p>Sim. Questões, simulados, estatísticas, revisão e 15 mensagens por dia com o Mentor não custam nada e não pedem cartão.</p></details>

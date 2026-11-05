@@ -196,6 +196,8 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
   const [editando, setEditando] = useState(false);
   const [uso, setUso] = useState<Uso | null>(null);
   const [aviso, setAviso] = useState('');
+  // Chegou pelo "Por que errei?": mostra o chat mesmo antes de montar o perfil (lido uma vez, ao abrir).
+  const [temPergunta] = useState(() => { try { return !!localStorage.getItem('cq:mentor-pergunta'); } catch { return false; } });
 
   useEffect(() => {
     chamar<Uso>({ acao: 'uso' }).then(setUso).catch(() => undefined);
@@ -205,6 +207,12 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
 
   if (!perfil || editando) {
     return (
+      <>
+      {temPergunta && (
+        <section className="coluna mentor">
+          <Chat ctx={() => ''} uso={uso} onUso={setUso} />
+        </section>
+      )}
       <Onboarding
         inicial={perfil ?? (ehKaua ? PERFIL_CUITE : null)}
         onPronto={(p) => {
@@ -213,6 +221,8 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
         }}
         onUso={setUso}
       />
+      <section className="coluna mentor"><Planos uso={uso} /></section>
+      </>
     );
   }
 
@@ -497,7 +507,19 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
   const [msgs, setMsgs] = usePersist<Msg[]>('cq:mentor-chat', []);
   const [texto, setTexto] = useState('');
   const [pensando, setPensando] = useState(false);
+  const [limite, setLimite] = useState(false);
   const fim = useRef<HTMLDivElement>(null);
+  const campo = useRef<HTMLInputElement>(null);
+  // "Por que errei?" na questão deixa a pergunta pronta aqui.
+  useEffect(() => {
+    try {
+      const p = localStorage.getItem('cq:mentor-pergunta');
+      if (!p) return;
+      localStorage.removeItem('cq:mentor-pergunta');
+      setTexto(p);
+      setTimeout(() => { campo.current?.scrollIntoView({ block: 'center' }); campo.current?.focus(); }, 50);
+    } catch { /* sem armazenamento */ }
+  }, []);
   useEffect(() => {
     fim.current?.scrollIntoView({ block: 'nearest' });
   }, [msgs, pensando]);
@@ -513,6 +535,7 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
       onUso(r);
       setMsgs([...novas, { role: 'assistant', content: r.texto }]);
     } catch (e) {
+      if ((e as { limite?: boolean }).limite) { setMsgs(msgs); setTexto(t.trim()); setLimite(true); return; }
       setMsgs([...novas, { role: 'assistant', content: `⚠️ ${(e as Error).message}` }]);
     } finally {
       setPensando(false);
@@ -530,6 +553,15 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
           <div key={i} className={`balao ${m.role}`} dangerouslySetInnerHTML={{ __html: mdParaHtml(m.content) }} />
         ))}
         {pensando && <div className="balao assistant nota">Pensando…</div>}
+        {limite && (
+          <div className="limite-card" role="alert">
+            <strong>Você usou as {uso?.limite ?? 15} mensagens de hoje.</strong>
+            <span>{uso?.plano === 'pro' ? 'Amanhã libera de novo.' : 'No Pro são 300 por dia. Sua pergunta fica guardada no campo abaixo.'}</span>
+            {uso?.plano !== 'pro' && (
+              <button className="btn" onClick={() => setTimeout(() => document.getElementById('planos-titulo')?.scrollIntoView({ block: 'start' }), 0)}>Ver o Pro</button>
+            )}
+          </div>
+        )}
         <div ref={fim} />
       </div>
       <div className="mentor-sugestoes">
@@ -539,7 +571,7 @@ function Chat({ ctx, uso, onUso }: { ctx: () => string; uso: Uso | null; onUso: 
         {msgs.length > 0 && <button className="link" onClick={() => setMsgs([])}>Limpar conversa</button>}
       </div>
       <form className="mentor-envio" onSubmit={(e) => { e.preventDefault(); enviar(texto); }}>
-        <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Ex.: não entendi a diferença entre IIP e Breteau" />
+        <input ref={campo} value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Ex.: não entendi a diferença entre IIP e Breteau" />
         <button className="btn" disabled={pensando || !texto.trim()}>Enviar</button>
       </form>
     </>
@@ -576,18 +608,21 @@ function Planos({ uso }: { uso: Uso | null }) {
   return (
     <section className="planos-pro" aria-labelledby="planos-titulo">
       <p className="rotulo">Planos</p>
-      <h2 id="planos-titulo">O Grátis já aprova. O Pro tira o limite do Mentor.</h2>
+      <h2 id="planos-titulo">{pro ? 'Você é Pro: o Mentor está do seu lado até o dia da prova.' : 'Pro: o Mentor do seu lado até o dia da prova.'}</h2>
+      {!pro && venda?.disponivel && (
+        <p className="planos-preco"><strong>R$ {venda.preco!.toFixed(2).replace('.', ',')}</strong> <span>por {venda.dias} dias</span></p>
+      )}
       <div className="planos-tabela" role="table" aria-label="Comparação entre os planos Grátis e Pro">
-        <div className="pt-linha pt-cab" role="row"><span role="columnheader">Recurso</span><span role="columnheader" className={!pro ? 'atual' : ''}>Grátis{!pro && <small>seu plano</small>}</span><span role="columnheader" className={pro ? 'atual' : ''}>Pro{pro ? <small>seu plano</small> : <small>em breve</small>}</span></div>
+        <div className="pt-linha pt-cab" role="row"><span role="columnheader">Recurso</span><span role="columnheader" className={!pro ? 'atual' : ''}>Grátis{!pro && <small>seu plano</small>}</span><span role="columnheader" className={pro ? 'atual' : ''}>Pro{pro ? <small>seu plano</small> : !venda?.disponivel && <small>em breve</small>}</span></div>
         {COMPARA.map(([r, g, p]) => (
           <div className="pt-linha" role="row" key={r}><span role="cell">{r}</span><span role="cell">{g}</span><span role="cell" className="pt-pro">{p}</span></div>
         ))}
       </div>
       {!pro && venda?.disponivel && (
         <>
-          <button className="btn btn-grande" disabled={abrindo} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : `Assinar o Pro · R$ ${venda.preco!.toFixed(2).replace('.', ',')} por ${venda.dias} dias`}</button>
+          <button className="btn btn-grande" disabled={abrindo} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : 'Assinar o Pro'}</button>
+          <p className="selos-pro"><span>Pix ou cartão</span><span>Sem renovação automática</span><span>Mercado Pago</span></p>
           {erroPg && <p className="aviso" role="alert">{erroPg}</p>}
-          <p className="nota">Pix ou cartão pelo Mercado Pago. Sem renovação automática: o acesso vale {venda.dias} dias por pagamento.</p>
         </>
       )}
       {!pro && !venda?.disponivel && (

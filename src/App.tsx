@@ -3,7 +3,7 @@ import Descobrir from './Descobrir';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
-import { md } from './md';
+import { comandoExibido, md } from './md';
 import Edital from './Edital';
 import Login from './Login';
 import Ranking from './Ranking';
@@ -67,6 +67,11 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [geradas, setGeradas] = usePersist<Questao[]>('cq:geradas', []);
   const [erro, setErro] = useState(false);
   const [aba, setAba] = usePersist<Aba>('cq:aba', 'praticar');
+  useEffect(() => {
+    const ir = (e: Event) => { setAba((e as CustomEvent<Aba>).detail); scrollTo(0, 0); };
+    window.addEventListener('aprovo:aba', ir);
+    return () => window.removeEventListener('aprovo:aba', ir);
+  }, [setAba]);
   const [tema, setTema] = usePersist<'claro' | 'escuro' | ''>('cq:tema-pref', '');
   const [historico, setHistorico] = usePersist<Resposta[]>('cq:historico', []);
   const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
@@ -810,7 +815,7 @@ function QuestaoCard(props: {
         </p>
       )}
       {q.enunciado && <div className="enunciado" dangerouslySetInnerHTML={{ __html: md(q.enunciado) }} />}
-      {q.comando && <div className="comando" dangerouslySetInnerHTML={{ __html: md(q.comando) }} />}
+      {q.comando && <div className="comando" dangerouslySetInnerHTML={{ __html: md(comandoExibido(q.comando)) }} />}
 
       <ol className="alternativas">
         {q.alternativas.map((a) => {
@@ -849,6 +854,20 @@ function QuestaoCard(props: {
             {q.comentario ??
               `Gabarito oficial (${q.banca}). Esta prova não tem comentário publicado; releia o enunciado com a alternativa correta em mente.`}
           </p>
+          {!certa && (
+            <button
+              className="btn btn-sec porque-errei"
+              onClick={() => {
+                const limpo = (t: string) => t.replace(/<[^>]+>|\*\*/g, '').replace(/\s+/g, ' ').trim();
+                const alt = (l: string) => limpo(q.alternativas.find((a) => a.letra === l)?.texto ?? l);
+                const pergunta = `Por que errei esta questão (${q.banca}, ${q.prova})? ${limpo(q.comando).slice(0, 600)} Marquei "${alt(marcada)}", mas o gabarito é "${alt(q.gabarito)}". Explique o raciocínio certo e como não cair nisso de novo.`;
+                try { localStorage.setItem('cq:mentor-pergunta', pergunta); } catch { /* sem armazenamento */ }
+                window.dispatchEvent(new CustomEvent('aprovo:aba', { detail: 'mentor' }));
+              }}
+            >
+              Por que errei? Perguntar ao Mentor
+            </button>
+          )}
           {!certa && q.revisar && (
             <p className="feedback-extra">
               <span className="rotulo">O que revisar</span>
