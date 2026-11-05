@@ -1,5 +1,6 @@
 // /api/conta: criar conta, entrar e sair.
 import { criarConta, entrar, json, sair } from '../lib/contas';
+import { registrarEmail } from '../lib/cakto';
 import { boasVindas, emails, emailValido, enviarEmail } from '../lib/email';
 
 export default async (req: Request) => {
@@ -17,6 +18,7 @@ export default async (req: Request) => {
       const email = (corpo.email ?? '').trim().toLowerCase();
       if (email && emailValido(email)) {
         await emails().setJSON(c.usuario, { email, optin: true, criadoEm: Date.now() });
+        await registrarEmail(c.usuario, email);
         await enviarEmail(email, 'Bem-vindo ao Aprovô: seu plano começa hoje', boasVindas(c.usuario, c.nome)).catch(() => false);
       }
       return json(c);

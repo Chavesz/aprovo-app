@@ -1,6 +1,7 @@
 // /api/email: cadastrar/trocar o e-mail da conta (POST logado {email, optin}) e descadastro pelo link do e-mail (GET ?sair=&t=).
 import { timingSafeEqual } from 'node:crypto';
 import { json, usuarioDaRequisicao } from '../lib/contas';
+import { registrarEmail } from '../lib/cakto';
 import { assinaturaDescadastro, emails, emailValido, type Contato } from '../lib/email';
 
 const pagina = (msg: string) =>
@@ -22,6 +23,7 @@ export default async (req: Request) => {
   if (!email) { await emails().delete(usuario); return json({ ok: true }); }
   if (!emailValido(email)) return json({ erro: 'E-mail inválido.' }, 400);
   await emails().setJSON(usuario, { email: email.trim().toLowerCase(), optin: optin !== false, criadoEm: Date.now() });
+  await registrarEmail(usuario, email);
   return json({ ok: true });
 };
 

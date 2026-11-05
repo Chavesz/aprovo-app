@@ -1,6 +1,7 @@
 // /api/admin: liberação manual do Pro (fallback quando a venda é por link pronto, Pix direto ou cortesia).
 // DESLIGADO até existir ADMIN_TOKEN na Netlify (texto aleatório com 32+ caracteres). Use pela página /admin.html.
 // Authorization: Bearer <ADMIN_TOKEN>
+// usuario pode ser o nome de usuário ou o e-mail da conta.
 // GET  ?usuario=x                       → plano atual
 // POST { usuario, acao: 'pro', dias? }  → libera o Pro por N dias (padrão 31; 0 = sem prazo)
 // POST { usuario, acao: 'gratis' }      → volta ao grátis
@@ -9,6 +10,7 @@ import { getStore } from '@netlify/blobs';
 import { json, normalizar } from '../lib/contas';
 import { gravarPlano, lerPlano } from '../lib/assinatura';
 import { planoDe } from '../lib/uso';
+import { usuarioPorEmail } from '../lib/cakto';
 
 function autorizado(req: Request) {
   const segredo = process.env.ADMIN_TOKEN ?? '';
@@ -22,8 +24,10 @@ export default async (req: Request) => {
   if (!autorizado(req)) return json({ erro: 'Não autorizado.' }, 401);
   const url = new URL(req.url);
   const corpo = req.method === 'POST' ? ((await req.json().catch(() => ({}))) as { usuario?: string; acao?: string; dias?: number }) : {};
-  const usuario = normalizar(String(corpo.usuario ?? url.searchParams.get('usuario') ?? ''));
-  if (!usuario) return json({ erro: 'Informe o usuário.' }, 400);
+  // Aceita o usuário ou o e-mail da conta (o e-mail que o aluno usou na Cakto).
+  const informado = String(corpo.usuario ?? url.searchParams.get('usuario') ?? '').trim();
+  const usuario = informado.includes('@') ? ((await usuarioPorEmail(informado)) ?? '') : normalizar(informado);
+  if (!usuario) return json({ erro: informado.includes('@') ? `Nenhuma conta com o e-mail "${informado}". Peça para o aluno salvar esse e-mail no app (Perfil) ou informe o usuário.` : 'Informe o usuário ou o e-mail.' }, informado ? 404 : 400);
   const existe = await getStore({ name: 'usuarios', consistency: 'strong' }).get(usuario);
   if (!existe) return json({ erro: `Usuário "${usuario}" não existe.` }, 404);
 

@@ -7,8 +7,9 @@ export const planos = () => getStore({ name: 'planos', consistency: 'strong' });
 export interface RegistroPlano {
   plano: 'gratis' | 'pro';
   ate?: number; // fim do acesso pago; sem data = liberação manual sem prazo
-  provedor?: 'mercadopago' | 'manual';
-  assinatura?: string; // id do preapproval no Mercado Pago
+  provedor?: 'mercadopago' | 'cakto' | 'manual';
+  assinatura?: string; // id do preapproval no Mercado Pago ou da assinatura na Cakto
+  pedidos?: string[]; // pedidos da Cakto já aplicados (id:status)
   status?: 'ativa' | 'cancelada' | 'pendente' | 'expirada';
   pagamentos?: string[];
   valor?: number;
@@ -22,7 +23,8 @@ export const cfgAssinatura = () => {
   // Link pronto de assinatura (Mercado Pago ou Cakto). Vale quando não há MP_ACCESS_TOKEN; o admin libera o Pro à mão.
   const bruto = (process.env.CHECKOUT_URL ?? process.env.VITE_CHECKOUT_URL ?? '').trim();
   const link = /^https:\/\//.test(bruto) ? bruto : '';
-  const modo: 'mercadopago' | 'link' | 'nenhum' = token ? 'mercadopago' : link ? 'link' : 'nenhum';
+  const cakto = /^https:\/\//.test((process.env.CAKTO_CHECKOUT_URL ?? '').trim());
+  const modo: 'cakto' | 'mercadopago' | 'link' | 'nenhum' = cakto ? 'cakto' : token ? 'mercadopago' : link ? 'link' : 'nenhum';
   return { token, preco, site, link, modo };
 };
 
@@ -35,8 +37,9 @@ export async function gravarPlano(usuario: string, r: RegistroPlano) {
   await planos().setJSON(usuario, novo);
   await espelharAssinatura(usuario, {
     plano: r.plano,
-    provedor: r.provedor ?? 'manual',
-    referencia: r.assinatura ?? `manual-${usuario}`,
+    // O Supabase só aceita mercadopago|stripe|manual; a Cakto vai como manual com a referência cakto-<id>.
+    provedor: r.provedor === 'mercadopago' ? 'mercadopago' : 'manual',
+    referencia: r.assinatura ? (r.provedor === 'cakto' ? `cakto-${r.assinatura}` : r.assinatura) : `manual-${usuario}`,
     status: r.status ?? (r.plano === 'pro' ? 'ativa' : 'expirada'),
     fim: r.ate,
   });

@@ -587,7 +587,7 @@ const COMPARA: [string, string, string][] = [
   ['Resumo do assunto em PDF', 'Conta nas 15', '✓'],
 ];
 
-type Venda = { disponivel: boolean; modo: 'mercadopago' | 'link' | 'nenhum'; preco: number; link?: string; plano?: 'gratis' | 'pro'; status?: string; ate?: number; recorrente?: boolean };
+type Venda = { disponivel: boolean; modo: 'cakto' | 'mercadopago' | 'link' | 'nenhum'; preco: number; link?: string; plano?: 'gratis' | 'pro'; status?: string; ate?: number; recorrente?: boolean };
 const LINK_CHECKOUT = String(import.meta.env.VITE_CHECKOUT_URL ?? '').trim();
 const reais = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ','));
 
@@ -605,8 +605,9 @@ function Planos({ uso }: { uso: Uso | null }) {
 
   const pro = venda?.plano === 'pro' || uso?.plano === 'pro';
   const preco = venda?.preco ?? 50;
-  const link = venda?.modo === 'link' ? venda.link : venda?.modo !== 'mercadopago' ? LINK_CHECKOUT : '';
-  const podeAssinar = venda?.modo === 'mercadopago' || !!link;
+  const viaApi = venda?.modo === 'mercadopago' || venda?.modo === 'cakto';
+  const link = venda?.modo === 'link' ? venda.link : !viaApi ? LINK_CHECKOUT : '';
+  const podeAssinar = viaApi || !!link;
 
   async function assinar() {
     setErroPg('');
@@ -652,6 +653,7 @@ function Planos({ uso }: { uso: Uso | null }) {
           {venda?.ate ? `Acesso Pro até ${new Date(venda.ate).toLocaleDateString('pt-BR')}${venda.recorrente ? ', renovando todo mês' : ''}.` : 'Acesso Pro ativo.'}{' '}
           {venda?.recorrente && <button className="link" disabled={abrindo} onClick={cancelar}>Cancelar assinatura</button>}
           {venda?.status === 'cancelada' && ' Assinatura cancelada: não haverá nova cobrança.'}
+          {venda?.modo === 'cakto' && venda.status !== 'cancelada' && ' Para cancelar, use o link "Gerenciar assinatura" no e-mail da Cakto.'}
         </p>
       )}
 
@@ -665,6 +667,7 @@ function Planos({ uso }: { uso: Uso | null }) {
           )}
           <button className="btn btn-grande" disabled={abrindo || (pedirEmail && !email)} onClick={assinar}>{abrindo ? 'Abrindo o pagamento…' : `Assinar · R$ ${reais(preco)}/mês`}</button>
           <p className="selos-pro"><span>Pix ou cartão</span><span>Cancele quando quiser</span><span>Pagamento seguro</span></p>
+          {venda?.modo === 'cakto' && <p className="nota">Pagou no Pix? O Pro é liberado sozinho em instantes. Use no pagamento o mesmo e-mail da sua conta.</p>}
           {link && <p className="nota">Depois de pagar, seu Pro é liberado em até 24 h. No pagamento, informe seu usuário do Aprovô: <strong>{contaSalva()?.usuario}</strong>.</p>}
           {erroPg && <p className="aviso" role="alert">{erroPg}</p>}
         </>

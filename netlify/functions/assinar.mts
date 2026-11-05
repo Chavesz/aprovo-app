@@ -9,6 +9,7 @@ import { json, usuarioDaRequisicao } from '../lib/contas';
 import { emails, emailValido, type Contato } from '../lib/email';
 import { aplicarPreapproval, cfgAssinatura, lerPlano, mp, type Preapproval } from '../lib/assinatura';
 import { planoDe } from '../lib/uso';
+import { linkCheckout, registrarEmail } from '../lib/cakto';
 
 export default async (req: Request) => {
   const c = cfgAssinatura();
@@ -44,6 +45,18 @@ export default async (req: Request) => {
 
   if (req.method !== 'POST') return json({ erro: 'Método não permitido.' }, 405);
   if (c.modo === 'link') return json({ url: c.link });
+  if (c.modo === 'cakto') {
+    // Cakto: link da oferta com a referência do aluno (sck) e o e-mail já preenchido, se houver.
+    const corpo = (await req.json().catch(() => ({}))) as { email?: string };
+    const salvo = (await emails().get(usuario, { type: 'json' })) as Contato | null;
+    const email = (corpo.email ?? salvo?.email ?? '').trim().toLowerCase();
+    if (email && emailValido(email) && !salvo?.email) {
+      await emails().setJSON(usuario, { email, optin: true, criadoEm: Date.now() });
+      await registrarEmail(usuario, email);
+    }
+    const destino = await linkCheckout(usuario, emailValido(email) ? email : undefined);
+    return destino ? json({ url: destino }) : json({ erro: 'Checkout indisponível.' }, 503);
+  }
   if (c.modo === 'nenhum') return json({ erro: 'A assinatura do Pro ainda não está aberta.' }, 503);
   const atual = await lerPlano(usuario);
   if ((await planoDe(usuario)) === 'pro' && atual.status === 'ativa') return json({ erro: 'Sua conta já é Pro.' }, 409);
