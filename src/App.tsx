@@ -272,13 +272,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
 
   const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
-    { id: 'mentor', rotulo: 'Mentor', icone: <IconSpark /> },
-    { id: 'concursos', rotulo: 'Concursos', icone: <IconBook /> },
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
-    { id: 'edital', rotulo: 'Edital', icone: <IconDoc /> },
-    { id: 'desempenho', rotulo: 'Desempenho', icone: <IconChart /> },
     { id: 'revisar', rotulo: 'Revisar', icone: <IconFlag /> },
+    { id: 'mentor', rotulo: 'Mentor', icone: <IconSpark /> },
+    { id: 'edital', rotulo: 'Edital', icone: <IconDoc /> },
+    { id: 'concursos', rotulo: 'Concursos', icone: <IconBook /> },
+    { id: 'desempenho', rotulo: 'Evolução', icone: <IconChart /> },
   ];
 
   return (
@@ -1395,9 +1395,9 @@ function Simulado(props: {
           </p>
           <button className="btn" onClick={() => iniciarProva(true)}>Fazer o simulado da semana</button>
         </div>
-        <div className="prova-estilo">
+        {props.cargo !== 'OUTRO' && <div className="prova-estilo">
           <p className="rotulo">Prova no estilo da banca</p>
-          <p className="prova-estilo-titulo">{props.cargo === 'OUTRO' ? 'Prova modelo' : props.cargo} Cuité de Mamanguape · EDUCA PB</p>
+          <p className="prova-estilo-titulo">{props.cargo} Cuité de Mamanguape · EDUCA PB</p>
           <p className="nota">
             40 questões em 3 horas: 15 de Português (peso 2), 5 de Informática, 5 de Gerais e 15 de Específicos (peso 4).
             Nota de 0 a 100, começando pelos assuntos em que você mais erra.
@@ -1426,8 +1426,8 @@ function Simulado(props: {
           <button className="btn btn-grande" onClick={() => iniciarProva()}>
             Gerar prova no estilo da banca
           </button>
-        </div>
-        <ProvasEduca />
+        </div>}
+        {props.cargo !== 'OUTRO' && <ProvasEduca />}
         <p className="rotulo simulado-livre">Ou monte um simulado livre</p>
         <div className="form-simulado">
           <Select

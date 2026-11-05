@@ -432,6 +432,7 @@ function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {
   onAviso: (t: string) => void;
   onUso: (u: Uso) => void;
 }) {
+  const [verSemana, setVerSemana] = useState(false);
   const [resumos, setResumos] = usePersist<Record<string, string>>('cq:resumos', {});
   const [gerando, setGerando] = useState('');
   async function resumo(disciplina: string, assunto: string) {
@@ -473,7 +474,7 @@ function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {
         </button>
       </h2>
       <div className="mentor-semana">
-        {plano.semana.map((d, n) => (
+        {plano.semana.slice(0, verSemana ? 7 : 1).map((d, n) => (
           <article key={n} className={n === 0 ? 'mentor-dia hoje' : 'mentor-dia'}>
             <p className="rotulo">{n === 0 ? 'Hoje' : d.data.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })}</p>
             {d.blocos.map((b) => {
@@ -503,6 +504,7 @@ function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {
           </article>
         ))}
       </div>
+      {!verSemana && <button className="link" onClick={() => setVerSemana(true)}>Ver os próximos 6 dias</button>}
     </>
   );
 }

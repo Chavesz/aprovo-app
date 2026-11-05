@@ -881,3 +881,13 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .comecar .link{align-self:center;margin-top:4px}
 .meu-concurso{display:flex;gap:10px;align-items:flex-start;padding:12px;border:2px solid var(--acento);border-radius:12px;margin-bottom:12px;font-weight:700;cursor:pointer}
 .meu-concurso input{margin-top:3px;width:18px;height:18px;accent-color:var(--acento)}.meu-concurso small{display:block;font-weight:400;color:var(--tinta-2);font-size:.85rem}
+
+/* Revisão visual 06/11: 7 abas cabem no celular; topo do Praticar mais enxuto para a questão aparecer logo */
+@media (max-width: 899px) {
+  .aba { flex: 1 1 0; min-width: 0; font-size: 0.65rem; padding-left: 0; padding-right: 0; letter-spacing: -0.01em; }
+  .meta-dia { grid-template-columns: 1fr; gap: 8px; padding: 12px 14px; margin: 10px 0 12px; background: var(--superficie, var(--papel)); }
+  .meta-contagem { flex-direction: row; align-items: baseline; gap: 6px; min-width: 0; text-align: left; }
+  .meta-contagem .meta-numero { font-size: 1.4rem; }
+  .plano-hoje { padding: 10px 12px; font-size: .95rem; }
+  .foco-btn { margin: 0 0 10px; font-size: .9rem; }
+}
