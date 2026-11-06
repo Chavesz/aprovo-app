@@ -192,3 +192,6 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 
 ### Lote 28 (feito)
 - [x] Revisão crítica do Praticar no celular: tirei a meta e o modo foco duplicados, o Hoje mostra 2 blocos e as autorais começam recolhidas (questão sobe ~300px)
+
+### Lote 29 (feito)
+- [x] Celular: painel Hoje e meta do dia viram um bloco só (questão começa ~50px mais acima)

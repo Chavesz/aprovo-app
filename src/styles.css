@@ -1005,3 +1005,9 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .foco { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .foco-relogio { font-size: 1.2rem; font-weight: 700; padding: 6px 12px; border-radius: 10px; background: var(--papel-2); }
 .autorais summary { cursor: pointer; }
+/* Celular: Hoje e meta do dia formam um bloco só, mais baixo, para a questão subir. */
+@media (max-width: 600px) {
+  .hoje { margin: 8px auto 0; border-radius: 16px 16px 0 0; padding: 12px; gap: 8px; }
+  .hoje + .meta-dia { margin-top: 0; border-top: 0; border-radius: 0 0 16px 16px; grid-template-columns: auto 1fr; padding: 8px 12px; }
+  .hoje-blocos li { padding: 6px 8px; }
+}
