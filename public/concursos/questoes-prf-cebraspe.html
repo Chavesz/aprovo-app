@@ -67,7 +67,29 @@ footer{color:var(--tinta2);font-size:.88rem;padding-top:28px}
 .cancele{margin:12px 0 0;font-weight:600;text-align:center;font-size:.93rem}.gratis{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--linha);font-size:.93rem;color:var(--tinta2)}.gratis a{font-weight:700;color:var(--marca)}
 .faq details{padding:4px 0}.faq summary{font-size:1.05rem;justify-content:space-between;gap:16px;list-style:none}.faq summary::-webkit-details-marker{display:none}.faq summary::after{content:"+";font-size:1.4rem;font-weight:400;color:var(--marca);transition:transform .3s var(--ease)}.faq details[open] summary::after{transform:rotate(45deg)}.faq details p{max-width:40em}
 .lp-final{border-top:1px solid var(--linha);text-align:left}.lp-final h2{max-width:14em}
-@media (prefers-reduced-motion:reduce){.lp *{transition:none!important}}</style></head><body><main>
+@media (prefers-reduced-motion:reduce){.lp *{transition:none!important}}
+.lp .num{font-variant-numeric:lining-nums tabular-nums}
+.lp-faixa{overflow:hidden;border-bottom:1px solid var(--linha);height:52px;display:flex;align-items:center;position:relative}
+.lp-faixa[hidden]{display:none}.lp-faixa-trilho{display:flex;width:max-content;padding-left:150px}.lp-faixa ul{display:flex;list-style:none;margin:0;padding:0}
+.lp-faixa li a{display:flex;align-items:center;gap:8px;padding:0 22px;white-space:nowrap;font-size:.9rem;color:var(--tinta);text-decoration:none;line-height:52px}.lp-faixa li a:hover{color:var(--marca);text-decoration:underline}
+.lp-faixa li a b{font-size:.7rem;font-weight:700;letter-spacing:.08em;color:var(--ok);background:var(--okbg);border-radius:999px;padding:2px 8px;line-height:1.4}
+.lp-faixa-rot{position:absolute;left:0;top:0;bottom:0;z-index:1;display:flex;align-items:center;gap:7px;padding:0 16px 0 0;background:var(--bg);box-shadow:12px 0 12px -4px var(--bg);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta2)}
+.lp-faixa-rot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.tel .bal{position:relative}
+.dig{position:absolute;left:0;top:0;display:flex;gap:4px;padding:14px 16px;background:var(--ia);border-radius:16px;border-bottom-left-radius:4px;opacity:0;pointer-events:none}.dig i{width:6px;height:6px;border-radius:50%;background:var(--tinta2)}
+.lp-hero a.cta{position:relative;overflow:hidden;isolation:isolate}
+@media (prefers-reduced-motion:no-preference){
+.mov .lp-faixa-trilho{animation:lp-faixa var(--faixa-dur,60s) linear infinite}.mov .lp-faixa:hover .lp-faixa-trilho,.mov .lp-faixa:focus-within .lp-faixa-trilho{animation-play-state:paused}
+@keyframes lp-faixa{to{transform:translateX(-50%)}}
+.mov .tel .bal>*{opacity:0;transform:translateY(8px);transition:opacity .4s var(--ease),transform .4s var(--ease)}.mov .tel .bal>.ve{opacity:1;transform:none}
+.mov .tel .bal>.dig{transform:none;transition:opacity .2s}.mov .dig i{animation:lp-dig 1s infinite}.mov .dig i:nth-child(2){animation-delay:.15s}.mov .dig i:nth-child(3){animation-delay:.3s}
+@keyframes lp-dig{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-3px);opacity:1}}
+.mov .rev{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0s)}.mov .rev.ve{opacity:1;transform:none}
+.mov .barra i{transform:scaleX(0);transform-origin:left;transition:transform .9s var(--ease);transition-delay:var(--d,0s)}.mov .barra.ve i{transform:none}
+.mov .diag i{opacity:0;transform:scale(.85);transition:opacity .3s,transform .3s var(--ease);transition-delay:var(--d,0s)}.mov .diag.ve i{opacity:1;transform:none}
+.mov .lp-hero a.cta::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-120%);animation:lp-brilho 7s var(--ease) 2.5s infinite}
+@keyframes lp-brilho{0%{transform:translateX(-120%)}14%,100%{transform:translateX(120%)}}
+}</style></head><body><main>
 <nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/?entrar=1">Entrar</a></nav><h1>Questões da PRF 2021 (Policial Rodoviário Federal, Cebraspe) com gabarito oficial</h1><p>68 questões no Aprovô, com gabarito, comentário, simulado e revisão espaçada.</p><p><a class="cta" href="/?teste=1">Fazer 5 questões grátis</a><a class="sec" href="/?entrar=1">Já tenho conta</a></p><p class="selo">Sem cartão. Sem cadastro para testar.</p><div class="q"><p><strong>Conhecimentos Gerais PRF</strong> · Cebraspe 2021</p>
 <p>Julgue o item. Entre as características da redação oficial incluem-se a objetividade, a impessoalidade e a informatividade.</p><ol type="A"><li>Certo</li><li>Errado</li></ol><p class="fonte">Gabarito e comentário no app. Fonte: PRF 2021 · Policial Rodoviário Federal (Cebraspe)</p></div><div class="q"><p><strong>Conhecimentos Gerais PRF</strong> · Cebraspe 2021</p>
 <p>Julgue o item. Na identificação do signatário de uma comunicação oficial destinada a uma pessoa do sexo feminino, dispensa-se flexão de gênero no nome do cargo.</p><ol type="A"><li>Certo</li><li>Errado</li></ol><p class="fonte">Gabarito e comentário no app. Fonte: PRF 2021 · Policial Rodoviário Federal (Cebraspe)</p></div><div class="q"><p><strong>Conhecimentos Gerais PRF</strong> · Cebraspe 2021</p>
