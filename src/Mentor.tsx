@@ -777,7 +777,54 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
           </li>
         ))}
       </ol>
+      <Foco />
       <button className="link" onClick={onMentor}>Falar com o Mentor</button>
     </section>
+  );
+}
+
+// Modo foco: pomodoro de 25 min (ou 50) com pausa de 5; soma os minutos estudados no dia (cq:foco).
+function Foco() {
+  const hoje = new Date().toDateString();
+  const lerMin = () => { try { const f = JSON.parse(localStorage.getItem('cq:foco') ?? '{}'); return f.dia === hoje ? (f.min as number) : 0; } catch { return 0; } };
+  const [min, setMin] = useState(lerMin);
+  const [fim, setFim] = useState<number | null>(null);
+  const [dur, setDur] = useState(25);
+  const [pausa, setPausa] = useState(false);
+  const [, tique] = useState(0);
+  useEffect(() => {
+    if (!fim) return;
+    const t = setInterval(() => {
+      tique((x) => x + 1);
+      if (Date.now() >= fim) {
+        clearInterval(t);
+        if (!pausa) {
+          const novo = lerMin() + dur;
+          try { localStorage.setItem('cq:foco', JSON.stringify({ dia: hoje, min: novo })); } catch { /* */ }
+          setMin(novo);
+          try { navigator.vibrate?.(300); new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=').play().catch(() => undefined); } catch { /* */ }
+          setPausa(true); setFim(Date.now() + 5 * 60000);
+        } else { setPausa(false); setFim(null); }
+      }
+    }, 1000);
+    return () => clearInterval(t);
+  }, [fim]); // eslint-disable-line react-hooks/exhaustive-deps
+  const resta = fim ? Math.max(0, Math.round((fim - Date.now()) / 1000)) : 0;
+  const mmss = `${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}`;
+  return (
+    <div className="foco">
+      {fim ? (
+        <>
+          <span className="foco-relogio mono" role="timer" aria-live="off">{pausa ? '☕ Pausa' : '⏱️ Foco'} {mmss}</span>
+          <button className="link" onClick={() => { setFim(null); setPausa(false); }}>Parar</button>
+        </>
+      ) : (
+        <>
+          <button className="btn btn-sec" onClick={() => setFim(Date.now() + dur * 60000)}>⏱️ Modo foco {dur} min</button>
+          <button className="link" onClick={() => setDur((d) => (d === 25 ? 50 : 25))}>{dur === 25 ? 'usar 50' : 'usar 25'}</button>
+        </>
+      )}
+      {min > 0 && <span className="nota">{min} min de foco hoje</span>}
+    </div>
   );
 }
