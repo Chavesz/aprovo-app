@@ -67,7 +67,8 @@ import { autenticar, type Conta } from './nuvem';
 
 export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   // Veio do botão "Assinar" da landing: vai direto para criar a conta (sem o teste grátis no caminho).
-  const querAssinar = new URLSearchParams(location.search).has('assinar');
+  // ?comecar (botão grátis da landing): também cria a conta; a conversa com o Mentor vem logo depois, antes de qualquer questão.
+  const querAssinar = /[?&](assinar|comecar)/.test(location.search);
   const [modo, setModo] = useState<'entrar' | 'criar'>(querAssinar ? 'criar' : 'entrar');
   const [usuario, setUsuario] = useState('');
   const [nome, setNome] = useState('');
@@ -80,8 +81,9 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
     let veio = false;
     try { veio = !!localStorage.getItem('cq:ja-entrou'); } catch { /* sem armazenamento */ }
     const q = new URLSearchParams(location.search);
-    if (q.has('assinar')) return 'nao';
-    return q.has('teste') || !veio ? 'fazendo' : 'nao';
+    void veio;
+    // Sem questões antes de escolher o concurso: o mini-teste só abre por link explícito (?teste).
+    return q.has('teste') ? 'fazendo' : 'nao';
   });
 
   const enviar = async (e: React.FormEvent) => {
