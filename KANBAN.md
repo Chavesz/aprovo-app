@@ -9,12 +9,12 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 
 ## A fazer
 ### Lote 17+ (pedido 06/11: engajamento, batalha, convite, landing com movimento)
-- [ ] **Batalha entre amigos**: 10 ou 20 questões iguais para os dois, link pelo WhatsApp, placar ao vivo (atualiza a cada poucos segundos), vencedor por acertos e tempo
-- [ ] **Convite de amigos**: link pessoal; a cada 3 amigos que criarem conta, 7 dias de Pro grátis; contador no Ranking
-- [ ] **Ranking**: "Melhor do dia" em destaque, vitórias em batalhas, selo do top 3 da semana
-- [ ] **Landing com movimento**: chat do hero digitando ao vivo, números contando, seções surgindo ao rolar, faixa rolando com concursos abertos de verdade (respeitando prefers-reduced-motion)
+- [x] **Batalha entre amigos**: 10 ou 20 questões iguais para os dois, link pelo WhatsApp, placar ao vivo (atualiza a cada poucos segundos), vencedor por acertos e tempo
+- [x] **Convite de amigos**: link pessoal; a cada 3 amigos que criarem conta, 7 dias de Pro grátis; contador no Ranking
+- [x] **Ranking**: "Melhor do dia" em destaque, vitórias em batalhas, selo do top 3 da semana
+- [x] **Landing com movimento**: chat do hero digitando ao vivo, números contando, seções surgindo ao rolar, faixa rolando com concursos abertos de verdade (respeitando prefers-reduced-motion)
 - [ ] **Liga semanal** (estilo Duolingo): grupos de 20 alunos do mesmo nível, sobe/desce de divisão no domingo
-- [ ] **Sequência de dias** com chama e meta diária na barra de cima; aviso "não perca a sequência"
+- [x] **Sequência de dias** com chama e meta diária na barra de cima; aviso "não perca a sequência"
 - [ ] **Mentor com IA proativo**: mensagem diária no app ("hoje: 30 min de Previdenciário, você errou 3 ontem") e resumo semanal
 - [ ] **Questão comentada pela IA sob demanda** com citação da lei e botão "reportar erro"
 - [ ] **Cadernos de erros** por matéria, exportáveis em PDF
