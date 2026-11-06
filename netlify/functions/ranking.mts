@@ -33,6 +33,10 @@ export default async (req: Request) => {
         semana: Number(r.semana ?? 0),
         notaSemana: Number(r.notaSemana ?? 0),
         ultimaNota: Number(r.ultimaNota ?? 0),
+        concurso: String(r.concurso ?? ''),
+        uf: String(r.uf ?? ''),
+        semanaQ: Number(r.semanaQ ?? 0),
+        semanaA: Number(r.semanaA ?? 0),
       };
     })
   );

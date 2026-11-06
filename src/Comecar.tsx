@@ -22,6 +22,7 @@ export default function Comecar({ questoes, onPronto, onPular }: { questoes: Que
   const [dataProva, setDataProva] = useState('');
   const [nivel, setNivel] = useState<PerfilMentor['nivel']>('iniciante');
   const [horas, setHoras] = useState(2);
+  const [editalSaiu, setEditalSaiu] = useState(false);
   const bancas = useMemo(
     () => [...new Set(questoes.map((q) => q.banca).filter((b) => b && !/aprov|autoral|estilo|elaborad/i.test(b)))].sort(),
     [questoes]
@@ -33,7 +34,7 @@ export default function Comecar({ questoes, onPronto, onPular }: { questoes: Que
       concurso: m?.rotulo ?? cargo,
       cargo: cargo || m?.cargo || '',
       banca: banca || m?.banca || '',
-      editalAberto: false,
+      editalAberto: editalSaiu,
       dataProva,
       horasDia: horas,
       disciplinas: m?.disciplinas ?? PADRAO,
@@ -84,6 +85,14 @@ export default function Comecar({ questoes, onPronto, onPular }: { questoes: Que
             </select>
           </label>
         </div>
+        <fieldset>
+          <legend>O edital já saiu?</legend>
+          <div className="segmentado">
+            <button aria-pressed={editalSaiu} onClick={() => setEditalSaiu(true)}>Sim, já saiu</button>
+            <button aria-pressed={!editalSaiu} onClick={() => setEditalSaiu(false)}>Ainda não</button>
+          </div>
+          <p className="nota">{editalSaiu ? 'Depois, no Mentor, cole o link ou o PDF do edital: a IA lê as matérias e os pesos e ajusta o plano.' : 'Sem problema: o plano usa o último edital desse cargo e as matérias que mais caem. Quando sair, o Mentor ajusta.'}</p>
+        </fieldset>
         <label>
           Data da prova <span className="nota">(deixe em branco se não saiu)</span>
           <input type="date" value={dataProva} onChange={(e) => setDataProva(e.target.value)} />

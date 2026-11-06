@@ -28,8 +28,10 @@ const cidades = () =>
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 function Radar() {
-  const [uf, setUf] = useState(() => lerLocal('cq:radar-uf', 'PB'));
-  const [cidade, setCidade] = useState(() => lerLocal('cq:radar-cidade', ''));
+  // Sem cidade escolhida no radar, começa pela cidade/UF do perfil (boas-vindas).
+  const perfil = lerLocal<{ cidade?: string; uf?: string } | null>('cq:mentor', null);
+  const [uf, setUf] = useState(() => lerLocal('cq:radar-uf', perfil?.uf || 'PB'));
+  const [cidade, setCidade] = useState(() => lerLocal('cq:radar-cidade', perfil?.cidade || ''));
   const [lista, setLista] = useState<Cidade[]>([]);
   const [res, setRes] = useState<{ total: number; itens: Diario[] } | null>(null);
   const [estado, setEstado] = useState<'' | 'buscando' | 'erro'>('');

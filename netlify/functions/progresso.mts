@@ -25,7 +25,7 @@ const diaBR = (t: number) => new Date(t - 3 * 3600_000).toISOString().slice(0, 1
 const semanaAtual = () => Math.floor((Date.now() - 3 * 3600_000 + 3 * 86400_000) / (7 * 86400_000));
 
 /** Guarda o resumo usado no ranking: totais, o dia de hoje e as provas completas (simulados com 30+ questões). */
-async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prova[]) {
+async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prova[], perfil?: { cargo?: string; concurso?: string; uf?: string } | null) {
   if (!Array.isArray(historico)) return;
   if (!Array.isArray(feitas)) feitas = [];
   const conta = (await getStore({ name: 'usuarios', consistency: 'strong' }).get(usuario, { type: 'json' })) as {
@@ -56,6 +56,11 @@ async function atualizarRanking(usuario: string, historico: Resp[], feitas: Prov
     // Simulado da semana: melhor nota na semana atual (mesma prova para todos).
     semana: semanaAtual(),
     notaSemana: Math.max(0, ...feitas.filter((p) => p.semana === semanaAtual()).map((p) => p.nota)),
+    // Ranking geral por recorte: concurso (cargo do perfil) e estado; e questões dos últimos 7 dias.
+    concurso: String(perfil?.cargo || perfil?.concurso || '').slice(0, 80),
+    uf: String(perfil?.uf ?? '').slice(0, 2),
+    semanaQ: historico.filter((h) => h.em > Date.now() - 7 * 86400_000).length,
+    semanaA: historico.filter((h) => h.em > Date.now() - 7 * 86400_000 && h.certa).length,
     atualizadoEm: Date.now(),
   });
 }
@@ -78,7 +83,7 @@ export default async (req: Request, context: { waitUntil?: (p: Promise<unknown>)
     }
     await store.set(usuario, texto);
     const dados = JSON.parse(texto);
-    await atualizarRanking(usuario, dados['cq:historico'] ?? [], dados['cq:provas'] ?? []);
+    await atualizarRanking(usuario, dados['cq:historico'] ?? [], dados['cq:provas'] ?? [], dados['cq:mentor']);
     // Espelha no Supabase depois de responder (o Blobs já guardou; se o Supabase falhar, nada se perde).
     const conta = (await getStore({ name: 'usuarios', consistency: 'strong' }).get(usuario, { type: 'json' })) as { nome?: string } | null;
     const espelho = espelharProgresso(usuario, conta?.nome ?? '', dados);

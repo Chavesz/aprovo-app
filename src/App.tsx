@@ -278,7 +278,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     { id: 'mentor', rotulo: 'Mentor', icone: <IconSpark /> },
     { id: 'edital', rotulo: 'Edital', icone: <IconDoc /> },
     { id: 'concursos', rotulo: 'Concursos', icone: <IconBook /> },
-    { id: 'desempenho', rotulo: 'Evolução', icone: <IconChart /> },
+    { id: 'desempenho', rotulo: 'Ranking', icone: <IconChart /> },
   ];
 
   return (

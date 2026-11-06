@@ -18,6 +18,10 @@ interface Linha {
   semana?: number;
   notaSemana?: number;
   ultimaNota?: number;
+  concurso?: string;
+  uf?: string;
+  semanaQ?: number;
+  semanaA?: number;
 }
 
 interface Criterio {
@@ -35,6 +39,15 @@ interface Criterio {
 const taxa = (a: number, t: number) => (t ? Math.round((a / t) * 100) : 0);
 
 const CRITERIOS: Criterio[] = [
+  {
+    id: 'semana7',
+    rotulo: 'Últimos 7 dias',
+    explica: 'Acertos nos últimos 7 dias. Zera aos poucos: quem estuda toda semana fica no topo.',
+    unidade: 'acertos',
+    valor: (l) => (l.semanaQ ? l.semanaA ?? 0 : -1),
+    destaque: (l) => String(l.semanaA ?? 0),
+    detalhe: (l) => `${l.semanaQ ?? 0} respondidas na semana · ${taxa(l.semanaA ?? 0, l.semanaQ ?? 0)}%`,
+  },
   {
     id: 'geral',
     rotulo: 'Geral',
@@ -106,7 +119,11 @@ const inicial = (nome: string) => nome.trim().charAt(0).toUpperCase() || '?';
 export default function Ranking({ conta }: { conta: Conta }) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [erro, setErro] = useState(false);
-  const [criterio, setCriterio] = useState('geral');
+  const [criterio, setCriterio] = useState('semana7');
+  // Recorte do ranking geral: todo mundo, quem estuda para o mesmo cargo ou quem é do mesmo estado.
+  const perfil = (() => { try { return JSON.parse(localStorage.getItem('cq:mentor') ?? 'null') as { cargo?: string; concurso?: string; uf?: string } | null; } catch { return null; } })();
+  const meuConcurso = (perfil?.cargo || perfil?.concurso || '').trim();
+  const [recorte, setRecorte] = useState<'brasil' | 'concurso' | 'uf'>('brasil');
 
   useEffect(() => {
     // Espera o envio do progresso mais recente antes de buscar.
@@ -120,7 +137,10 @@ export default function Ranking({ conta }: { conta: Conta }) {
   }, [conta]);
 
   const c = CRITERIOS.find((x) => x.id === criterio)!;
-  const todos = linhas ?? [];
+  const norm = (x = '') => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const todos = (linhas ?? []).filter((l) =>
+    recorte === 'concurso' ? l.eu || (!!meuConcurso && norm(l.concurso) === norm(meuConcurso)) : recorte === 'uf' ? l.eu || (!!perfil?.uf && l.uf === perfil.uf) : true
+  );
   const ordenadas = todos.filter((l) => c.valor(l) >= 0).sort((a, b) => c.valor(b) - c.valor(a));
   const fora = todos.filter((l) => c.valor(l) < 0);
   const minhaPos = ordenadas.findIndex((l) => l.eu);
@@ -149,6 +169,11 @@ export default function Ranking({ conta }: { conta: Conta }) {
         )}
       </h1>
 
+      <div className="ranking-abas ranking-recorte" role="group" aria-label="Quem entra no ranking">
+        <button className="ranking-aba" aria-pressed={recorte === 'brasil'} onClick={() => setRecorte('brasil')}>Brasil</button>
+        {meuConcurso && <button className="ranking-aba" aria-pressed={recorte === 'concurso'} onClick={() => setRecorte('concurso')}>{meuConcurso.length > 22 ? meuConcurso.slice(0, 21) + '…' : meuConcurso}</button>}
+        {perfil?.uf && <button className="ranking-aba" aria-pressed={recorte === 'uf'} onClick={() => setRecorte('uf')}>{perfil.uf}</button>}
+      </div>
       <div className="ranking-abas" role="tablist" aria-label="Tipo de ranking">
         {CRITERIOS.map((x) => (
           <button

@@ -151,6 +151,7 @@ function contexto(perfil: PerfilMentor, historico: Resposta[], questoes: Questao
   return [
     `Concurso: ${perfil.concurso} · Cargo: ${perfil.cargo} · Banca: ${perfil.banca}`,
     `Local: ${[perfil.cidade, perfil.uf].filter(Boolean).join('/') || '—'} · Nível declarado: ${perfil.nivel ?? '—'} (ajuste a profundidade das explicações a esse nível)`,
+    `Edital: ${perfil.editalAberto ? 'publicado' : 'AINDA NÃO publicado: planeje pelo último edital do cargo e pelas matérias que mais caem; lembre o aluno de colar o edital novo quando sair'}`,
     `Prova: ${perfil.dataProva || 'data não definida'}${plano.dias !== null ? ` (faltam ${plano.dias} dias)` : ''} · Estuda ${perfil.horasDia}h por dia`,
     `Tem facilidade em: ${perfil.faceis.join(', ') || '—'} · Dificuldade em: ${perfil.dificeis.join(', ') || '—'}`,
     `Edital: ${perfil.disciplinas.map((d) => `${d.nome} (${d.questoes} questões, peso ${d.peso}): ${d.assuntos.slice(0, 15).join('; ')}`).join('\n')}`,

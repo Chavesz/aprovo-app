@@ -8,6 +8,17 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+### Benchmark 06/11/2026 (o que os concorrentes têm e o que puxar)
+Referências públicas: QConcursos e TEC (banco com filtros e comentários de professores), Gran e Estratégia (cursos, planos de estudo, simulados nacionais com ranking), PCI Concursos (lista de concursos abertos por estado), Aprova Concursos e Mentor Concursos (mentoria humana cara). Diferencial do Aprovô: **mentor com IA** que entrevista o aluno e monta e ajusta o plano, a preço de app.
+- [ ] Mentor com IA em formato de entrevista: 5 a 8 perguntas no chat (rotina, pontos fracos, provas anteriores) e plano gerado a partir das respostas, revisado toda semana com base no desempenho
+- [ ] Simulado nacional mensal com ranking por cargo e por estado e nota de corte estimada (Gran/Estratégia fazem; puxa retenção)
+- [ ] Radar de concursos abertos: além do Querido Diário, ler editais publicados em diários estaduais e páginas oficiais de bancas (só fontes públicas) e avisar por e-mail/WhatsApp quem marcou a cidade
+- [ ] Prefeituras pequenas: pedir ao aluno o link do edital e da prova anterior; a IA extrai matérias e gera questões "estilo" da banca local
+- [ ] Comentários em vídeo/texto curto por questão gerados pela IA e revisados pelos alunos (votos), como a "resolução comentada" do QConcursos
+- [ ] Cadernos de questões por assunto que o aluno salva e compartilha
+- [ ] Sequência de dias e metas semanais com notificação (retenção, Duolingo-like)
+- [ ] Ranking: liga entre amigos (código de convite) e selo do top 10 da semana
+
 _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-2026-11-04.md`). Os números entre parênteses são os achados do relatório._
 - [P1] (3) Recortar Grátis × Pro (explicação de erro, plano até a prova, PDFs no Pro) com lista única `RECURSOS_PRO` usada pelo app e pela landing; ajustar cota em `mentor.mts`
 - [P1] (4) Concurso ativo único: edital começa vazio (não Cuité para todos), simulado da semana, resumão e flashcards seguem o concurso escolhido
@@ -41,6 +52,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - (nenhum)
 
 ## Feito
+- Lote 06/11/2026 (16): **ranking geral** com recorte Brasil / meu cargo / meu estado e critério "Últimos 7 dias"; aba renomeada para **Ranking**; radar de concursos já abre na cidade/UF do perfil; boas-vindas pergunta **se o edital já saiu** e o Mentor planeja pelo último edital quando não saiu; app no celular com 7 abas cabendo e topo enxuto
 - Lote 05/11/2026 (15), vender hoje: **Cakto** como cobrança principal (`CAKTO_CHECKOUT_URL`): botão Assinar leva à oferta com a referência do aluno (`sck`) e o e-mail preenchido; **webhook `/api/cakto-webhook`** com HMAC (`x-cakto-signature`) ou segredo no corpo (`CAKTO_WEBHOOK_SECRET`), ativa o Pro por 33 dias a cada pagamento, cancelamento mantém até o fim do mês pago, estorno e chargeback voltam ao grátis, compra de e-mail sem conta fica pendente até o cadastro; **admin por usuário ou e-mail**; **boas-vindas com perfil** (concurso/cargo, banca, cidade/UF, data da prova, nível, horas por dia) salvo em `cq:mentor` → `planos_mentor.perfil`, usado no contexto do Mentor; **filtro "Só do meu concurso"** nas questões e no simulado livre (matérias do perfil e, se houver 40+, só a banca dele)
 - Lote 05/11/2026 (14), pronto para vender: **assinatura mensal recorrente** do Mercado Pago (preapproval, `PRO_PRECO` padrão R$ 50) em `/api/assinar` (assinar, cancelar, situação), webhook com `subscription_preapproval` e `subscription_authorized_payment` que ativa o Pro e espelha `perfis.plano` + `assinaturas` no Supabase; **fallback por link** (`CHECKOUT_URL`/`VITE_CHECKOUT_URL`, Mercado Pago ou Cakto) e **liberação manual** em `/admin.html` (`ADMIN_TOKEN`); **landing curta** em /aprovo (hero sem prometer aprovação, 3 benefícios, prints reais do app, preço único Pro R$ 50/mês com "Assinar" e "cancele quando quiser", grátis como porta de entrada, FAQ); **/termos** e **/privacidade**; meta tags e imagem OG (`/img/og.png`); app com tela de planos nova (R$ 50/mês, e-mail do recibo, cancelar assinatura), `?assinar=1` leva direto à criação de conta e aos Planos, `?pro=ok` avisa o pagamento
 - Lote 04/11/2026 (13), da crítica de conversão: **"Por que errei? Perguntar ao Mentor"** em toda questão errada (abre o Mentor com a pergunta pronta, inclusive antes de montar o perfil); **card de cota esgotada** com "Ver o Pro" no lugar do balão de erro; **Planos visível também sem perfil**; tela de venda com título "Pro: o Mentor do seu lado até o dia da prova", preço em destaque e selos Pix/cartão e sem renovação; **landing sem o card "Pro em breve"** enquanto a cobrança estiver desligada (`PRO_PRECO_LANDING` em `gerar-paginas.py` liga o card com preço); **texto das questões**: quebras de linha do PDF juntadas, comando Cebraspe cortado no "**Item:**" (3.211 questões), páginas de SEO sem markdown cru, crédito de autor vazado removido, `scripts/qa-textos.py` para conferir
