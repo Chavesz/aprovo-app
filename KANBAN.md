@@ -202,3 +202,9 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 
 ### Lote 31 (feito)
 - [x] Hoje avisa batalha pendente (entrou e não terminou, últimos 3 dias) com link "Jogar"
+
+### Lote 32 (feito) — foco em vender
+- [x] Páginas de concurso para SEO em /concurso/<slug> (INSS, PF, PRF, TJ CE, STJ, OAB, prefeituras): matérias que mais caem, questões oficiais, CTA para o plano; sem datas/vagas inventadas
+- [x] Paywall: ao bater o limite grátis de IA (429) abre aviso com o que o Pro libera e botão "Ver o Pro"
+- [x] Tabela Grátis × Pro atualizada (autorais, comentário com a lei, batalhas/liga grátis)
+- Já existia: e-mail de boas-vindas (Resend, ao criar conta com e-mail)

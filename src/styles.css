@@ -1013,3 +1013,8 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 }
 .hoje-rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
 .hoje-batalha { display: block; padding: 8px 12px; border-radius: 10px; background: var(--nok-fundo); color: var(--tinta); text-decoration: none; font-size: .9rem; }
+.paywall-fundo { position: fixed; inset: 0; z-index: 100; background: rgba(20, 14, 32, .55); display: grid; place-items: end center; padding: 16px; }
+.paywall { width: min(480px, 100%); background: var(--papel); color: var(--tinta); border-radius: 20px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.35); display: grid; gap: 10px; }
+.paywall h2 { margin: 0; font-size: 1.3rem; }
+.paywall-preco strong { font-size: 1.6rem; color: var(--acento); }
+@media (min-width: 600px) { .paywall-fundo { place-items: center; } }

@@ -277,6 +277,41 @@ for slug, titulo, f in GRUPOS:
       f"<h1>{html.escape(titulo)}</h1><p>{total} questões no Aprovô, com gabarito, comentário, simulado e revisão espaçada.</p>{CTA}{amostra(f)}{CTA}"))
     links.append(f'<li><a href="/concursos/{slug}">{html.escape(titulo)}</a> ({total})</li>')
 
+# Páginas de concurso específico (/concurso/<slug>): o que cai, banca e como o Mentor monta o plano.
+# Sem datas nem vagas inventadas: o aluno confere o edital oficial; o app mostra os abertos pelo feed público.
+CONCURSOS = [
+  ("inss-2026", "INSS", "Técnico do Seguro Social", "Cebraspe", lambda q: "inss" in q["id"]),
+  ("pf-agente", "Polícia Federal", "Agente de Polícia Federal", "Cebraspe", lambda q: "pf-2021" in q["id"]),
+  ("prf-policial", "PRF", "Policial Rodoviário Federal", "Cebraspe", lambda q: "prf-2021" in q["id"]),
+  ("tj-ce-tecnico", "TJ CE", "Técnico Judiciário", "Cebraspe", lambda q: "tjce-2023" in q["id"]),
+  ("stj-tecnico", "STJ", "Técnico Judiciário", "Cebraspe", lambda q: "stj-2018" in q["id"]),
+  ("pm-sp-soldado", "PM SP", "Soldado", "FGV", lambda q: "pmsp" in q["id"] or "pm-sp" in q["id"]),
+  ("oab-exame-de-ordem", "OAB", "Exame de Ordem", "FGV", lambda q: q["prova"].startswith("OAB")),
+  ("prefeitura-nivel-medio", "Prefeituras", "Cargos de nível médio", "bancas regionais", lambda q: q["banca"] not in ("Cebraspe", "FGV", "INEP")),
+]
+links_conc = []
+for slug, orgao, cargo, banca, f in CONCURSOS:
+    sel = [q for q in qs if f(q)]
+    if not sel:
+        continue
+    cont = {}
+    for q in sel:
+        cont[q["disciplina"]] = cont.get(q["disciplina"], 0) + 1
+    top = sorted(cont.items(), key=lambda x: -x[1])[:8]
+    lis = "".join(f"<li><strong>{html.escape(d)}</strong> · {n} questões no banco</li>" for d, n in top)
+    titulo = f"Concurso {orgao} ({cargo}): o que estudar e questões da {banca}"
+    cta = f'<p><a class="cta" href="/?comecar=1">Montar meu plano para o {html.escape(orgao)}</a><a class="sec" href="/?teste=1">Fazer 5 questões grátis</a></p><p class="selo">Grátis para começar. O Pro custa R$ 50/mês: 300 usos de IA por dia em vez de 15.</p>'
+    corpo = (f"<h1>{html.escape(titulo)}</h1>"
+      f"<p>O Aprovô tem {len(sel)} questões oficiais de provas anteriores de {html.escape(orgao)} ({html.escape(banca)}), com gabarito definitivo e a fonte de cada uma. "
+      "O Mentor com IA pergunta quanto tempo você tem e o que já domina, aplica um diagnóstico de 10 questões e monta um plano até o dia da prova.</p>"
+      f"{cta}<h2>Matérias que mais aparecem nas provas anteriores</h2><ul>{lis}</ul>"
+      f"<h2>Como estudar para {html.escape(orgao)} no Aprovô</h2><ol><li>Conte ao Mentor a data da prova e as horas por dia.</li><li>Faça o diagnóstico de 10 questões no estilo da {html.escape(banca)}.</li><li>Siga o plano do dia, com simulado e revisão dos erros em 1, 3, 7 e 30 dias.</li></ol>"
+      "<p class=\"nota\">Datas, vagas e salários mudam a cada edital: confira sempre o edital oficial. Na aba Concursos do app você vê os concursos com inscrição aberta.</p>"
+      f"<h2>Exemplos de questões</h2>{amostra(f)}{cta}")
+    paginas.append(pagina(f"concurso/{slug}.html", titulo, f"O que estudar para {orgao} ({cargo}), matérias que mais caem e {len(sel)} questões oficiais da {banca} com gabarito.", corpo))
+    links_conc.append(f'<li><a href="/concurso/{slug}">{html.escape(orgao)} · {html.escape(cargo)}</a></li>')
+links.insert(0, f"<li><strong>Guias por concurso:</strong><ul>{''.join(links_conc)}</ul></li>")
+
 paginas.append(pagina("concursos/index.html", "Questões de concurso por cargo, banca e matéria | Aprovô",
   "Escolha o concurso, a banca ou a matéria e treine com questões comentadas.", f"<h1>Questões por concurso</h1><ul>{''.join(links)}</ul>{CTA}"))
 

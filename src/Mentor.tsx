@@ -624,6 +624,8 @@ const COMPARA: [string, string, string][] = [
   ['Mentor IA: conversa e "Por que errei?"', '15 por dia', '300 por dia'],
   ['Plano até a prova, revisado toda semana', 'Plano do dia', '✓'],
   ['Resumo do assunto em PDF', 'Conta nas 15', '✓'],
+  ['Questões autorais da IA e comentário com a lei', 'Conta nas 15', '✓'],
+  ['Batalhas, desafio do dia, liga e cadernos', '✓', '✓'],
 ];
 
 type Venda = { disponivel: boolean; modo: 'cakto' | 'mercadopago' | 'link' | 'nenhum'; preco: number; link?: string; plano?: 'gratis' | 'pro'; status?: string; ate?: number; recorrente?: boolean };

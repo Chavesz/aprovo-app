@@ -502,6 +502,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             }}
           />
         )}
+        <Paywall />
       </main>
     </div>
   );
@@ -2686,5 +2687,39 @@ function Instalar({ historico }: { historico: number }) {
       {!ios && <button className="btn" onClick={async () => { await eventoInstalar?.prompt(); fechar(); }}>Instalar</button>}
       <button className="link" onClick={fechar} aria-label="Fechar aviso">Agora não</button>
     </p>
+  );
+}
+
+// Paywall: qualquer chamada de IA que bater o limite grátis do dia (HTTP 429) abre este aviso com o que o Pro libera.
+if (typeof window !== 'undefined' && !(window as { __paywall?: boolean }).__paywall) {
+  (window as { __paywall?: boolean }).__paywall = true;
+  const f = window.fetch.bind(window);
+  window.fetch = async (...a: Parameters<typeof fetch>) => {
+    const r = await f(...a);
+    const url = String(a[0] instanceof Request ? a[0].url : a[0]);
+    if (r.status === 429 && /\/api\/(ia|mentor)/.test(url)) {
+      r.clone().json().then((d: { erro?: string }) => { if (/usou|limite/i.test(d.erro ?? '')) window.dispatchEvent(new CustomEvent('aprovo:limite')); }).catch(() => undefined);
+    }
+    return r;
+  };
+}
+export function Paywall() {
+  const [aberto, setAberto] = useState(false);
+  useEffect(() => { const ab = () => setAberto(true); window.addEventListener('aprovo:limite', ab); return () => window.removeEventListener('aprovo:limite', ab); }, []);
+  if (!aberto) return null;
+  return (
+    <div className="paywall-fundo" role="dialog" aria-modal="true" aria-labelledby="paywall-tit" onClick={(e) => e.target === e.currentTarget && setAberto(false)}>
+      <div className="paywall">
+        <p className="rotulo">Limite grátis de hoje</p>
+        <h2 id="paywall-tit">Você usou os 15 usos de IA de hoje.</h2>
+        <p>Com o <strong>Pro</strong> são <strong>300 por dia</strong>: Mentor, "Por que errei?", questões autorais do seu concurso, comentário com a lei e resumos em PDF.</p>
+        <p className="paywall-preco"><strong>R$ 50</strong>/mês · cancele quando quiser · 7 dias para desistir</p>
+        <div className="linha-botoes">
+          <button className="btn btn-grande" onClick={() => { setAberto(false); window.dispatchEvent(new CustomEvent('aprovo:aba', { detail: 'mentor' })); setTimeout(() => document.getElementById('planos-titulo')?.scrollIntoView({ block: 'start' }), 400); }}>Ver o Pro</button>
+          <button className="link" onClick={() => setAberto(false)}>Continuar no grátis (amanhã libera de novo)</button>
+        </div>
+        <p className="nota">Questões, simulados, revisão, ranking e batalhas continuam liberados no grátis.</p>
+      </div>
+    </div>
   );
 }
