@@ -287,6 +287,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const alternarRevisar = (id: string) =>
     setRevisar((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
 
+  const [menu, setMenu] = useState(false);
   const abas: { id: Aba; rotulo: string; icone: JSX.Element }[] = [
     { id: 'praticar', rotulo: 'Praticar', icone: <IconPen /> },
     { id: 'simulado', rotulo: 'Simulado', icone: <IconClock /> },
@@ -298,19 +299,22 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   ];
 
   return (
-    <div className="app">
+    <div className={`app ${menu ? 'menu-aberto' : ''}`}>
       <header className="topo">
+        <button className="icone-btn menu-btn" onClick={() => setMenu(true)} aria-label="Abrir menu" aria-expanded={menu}>☰</button>
         <div className="marca">
           <span className="marca-selo" aria-hidden>A</span>
           <span className="marca-nome">Aprovô</span>
         </div>
-        <nav className="abas" aria-label="Seções">
+        {menu && <div className="menu-fundo" onClick={() => setMenu(false)} aria-hidden />}
+        <nav className={`abas ${menu ? 'aberto' : ''}`} aria-label="Seções">
+          <div className="menu-cab"><span className="marca-selo" aria-hidden>A</span><span className="marca-nome">Aprovô</span><button className="icone-btn menu-fechar" onClick={() => setMenu(false)} aria-label="Fechar menu">✕</button></div>
           {abas.map((a) => (
             <button
               key={a.id}
               className="aba"
               aria-current={aba === a.id ? 'page' : undefined}
-              onClick={() => setAba(a.id)}
+              onClick={() => { setAba(a.id); setMenu(false); }}
             >
               {a.icone}
               <span>{a.rotulo}</span>

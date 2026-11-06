@@ -220,3 +220,6 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 35 (feito) — conversão
 - [x] Landing: bloco de preço virou tabela Grátis × Pro (deixa claro que o Pro = 300 usos de IA/dia, autorais, plano completo e PDF; o resto é grátis)
 - [x] CTA grátis reforça "diagnóstico de 10 questões, sem cartão"
+
+### Lote 36 (feito)
+- [x] Menu lateral: fixo à esquerda no computador (≥1000px) e gaveta ☰ no celular, como nos outros sistemas (MIDAS); substitui a barra de abas de baixo

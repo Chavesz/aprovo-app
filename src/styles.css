@@ -1019,3 +1019,37 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .paywall-preco strong { font-size: 1.6rem; color: var(--acento); }
 @media (min-width: 600px) { .paywall-fundo { place-items: center; } }
 .bot-pular { display: block; margin: 10px 0 0 auto; font-size: .9rem; }
+
+/* ---------- Menu lateral (igual aos outros sistemas): fixo no computador, gaveta no celular ---------- */
+.menu-btn, .menu-cab, .menu-fundo { display: none; }
+@media (max-width: 999px) {
+  .app { padding-bottom: 0; }
+  .topo .menu-btn { display: inline-grid; place-items: center; font-size: 1.2rem; margin-right: -6px; }
+  .app .topo .abas {
+    position: fixed; inset: 0 auto 0 0; z-index: 60; width: min(280px, 82vw);
+    display: flex; flex-direction: column; gap: 2px; padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+    background: var(--papel); border: 0; border-right: 1px solid var(--linha); overflow-y: auto;
+    transform: translateX(-102%); transition: transform .22s ease; box-shadow: 8px 0 32px rgba(0,0,0,.18);
+  }
+  .app .topo .abas.aberto { transform: none; }
+  .menu-fundo { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(20,14,32,.45); }
+  .menu-cab { display: flex; align-items: center; gap: 10px; padding: 4px 6px 14px; margin-bottom: 6px; border-bottom: 1px solid var(--linha); }
+  .menu-cab .menu-fechar { margin-left: auto; }
+  .app .topo .aba { flex: none; flex-direction: row; justify-content: flex-start; gap: 12px; min-height: 46px; padding: 10px 12px; border-radius: 10px; font-size: 1rem; letter-spacing: 0; }
+  .app .topo .aba[aria-current='page'] { background: var(--papel-2); color: var(--acento); font-weight: 700; }
+  .app .topo .aba .contador { position: static; margin-left: auto; }
+}
+@media (min-width: 1000px) {
+  .app { padding: 0 0 0 248px; }
+  .app .topo .abas {
+    position: fixed; inset: 0 auto 0 0; width: 248px; z-index: 20;
+    display: flex; flex-direction: column; gap: 2px; padding: 16px 12px;
+    background: var(--papel); border-right: 1px solid var(--linha); overflow-y: auto;
+  }
+  .menu-cab { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+  .menu-cab .menu-fechar { display: none; }
+  .topo > .marca { visibility: hidden; }
+  .app .topo .aba { justify-content: flex-start; width: 100%; border-radius: 10px; }
+  .app .topo .aba[aria-current='page'] { color: var(--acento); font-weight: 700; }
+  .app .topo .aba .contador { margin-left: auto; }
+}
