@@ -93,6 +93,12 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [historico, setHistorico] = usePersist<Resposta[]>('cq:historico', []);
   const [revisar, setRevisar] = usePersist<string[]>('cq:revisar', []);
   const [bloco, setBloco] = usePersist<string[]>('cq:bloco', []);
+  // "Praticar este caderno": outro componente manda os ids e o app abre o bloco no Praticar.
+  useEffect(() => {
+    const praticar = (e: Event) => { const ids = (e as CustomEvent<string[]>).detail; if (!ids?.length) return; setBloco(ids); setFiltros({ ...FILTROS_VAZIOS, status: 'bloco' }); setAba('praticar'); };
+    window.addEventListener('aprovo:bloco', praticar);
+    return () => window.removeEventListener('aprovo:bloco', praticar);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [filtros, setFiltros] = usePersist<Filtros>('cq:filtros', FILTROS_VAZIOS);
   /** Leva a matéria do plano/edital para o filtro, mesmo quando o nome não é idêntico ao do banco. */
   const praticarMateria = (materia: string, assunto: string) => {
@@ -930,6 +936,7 @@ function QuestaoCard(props: {
         <span className="sep" aria-hidden />
         <span>{q.prova} · Q{q.numero}</span>
         <BotaoTamanho />
+        <BotaoCaderno id={q.id} />
         <button
           className={`icone-btn bandeira ${props.marcadaRevisar ? 'ativo' : ''}`}
           onClick={props.onRevisar}
@@ -1011,6 +1018,7 @@ function QuestaoCard(props: {
               Por que errei? Perguntar ao Mentor
             </button>
           )}
+          {!q.comentario && <ComentarioIA q={q} />}
           <ReportarErro id={q.id} />
           {!certa && q.revisar && (
             <p className="feedback-extra">
@@ -2348,6 +2356,7 @@ function Revisar(props: {
     <section className="coluna estreita">
       <p className="sobretitulo">Revisar</p>
       <MeuCaderno porId={porId} />
+      <Cadernos porId={porId} />
       {fracos.length > 0 && (
         <>
           <h1 className="titulo">Estudar meus erros</h1>
@@ -2609,5 +2618,93 @@ function ReportarErro({ id }: { id: string }) {
       <input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={400} placeholder="Detalhe (opcional)" aria-label="Detalhe" />
       <button className="btn btn-sec">Enviar</button>
     </form>
+  );
+}
+
+// Cadernos com nome (ex.: "Crase", "Pegadinhas FGV"): guardados em cq:cadernos e sincronizados com a conta.
+const lerCadernos = (): Record<string, string[]> => { try { return JSON.parse(localStorage.getItem('cq:cadernos') ?? '{}'); } catch { return {}; } };
+const gravarCadernos = (c: Record<string, string[]>) => { try { localStorage.setItem('cq:cadernos', JSON.stringify(c)); } catch { /* sem armazenamento */ } };
+
+function BotaoCaderno({ id }: { id: string }) {
+  const [aberto, setAberto] = useState(false);
+  const [cads, setCads] = useState(lerCadernos);
+  const [novo, setNovo] = useState('');
+  const dentro = Object.values(cads).some((l) => l.includes(id));
+  const alternar = (nome: string) => {
+    const l = cads[nome] ?? [];
+    const c = { ...cads, [nome]: l.includes(id) ? l.filter((x) => x !== id) : [...l, id] };
+    gravarCadernos(c); setCads(c);
+  };
+  return (
+    <span className="caderno-pop">
+      <button className={`icone-btn ${dentro ? 'ativo' : ''}`} title="Guardar em um caderno" aria-expanded={aberto} onClick={() => { setCads(lerCadernos()); setAberto((v) => !v); }}>📁<span className="sr">Guardar em um caderno</span></button>
+      {aberto && (
+        <span className="caderno-menu" role="dialog" aria-label="Cadernos">
+          {Object.keys(cads).map((n) => (
+            <label key={n}><input type="checkbox" checked={cads[n].includes(id)} onChange={() => alternar(n)} /> {n} <small>({cads[n].length})</small></label>
+          ))}
+          <form onSubmit={(e) => { e.preventDefault(); const n = novo.trim().slice(0, 40); if (n) { alternar(n); setNovo(''); } }}>
+            <input value={novo} onChange={(e) => setNovo(e.target.value)} placeholder="Novo caderno" aria-label="Nome do novo caderno" />
+            <button className="btn btn-sec">Criar</button>
+          </form>
+        </span>
+      )}
+    </span>
+  );
+}
+
+function Cadernos({ porId }: { porId: Map<string, Questao> }) {
+  const [cads, setCads] = useState(lerCadernos);
+  const lista = Object.entries(cads).map(([n, ids]) => [n, ids.filter((i) => porId.has(i))] as const).filter(([, ids]) => ids.length);
+  if (!lista.length) return null;
+  return (
+    <div className="cadernos">
+      <p className="rotulo">📁 Meus cadernos</p>
+      <ul>
+        {lista.map(([n, ids]) => (
+          <li key={n}>
+            <span><strong>{n}</strong> <span className="nota">{ids.length} {ids.length === 1 ? 'questão' : 'questões'}</span></span>
+            <span>
+              <button className="btn btn-sec" onClick={() => window.dispatchEvent(new CustomEvent('aprovo:bloco', { detail: ids }))}>Praticar</button>
+              <button className="link" onClick={() => { if (!confirm(`Apagar o caderno "${n}"?`)) return; const c = { ...cads }; delete c[n]; gravarCadernos(c); setCads(c); }}>Apagar</button>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Questão oficial sem comentário publicado: a IA explica o gabarito (sem contradizê-lo) e lista a base legal.
+function ComentarioIA({ q }: { q: Questao }) {
+  const [estado, setEstado] = useState<'' | 'carregando' | 'erro'>('');
+  const [r, setR] = useState<{ comentario: string; baseLegal: string[] } | null>(null);
+  const [erro, setErro] = useState('');
+  const limpo = (t: string) => t.replace(/<[^>]+>|\*\*/g, '').replace(/\s+/g, ' ').trim();
+  async function pedir() {
+    setEstado('carregando');
+    try {
+      const resp = await fetch('/api/ia', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${contaSalva()?.token ?? ''}` },
+        body: JSON.stringify({ acao: 'comentar', banca: q.banca, disciplina: q.disciplina, enunciado: limpo(`${q.enunciado ?? ''} ${q.comando}`), alternativas: q.alternativas.map((a) => `${a.letra}) ${limpo(a.texto)}`).join(' / '), gabarito: q.gabarito }),
+      });
+      const d = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(d.erro ?? 'A IA não respondeu.');
+      setR(d); setEstado('');
+    } catch (e) { setErro((e as Error).message); setEstado('erro'); }
+  }
+  if (r) return (
+    <div className="feedback-extra comentario-ia">
+      <span className="rotulo">Comentário da IA (confira na lei)</span>
+      <p>{r.comentario}</p>
+      {r.baseLegal.length > 0 && <p className="nota">Base legal: {r.baseLegal.join(' · ')}</p>}
+    </div>
+  );
+  return (
+    <>
+      <button className="link" disabled={estado === 'carregando'} onClick={pedir}>{estado === 'carregando' ? 'A IA está comentando…' : '✦ Comentar com IA'}</button>
+      {estado === 'erro' && <p className="aviso" role="alert">{erro}</p>}
+    </>
   );
 }

@@ -72,8 +72,14 @@ Escreva sempre em português do Brasil, com linguagem de prova.
 Baseie-se na legislação e doutrina vigentes; quando citar lei, cite artigo e número.
 Nunca copie questões de sites como QConcursos ou TEC Concursos: crie questões originais.`;
 
+const SCHEMA_COMENTARIO = {
+  type: 'object', additionalProperties: false, required: ['comentario', 'baseLegal'],
+  properties: { comentario: { type: 'string' }, baseLegal: { type: 'array', items: { type: 'string' } } },
+};
+
 type Pedido =
   | { acao: 'edital'; texto: string }
+  | { acao: 'comentar'; banca: string; disciplina: string; enunciado: string; alternativas: string; gabarito: string }
   | {
       acao: 'questoes';
       concurso: { banca: string; orgao: string; cargo: string };
@@ -98,6 +104,19 @@ Se for só um pedido como "quero estudar português e direito constitucional par
 <texto>
 ${p.texto.slice(0, LIMITE_TEXTO)}
 </texto>`,
+    };
+  }
+  if (p.acao === 'comentar') {
+    return {
+      schema: SCHEMA_COMENTARIO,
+      prompt: `Comente esta questão de concurso (${p.banca}, ${p.disciplina}). O gabarito oficial é ${p.gabarito}; não o contradiga.
+Explique em até 180 palavras por que a correta está certa e o erro de cada alternativa errada. Termine com uma dica para não errar de novo.
+Em "baseLegal", liste os dispositivos que fundamentam a resposta (ex.: "CF/88, art. 37, II"; "Lei 8.112/90, art. 20"). Lista vazia se não houver base legal; nunca invente artigo.
+
+<questao>
+${p.enunciado.slice(0, 4000)}
+${p.alternativas.slice(0, 3000)}
+</questao>`,
     };
   }
   const n = Math.max(1, Math.min(10, Math.round(p.quantidade)));
@@ -137,7 +156,8 @@ export default async (req: Request) => {
     return json({ erro: 'Pedido inválido.' }, 400);
   }
   if (pedido.acao === 'edital' && !pedido.texto?.trim()) return json({ erro: 'Escreva ou dite o edital primeiro.' }, 400);
-  if (pedido.acao !== 'edital' && pedido.acao !== 'questoes') return json({ erro: 'Ação desconhecida.' }, 400);
+  if (pedido.acao === 'comentar' && !pedido.enunciado?.trim()) return json({ erro: 'Questão vazia.' }, 400);
+  if (pedido.acao !== 'edital' && pedido.acao !== 'questoes' && pedido.acao !== 'comentar') return json({ erro: 'Ação desconhecida.' }, 400);
 
   const { prompt, schema } = montar(pedido);
   const client = new Anthropic();
@@ -152,7 +172,7 @@ export default async (req: Request) => {
     } as never);
 
     const msg = resposta as unknown as Anthropic.Message;
-    await registrarUso(usuario, uso.usadas, 2);
+    await registrarUso(usuario, uso.usadas, pedido.acao === 'comentar' ? 1 : 2);
     if (msg.stop_reason === 'refusal') return json({ erro: 'A IA recusou esse pedido. Reformule o texto.' }, 422);
     if (msg.stop_reason === 'max_tokens') return json({ erro: 'Resposta longa demais. Peça menos questões.' }, 422);
     const texto = msg.content.find((b): b is Anthropic.TextBlock => b.type === 'text')?.text ?? '';

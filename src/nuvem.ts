@@ -11,6 +11,7 @@ export interface Conta {
 const CHAVES = [
   'cq:historico',
   'cq:revisar',
+  'cq:cadernos',
   'cq:bloco',
   'cq:geradas',
   'cq:editais',

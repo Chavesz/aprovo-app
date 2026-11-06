@@ -158,3 +158,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - [x] Admin: lista de erros reportados (/admin.html → "Ver reportes")
 - [x] Resumo semanal do Mentor (7 dias vs. semana anterior, melhor/pior matéria, meta)
 - [x] Alertas em Concursos: "novo desde a última visita" e notícias novas sobre concursos salvos
+
+### Lote 20 (feito)
+- [x] Cadernos com nome (📁 na questão; Revisar → Meus cadernos → Praticar), sincronizados com a conta
+- [x] "Comentar com IA" em questões sem comentário: explica o gabarito oficial e lista a base legal

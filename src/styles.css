@@ -985,3 +985,10 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .resumo-semana p { margin: 4px 0; }
 .abertos-alerta { padding: 8px 12px; border-radius: 10px; background: var(--ok-fundo); color: var(--tinta); margin: 6px 0; }
 .tag-novo { display: inline-block; font-size: .7rem; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 6px; background: var(--acento); color: var(--papel); margin-right: 6px; vertical-align: 1px; }
+.caderno-pop { position: relative; }
+.caderno-menu { position: absolute; right: 0; top: 110%; z-index: 20; display: grid; gap: 6px; min-width: 220px; padding: 10px; border: 1px solid var(--linha); border-radius: 12px; background: var(--superficie, var(--papel)); box-shadow: 0 8px 24px rgba(0,0,0,.2); font-size: .9rem; }
+.caderno-menu form { display: flex; gap: 6px; }
+.caderno-menu input[type=text], .caderno-menu form input { flex: 1; min-width: 0; }
+.cadernos { margin: 12px 0; }
+.cadernos ul { list-style: none; padding: 0; display: grid; gap: 6px; }
+.cadernos li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--linha); border-radius: 10px; }
