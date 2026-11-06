@@ -163,13 +163,14 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     return () => window.removeEventListener('aprovo:perfil', ler);
   }, []);
   const [pulouComecar, setPulouComecar] = usePersist('cq:comecar-pulado', false);
-  const comecar = !perfil && !pulouComecar;
+  // A conversa de boas-vindas segue na tela até o aluno sair dela (o perfil é salvo antes do diagnóstico).
+  const [emConversa, setEmConversa] = useState(() => !lerPerfil() && !pulouComecar);
+  const comecar = emConversa || (!perfil && !pulouComecar);
   const salvarPerfil = (p: PerfilMentor) => {
     try { localStorage.setItem('cq:mentor', JSON.stringify(p)); } catch { /* sem armazenamento */ }
     setPerfilApp(p);
     if (!cargo) setCargo(/ACS|Comunit/i.test(p.cargo + p.concurso) ? 'ACS' : /ACE|Endemia/i.test(p.cargo + p.concurso) ? 'ACE' : 'OUTRO');
     setFiltros({ ...FILTROS_VAZIOS, meuConcurso: true });
-    scrollTo(0, 0);
   };
 
   const questoes = useMemo(() => {
@@ -337,7 +338,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             {aviso} <button className="link" onClick={() => setAvisoPro('')}>Fechar</button>
           </p>
         )}
-        {questoes && comecar && <Comecar questoes={questoes} onPronto={salvarPerfil} onPular={() => setPulouComecar(true)} />}
+        {questoes && comecar && <Comecar questoes={questoes} selecionar={(p) => doConcurso(questoes, p)} onResponder={registrar} onPronto={salvarPerfil} onPular={() => { setPulouComecar(true); setEmConversa(false); }} onIr={(a) => { setEmConversa(false); setAba(a); scrollTo(0, 0); }} />}
         {!cargo && !comecar && (
           <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
             <p className="rotulo">Para qual concurso você está estudando?</p>

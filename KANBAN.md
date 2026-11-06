@@ -10,7 +10,7 @@ Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa mé
 ## A fazer
 ### Benchmark 06/11/2026 (o que os concorrentes têm e o que puxar)
 Referências públicas: QConcursos e TEC (banco com filtros e comentários de professores), Gran e Estratégia (cursos, planos de estudo, simulados nacionais com ranking), PCI Concursos (lista de concursos abertos por estado), Aprova Concursos e Mentor Concursos (mentoria humana cara). Diferencial do Aprovô: **mentor com IA** que entrevista o aluno e monta e ajusta o plano, a preço de app.
-- [ ] Mentor com IA em formato de entrevista: 5 a 8 perguntas no chat (rotina, pontos fracos, provas anteriores) e plano gerado a partir das respostas, revisado toda semana com base no desempenho
+- [x] Mentor com IA em formato de entrevista (06/11, conversa + diagnóstico de 10 questões + plano em min/dia): 5 a 8 perguntas no chat (rotina, pontos fracos, provas anteriores) e plano gerado a partir das respostas, revisado toda semana com base no desempenho
 - [ ] Simulado nacional mensal com ranking por cargo e por estado e nota de corte estimada (Gran/Estratégia fazem; puxa retenção)
 - [ ] Radar de concursos abertos: além do Querido Diário, ler editais publicados em diários estaduais e páginas oficiais de bancas (só fontes públicas) e avisar por e-mail/WhatsApp quem marcou a cidade
 - [ ] Prefeituras pequenas: pedir ao aluno o link do edital e da prova anterior; a IA extrai matérias e gera questões "estilo" da banca local

@@ -893,3 +893,26 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 }
 .ranking-recorte { margin-bottom: 8px; }
 .ranking-recorte .ranking-aba[aria-pressed='true'] { background: var(--acento); color: var(--acento-tinta, #fff); border-color: var(--acento); }
+
+/* Boas-vindas em conversa com o Mentor */
+.bot-conversa { display: grid; gap: 10px; margin: 16px 0; }
+.bot-conversa .balao { margin: 0; }
+.bot-resposta { display: grid; gap: 12px; }
+.bot-opcoes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.bot-texto { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.bot-texto input, .bot-texto select { flex: 1 1 160px; min-height: 44px; padding: 0 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel); color: var(--tinta); font: inherit; }
+.bot-texto select { flex: 0 0 80px; }
+.bot-questao { border: 1px solid var(--linha); border-radius: 14px; padding: 16px; background: var(--papel); }
+.bot-comando { font-family: var(--serifa, Georgia, serif); line-height: 1.55; white-space: pre-line; }
+.bot-alts { display: grid; gap: 8px; }
+.bot-alts .alt { text-align: left; display: flex; gap: 10px; padding: 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel-2); color: var(--tinta); font: inherit; cursor: pointer; }
+.bot-alts .alt:hover { border-color: var(--acento); }
+.bot-plano { border: 2px solid var(--acento); border-radius: 16px; padding: 18px; background: var(--papel); }
+.bot-plano-dias { font-size: 1.05rem; }
+.bot-prioridades { padding-left: 20px; display: grid; gap: 6px; }
+.bot-prioridades li span:first-child { font-weight: 600; }
+.bot-prioridades li { display: list-item; }
+.bot-prioridades li .mono { float: right; color: var(--tinta-2); }
+.bot-prioridades small { font-weight: 400; margin-left: 6px; }
+.bot-prioridades .nok { color: var(--nok); } .bot-prioridades .ok { color: var(--ok); }
+.bot-pular { margin-top: 12px; }
