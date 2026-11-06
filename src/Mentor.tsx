@@ -24,6 +24,8 @@ export interface PerfilMentor {
   cidade?: string;
   uf?: string;
   nivel?: 'iniciante' | 'intermediario' | 'avancado';
+  /** Notícia/edital do concurso aberto escolhido na lista. */
+  editalUrl?: string;
 }
 
 type Msg = { role: 'user' | 'assistant'; content: string };

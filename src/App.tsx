@@ -407,6 +407,9 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             cargo={cargo || 'ACE'}
             questoes={questoes}
             pool={meuConcurso ? questoesPerfil : null}
+            perfil={perfil}
+            poolConcurso={questoesPerfil}
+            onNovas={(qs) => qs.length && setGeradas((g) => [...qs, ...g])}
             historico={historico}
             onResponder={registrar}
             onProva={(p) => setProvas((l) => [...l, p])}
@@ -629,6 +632,49 @@ function doConcurso(qs: Questao[], perfil: PerfilMentor) {
   const daBanca = b.length >= 3 ? porMateria.filter((q) => norm(q.banca).includes(b)) : [];
   if (daBanca.length >= 40) return daBanca;
   return porMateria.length >= 20 ? porMateria : qs;
+}
+
+/** Simulado do concurso do aluno: com questões reais de provas da banca dele (se houver no banco) ou autorais escritas pela IA. */
+function SimuladoDoConcurso({ perfil, pool, total, onIniciar }: { perfil: PerfilMentor; pool: Questao[]; total: number; onIniciar: (l: Questao[]) => void }) {
+  const [gerando, setGerando] = useState(false);
+  const [erro, setErro] = useState('');
+  const norm = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const reais = pool.filter((q) => eOficial(q));
+  const daBanca = perfil.banca ? reais.filter((q) => norm(q.banca).includes(norm(perfil.banca))) : [];
+  const fonteReal = daBanca.length >= total ? daBanca : reais;
+  const temReais = fonteReal.length >= total;
+
+  async function autoral() {
+    setErro(''); setGerando(true);
+    try {
+      const discs = [...perfil.disciplinas].sort((a, b) => Number(perfil.dificeis.includes(b.nome)) - Number(perfil.dificeis.includes(a.nome)) || b.peso * b.questoes - a.peso * a.questoes).slice(0, Math.min(4, Math.ceil(total / 5)));
+      const banca = perfil.banca || 'banca do concurso';
+      const partes = await Promise.all(discs.map(async (d, k) => {
+        const assuntos = pool.filter((q) => q.disciplina === resolverDisciplina(d.nome, pool)).map((q) => q.assunto);
+        const assunto = d.assuntos[0] ?? assuntos[Math.floor(Math.random() * assuntos.length)] ?? d.nome;
+        const r = await fetch('/api/ia', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${contaSalva()?.token ?? ''}` },
+          body: JSON.stringify({ acao: 'questoes', concurso: { banca, orgao: perfil.concurso || perfil.cargo, cargo: perfil.cargo }, disciplina: d.nome, assunto, quantidade: Math.ceil(total / discs.length), dificuldade: perfil.nivel === 'avancado' ? 'dificil' : 'media', formato: /cebraspe|cespe/i.test(banca) ? 'certo-errado' : 'multipla' }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.erro ?? 'A IA não respondeu.');
+        const agora = Date.now();
+        return (j.questoes as Questao[]).map((q, i) => ({ ...q, id: `ia-${agora}-${k}-${i}`, banca: `Autoral · estilo ${banca}`, orgao: perfil.cargo, prova: `Simulado autoral · ${perfil.cargo || perfil.concurso}`, ano: new Date().getFullYear(), numero: i + 1, disciplina: d.nome, assunto, ia: true }));
+      }));
+      onIniciar(embaralhar(partes.flat()).slice(0, total));
+    } catch (e) { setErro((e as Error).message); }
+    setGerando(false);
+  }
+
+  return (
+    <div className="prova-estilo">
+      <p className="rotulo">Simulado do seu concurso · {perfil.cargo || perfil.concurso}</p>
+      <p className="nota">{temReais ? `${fonteReal.length} questões reais ${daBanca.length >= total ? `da ${perfil.banca}` : 'de provas oficiais'} nas suas matérias.` : 'Ainda não há provas reais suficientes dessa banca no banco: use o autoral, escrito pela IA no estilo dela.'} {total} questões.</p>
+      <div className="simulado-escolha">
+        <button className="btn" disabled={!temReais} onClick={() => onIniciar(embaralhar(fonteReal).slice(0, total))}>Questões reais</button>
+        <button className="btn btn-sec" disabled={gerando} onClick={autoral}>{gerando ? 'A IA está escrevendo…' : 'Autoral (IA)'}</button>
+      </div>
+      {erro && <p className="aviso" role="alert">{erro}</p>}
+    </div>
+  );
 }
 
 function aplicarFiltros(qs: Questao[], f: Filtros, historico: Resposta[], revisar: string[], bloco: string[]) {
@@ -1274,6 +1320,9 @@ function Simulado(props: {
   cargo: Cargo;
   /** Questões do concurso do perfil para o simulado livre (null = banco inteiro). */
   pool?: Questao[] | null;
+  perfil?: PerfilMentor | null;
+  poolConcurso?: Questao[] | null;
+  onNovas?: (qs: Questao[]) => void;
   historico: Resposta[];
   questoes: Questao[];
   onResponder: (r: Resposta) => void;
@@ -1311,9 +1360,9 @@ function Simulado(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restante]);
 
-  const iniciar = () => {
+  const iniciar = (lista?: Questao[]) => {
     const pool = (props.pool ?? props.questoes).filter((q) => !config.disciplina || q.disciplina === config.disciplina);
-    setProva(embaralhar(pool).slice(0, config.total));
+    setProva(lista ?? embaralhar(pool).slice(0, config.total));
     setRespostas({});
     setDuvidas([]);
     setFiltroRes('todas');
@@ -1440,6 +1489,7 @@ function Simulado(props: {
           </button>
         </div>}
         {props.cargo !== 'OUTRO' && <ProvasEduca />}
+        {props.perfil && <SimuladoDoConcurso perfil={props.perfil} pool={props.poolConcurso ?? props.questoes} total={Math.max(10, config.total)} onIniciar={(l) => { props.onNovas?.(l.filter((q) => q.ia)); iniciar(l); }} />}
         <p className="rotulo simulado-livre">Ou monte um simulado livre</p>
         <div className="form-simulado">
           <Select

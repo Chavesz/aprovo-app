@@ -97,6 +97,15 @@ function iaDeExemplo(): Plugin {
           return res.end(JSON.stringify({ ...uso, edital: { concurso: 'Exemplo 2026', cargo: 'Agente', banca: 'EDUCA PB', dataProva: '', disciplinas: [{ nome: 'Português', questoes: 15, peso: 2, assuntos: ['Crase', 'Concordância'] }] } }));
         res.end(JSON.stringify({ ...uso, texto: 'Resposta de exemplo do **Mentor** (modo de teste).' }));
       });
+      server.middlewares.use('/api/concursos-abertos', (_req, res) => {
+        const h = new Date().toISOString();
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({ fonte: 'teste', lista: [
+          { titulo: 'Prefeitura de Patos (PB) abre concurso com 120 vagas', link: 'https://concursosnobrasil.com/concursos/pb/x', uf: 'PB', data: h, tipo: 'concurso', area: 'Administrativo' },
+          { titulo: 'Concurso INSS 2026: edital com 1.500 vagas para Técnico', link: 'https://concursosnobrasil.com/concursos/df/y', uf: 'DF', data: h, tipo: 'concurso', area: 'Federais' },
+          { titulo: 'Prefeitura de Cuité (PB) seleciona Agentes Comunitários de Saúde', link: 'https://concursosnobrasil.com/concursos/pb/z', uf: 'PB', data: h, tipo: 'selecao', area: 'Saúde' },
+        ] }));
+      });
       server.middlewares.use('/api/ia', (req, res) => {
         let corpo = '';
         req.on('data', (c) => (corpo += c));

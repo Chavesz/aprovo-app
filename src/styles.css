@@ -922,3 +922,10 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .autorais-linha select { flex: 1 1 180px; min-height: 44px; padding: 0 10px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel); color: var(--tinta); font: inherit; }
 .diag-card { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 2px solid var(--acento); border-radius: 14px; padding: 14px; margin: 12px auto; }
 .diag-card small { display: block; color: var(--tinta-2); font-size: .88rem; margin-top: 2px; }
+.abertos { display: grid; gap: 10px; }
+.abertos-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 420px; overflow-y: auto; }
+.abertos-item { width: 100%; text-align: left; display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 12px; background: var(--papel); color: var(--tinta); font: inherit; cursor: pointer; }
+.abertos-item:hover { border-color: var(--acento); }
+.abertos-tit { font-weight: 600; line-height: 1.35; }
+.abertos-fonte { font-size: .8rem; }
+.simulado-escolha { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; margin-top: 10px; }

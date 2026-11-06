@@ -22,8 +22,50 @@ const NIVEIS: [NonNullable<PerfilMentor['nivel']>, string][] = [
   ['avancado', 'Estou na reta final'],
 ];
 
-type Passo = 'alvo' | 'qual' | 'banca' | 'edital' | 'data' | 'nivel' | 'horas' | 'faceis' | 'dificeis' | 'local' | 'convite' | 'diag' | 'plano';
+type Passo = 'abertos' | 'alvo' | 'qual' | 'banca' | 'edital' | 'data' | 'nivel' | 'horas' | 'faceis' | 'dificeis' | 'local' | 'convite' | 'diag' | 'plano';
 type Msg = { de: 'mentor' | 'eu'; texto: string };
+
+export type Aberto = { titulo: string; link: string; uf: string; data: string; tipo: string; area: string };
+const MODELO_DA_AREA: Record<string, string> = {
+  Saúde: 'Agente de Saúde (ACS)', Federais: 'INSS (Técnico do Seguro Social)', Segurança: 'Polícia e Bombeiros (FGV)',
+  Tribunais: 'Técnico nível médio (Cebraspe)', Educação: 'Prefeitura (nível médio)', Administrativo: 'Prefeitura (nível médio)',
+};
+
+/** Lista de concursos e seleções abertas (feed público), com filtro por estado. */
+export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; onEscolher: (a: Aberto) => void }) {
+  const [uf, setUf] = useState(ufInicial ?? '');
+  const [lista, setLista] = useState<Aberto[] | null>(null);
+  const [busca, setBusca] = useState('');
+  useEffect(() => {
+    setLista(null);
+    fetch(`/api/concursos-abertos${uf ? `?uf=${uf}` : ''}`).then((r) => r.json()).then((d) => setLista(d.lista ?? [])).catch(() => setLista([]));
+  }, [uf]);
+  const filtrada = (lista ?? []).filter((a) => !busca || a.titulo.toLowerCase().includes(busca.toLowerCase()));
+  return (
+    <div className="abertos">
+      <div className="bot-texto">
+        <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar cargo ou cidade" aria-label="Buscar concurso" />
+        <select value={uf} onChange={(e) => setUf(e.target.value)} aria-label="Estado">
+          <option value="">Brasil</option>
+          {UFS.map((u) => <option key={u}>{u}</option>)}
+        </select>
+      </div>
+      {!lista && <p className="nota">Buscando concursos abertos…</p>}
+      {lista && !filtrada.length && <p className="nota">Nada encontrado agora. Tente outro estado ou escreva o seu concurso.</p>}
+      <ul className="abertos-lista">
+        {filtrada.slice(0, 30).map((a) => (
+          <li key={a.link}>
+            <button className="abertos-item" onClick={() => onEscolher(a)}>
+              <span className="abertos-tit">{a.titulo}</span>
+              <span className="nota">{a.uf} · {a.area} · {a.tipo === 'selecao' ? 'seleção' : 'concurso'}{a.data ? ` · ${new Date(a.data).toLocaleDateString('pt-BR')}` : ''}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="nota abertos-fonte">Fonte: Concursos no Brasil. Confira sempre o edital oficial.</p>
+    </div>
+  );
+}
 
 const diasAte = (iso: string) => (iso ? Math.ceil((Date.parse(iso + 'T12:00:00') - Date.now()) / 86400000) : null);
 
@@ -43,7 +85,7 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
     { de: 'mentor', texto: `Vamos ver como você está em ${inicial.cargo || inicial.concurso}? São 10 questões do seu concurso, uma ou duas de cada matéria. No fim, eu ajusto o seu plano.` },
   ] : [
     { de: 'mentor', texto: 'Oi! Eu sou o seu Mentor. Vou te fazer umas perguntas rápidas e montar um plano para você passar na sua prova.' },
-    { de: 'mentor', texto: 'Você vai estudar para um concurso específico ou para vários da mesma área?' },
+    { de: 'mentor', texto: 'Você já sabe qual concurso vai fazer? Se não, eu te mostro os que estão com inscrição aberta agora.' },
   ]);
   const [p, setP] = useState<PerfilMentor>(inicial ?? { concurso: '', cargo: '', banca: '', editalAberto: false, dataProva: '', horasDia: 2, disciplinas: PADRAO, faceis: [], dificeis: [], cidade: '', uf: '', nivel: 'iniciante' });
   const [texto, setTexto] = useState('');
@@ -138,7 +180,20 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
       </div>
 
       <div className="bot-resposta">
-        {passo === 'alvo' && opcoes([
+        {passo === 'alvo' && msgs.length <= 2 && opcoes([
+          ['Ver concursos abertos', () => responder('Quero ver os concursos abertos', 'abertos', 'Esses são os mais recentes. Filtre pelo seu estado e toque no que te interessa.')],
+          ['Já sei qual', () => responder('Já sei qual', 'qual', 'Qual concurso ou cargo? Escolha um parecido ou escreva.')],
+          ['Vários da mesma área', () => responder('Vários da mesma área', 'qual', 'Qual área? Eu junto as matérias que mais caem nela.')],
+        ])}
+        {passo === 'abertos' && (
+          <ListaAbertos ufInicial={p.uf} onEscolher={(a) => {
+            const m = MODELOS.find((x) => x.rotulo === MODELO_DA_AREA[a.area]) ?? MODELOS[3];
+            responder(a.titulo, 'banca', `Boa escolha! Vou usar as matérias que mais caem em provas de ${a.area.toLowerCase()} até você me mandar o edital (link no Mentor). Sabe qual é a banca?`, {
+              concurso: a.titulo.slice(0, 120), cargo: m.cargo, disciplinas: m.disciplinas, editalAberto: true, uf: a.uf, editalUrl: a.link,
+            } as Partial<PerfilMentor>);
+          }} />
+        )}
+        {passo === 'alvo' && msgs.length > 2 && opcoes([
           ['Um concurso específico', () => responder('Um concurso específico', 'qual', 'Qual concurso ou cargo? Escolha um parecido ou escreva.')],
           ['Vários da mesma área', () => responder('Vários da mesma área', 'qual', 'Qual área? Eu junto as matérias que mais caem nela.')],
         ])}
@@ -152,8 +207,8 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
           </>
         ))}
         {passo === 'banca' && opcoes([
-          ...BANCAS.map((b): [string, () => void] => [b, () => responder(b, 'edital', 'O edital já saiu?', { banca: b })]),
-          ['Não sei ainda', () => responder('Não sei ainda', 'edital', 'Tudo bem. O edital já saiu?', { banca: '' })],
+          ...BANCAS.map((b): [string, () => void] => [b, () => (p.editalUrl ? responder(b, 'data', 'Quando é a prova?', { banca: b }) : responder(b, 'edital', 'O edital já saiu?', { banca: b }))]),
+          ['Não sei ainda', () => (p.editalUrl ? responder('Não sei ainda', 'data', 'Tudo bem, está no edital. Quando é a prova?', { banca: '' }) : responder('Não sei ainda', 'edital', 'Tudo bem. O edital já saiu?', { banca: '' }))],
         ])}
         {passo === 'edital' && opcoes([
           ['Sim, já saiu', () => responder('Sim, já saiu', 'data', 'Ótimo. Depois, no Mentor, cole o link ou o PDF do edital que eu leio as matérias e os pesos. Quando é a prova?', { editalAberto: true })],

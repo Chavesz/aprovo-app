@@ -3,6 +3,7 @@ import type { Questao, Resposta } from './types';
 // dica do dia e trilhas de aulas. Só fontes públicas e oficiais; nada de material pago copiado.
 import { useEffect, useState } from 'react';
 import Flashcards from './Flashcards';
+import { ListaAbertos } from './Comecar';
 
 const QD = 'https://api.queridodiario.org.br';
 const UFS = 'AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO'.split(' ');
@@ -268,14 +269,21 @@ function Trilhas({ onPraticar }: { onPraticar: (d: string, a: string) => void })
 }
 
 export default function Descobrir({ onPraticar, questoes, historico }: { onPraticar: (d: string, a: string) => void; questoes?: Questao[]; historico?: Resposta[] }) {
-  const [sub, setSub] = useState<'radar' | 'bancas' | 'trilhas' | 'flash'>('trilhas');
+  const [sub, setSub] = useState<'abertos' | 'radar' | 'bancas' | 'trilhas' | 'flash'>('abertos');
   return (
     <div className="descobrir">
       <div className="sub-abas">
-        {([['trilhas', 'Dicas e trilhas'], ['flash', 'Flashcards'], ['radar', 'Concursos abertos'], ['bancas', 'Bancas']] as const).map(([id, r]) => (
+        {([['abertos', 'Abertos agora'], ['radar', 'Diários oficiais'], ['trilhas', 'Dicas e trilhas'], ['flash', 'Flashcards'], ['bancas', 'Bancas']] as const).map(([id, r]) => (
           <button key={id} className={sub === id ? 'btn' : 'btn btn-sec'} onClick={() => setSub(id)}>{r}</button>
         ))}
       </div>
+      {sub === 'abertos' && (
+        <section className="coluna estreita">
+          <h1 className="titulo">Concursos com inscrição aberta</h1>
+          <p className="lead">Atualizado de hora em hora. Toque para abrir a notícia com o link do edital.</p>
+          <ListaAbertos ufInicial={lerLocal<{ uf?: string } | null>('cq:mentor', null)?.uf} onEscolher={(a) => window.open(a.link, '_blank', 'noopener')} />
+        </section>
+      )}
       {sub === 'radar' && <Radar />}
       {sub === 'bancas' && <Bancas />}
       {sub === 'flash' && <Flashcards questoes={questoes} historico={historico} />}
