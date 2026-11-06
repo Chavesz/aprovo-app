@@ -162,3 +162,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 20 (feito)
 - [x] Cadernos com nome (📁 na questão; Revisar → Meus cadernos → Praticar), sincronizados com a conta
 - [x] "Comentar com IA" em questões sem comentário: explica o gabarito oficial e lista a base legal
+
+### Lote 21 (feito)
+- [x] Landing: recursos novos (batalha, liga, concursos abertos com alerta, cadernos e comentário com a lei)
+- [x] Landing: print novo do ranking/batalha (4 prints)

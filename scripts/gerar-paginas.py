@@ -130,7 +130,7 @@ CSS_LANDING = """.rodape{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px
 .recursos{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0}@media (min-width:880px){.recursos{grid-template-columns:1fr 1fr;column-gap:56px}}
 .recursos li{padding:22px 0;border-top:1px solid var(--linha);display:grid;grid-template-columns:2.4em 1fr;gap:4px 14px}.recursos li>span{font-size:.78rem;font-weight:700;color:var(--tinta2);padding-top:4px}.recursos strong{font-size:1.1rem}.recursos p{grid-column:2;margin:0;color:var(--tinta2)}
 .marca-q{display:inline-block;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:2px;border:1px solid var(--linha)}
-.prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(70%,250px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 2px 14px;margin-top:28px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);gap:32px}.prints figure:nth-child(2){transform:translateY(32px)}}
+.prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(70%,250px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 2px 14px;margin-top:28px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(4,1fr);gap:24px}.prints figure:nth-child(even){transform:translateY(32px)}}
 .prints figure{margin:0;scroll-snap-align:start}.prints img{width:100%;height:auto;aspect-ratio:375/812;border-radius:24px;border:1px solid var(--linha);box-shadow:0 24px 48px -32px rgba(42,31,61,.55);background:var(--sup)}.prints figcaption{font-size:.9rem;color:var(--tinta2);margin-top:10px}
 .lp-preco{display:grid;gap:32px;align-items:start}@media (min-width:880px){.lp-preco{grid-template-columns:1fr 1fr;gap:64px}}
 .preco-bloco{background:var(--sup);border:2px solid var(--marca);border-radius:24px;padding:28px 22px}.preco-bloco h3{margin:0;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;color:var(--marca)}.preco-bloco .preco{font-family:var(--serif);font-weight:400;font-size:4rem;line-height:1;margin:12px 0 4px}.preco-bloco .preco small{font-family:Archivo,system-ui,sans-serif;font-size:1rem}.preco-bloco .dia{margin:0;color:var(--tinta2);font-size:.92rem}.preco-bloco .check{margin:20px 0}.preco-bloco .cta{width:100%}
@@ -196,12 +196,17 @@ paginas.append(pagina("aprovo.html", "Aprovô: mentor com IA, simulados e quest�
 <ul class="recursos"><li><span>A</span><strong>Simulado do seu concurso</strong><p>Com questões reais da banca, cada uma com a fonte <span class="marca-q">Cebraspe 2022</span>, ou autorais escritas pela IA no estilo dela <span class="marca-q">estilo</span>.</p></li>
 <li><span>B</span><strong>Ranking de verdade</strong><p>Veja sua posição no Brasil, entre quem disputa o mesmo cargo e no seu estado.</p></li>
 <li><span>C</span><strong>Revisão espaçada dos erros</strong><p>Cada questão errada volta em 1, 3, 7 e 30 dias, até virar acerto.</p></li>
-<li><span>D</span><strong>"Por que errei?"</strong><p>Em qualquer questão, o mentor explica o raciocínio da banca e a pegadinha.</p></li></ul></section>
+<li><span>D</span><strong>"Por que errei?"</strong><p>Em qualquer questão, o mentor explica o raciocínio da banca e a pegadinha.</p></li>
+<li><span>E</span><strong>Batalha entre amigos</strong><p>Mande o link no WhatsApp: as mesmas 10 ou 20 questões para todos, com placar ao vivo.</p></li>
+<li><span>F</span><strong>Liga da semana</strong><p>Suba de Bronze para Diamante com os acertos da semana e dispute o "melhor do dia".</p></li>
+<li><span>G</span><strong>Concursos abertos</strong><p>Veja o que abriu no seu estado, salve os seus e receba o aviso quando sair novidade.</p></li>
+<li><span>H</span><strong>Cadernos e comentário com a lei</strong><p>Guarde questões em cadernos com nome e peça à IA o comentário com a base legal.</p></li></ul></section>
 
 <section><p class="rotulo"><b>03</b> Por dentro do app</p><h2>É assim no seu celular.</h2><div class="prints">
 <figure><img src="/img/print-mentor.jpg" width="375" height="812" loading="lazy" alt="Plano de estudos do Mentor com as matérias por prioridade"><figcaption>O plano do mentor, pelo peso de cada matéria.</figcaption></figure>
 <figure><img src="/img/print-simulado.jpg" width="375" height="812" loading="lazy" alt="Simulado com cronômetro, mapa de questões e item oficial da Cebraspe"><figcaption>Simulado cronometrado, no formato da banca.</figcaption></figure>
-<figure><img src="/img/print-questao.jpg" width="375" height="812" loading="lazy" alt="Questão respondida com o gabarito e o botão Por que errei? Perguntar ao Mentor"><figcaption>Errou? O mentor explica o porquê.</figcaption></figure></div></section>
+<figure><img src="/img/print-questao.jpg" width="375" height="812" loading="lazy" alt="Questão respondida com o gabarito e o botão Por que errei? Perguntar ao Mentor"><figcaption>Errou? O mentor explica o porquê.</figcaption></figure>
+<figure><img src="/img/print-ranking.jpg" width="375" height="812" loading="lazy" alt="Ranking com batalha entre amigos, melhor do dia e liga da semana"><figcaption>Batalha, ranking e liga da semana.</figcaption></figure></div></section>
 
 <section id="planos"><div class="lp-preco"><div><p class="rotulo"><b>04</b> Preço</p><h2>Um plano só. Tudo incluído.</h2><p class="lead">Menos que uma apostila, com um mentor que acompanha você todo dia. Não prometemos aprovação: prometemos método, constância e treino no formato certo.</p></div>{bloco_preco()}</div></section>
 
