@@ -185,3 +185,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 
 ### Lote 26 (feito)
 - [x] Modo foco (pomodoro 25/50 min + pausa de 5) no painel Hoje, com minutos de foco do dia
+
+### Lote 27 (feito)
+- [x] Minutos de foco por dia, sincronizados com a conta (cq:foco)
+- [x] Resumo semanal do Mentor mostra o tempo no modo foco

@@ -12,6 +12,7 @@ const CHAVES = [
   'cq:historico',
   'cq:revisar',
   'cq:cadernos',
+  'cq:foco',
   'cq:bloco',
   'cq:geradas',
   'cq:editais',

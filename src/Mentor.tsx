@@ -441,8 +441,10 @@ function ResumoSemana({ historico, questoes }: { historico: Resposta[]; questoes
   const ord = [...disc.entries()].filter(([, g]) => g.t >= 3).sort((x, y) => x[1].a / x[1].t - y[1].a / y[1].t);
   const dias = new Set(s1.map((r) => new Date(r.em).toDateString())).size;
   const delta = taxa(s1) - taxa(s0);
+  const focoSemana = Object.entries(lerFoco()).filter(([d]) => Date.parse(d) > agora - 7 * D).reduce((t, [, m]) => t + m, 0);
   const frases = [
     `${s1.length} questões em ${dias} ${dias === 1 ? 'dia' : 'dias'}, ${taxa(s1)}% de acerto${s0.length ? ` (${delta >= 0 ? '+' : ''}${delta} pontos sobre a semana passada)` : ''}.`,
+    focoSemana ? `${focoSemana} min no modo foco (${(focoSemana / 60).toFixed(1).replace('.', ',')} h).` : '',
     ord.length > 1 ? `Melhor matéria: ${ord[ord.length - 1][0]}. Precisa de atenção: ${ord[0][0]}.` : '',
     dias < 4 ? 'Meta da próxima semana: estudar pelo menos 5 dias, mesmo que pouco.' : 'Constância boa! Mantém o ritmo e aumenta 10 questões por dia.',
   ].filter(Boolean);
@@ -783,10 +785,12 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
   );
 }
 
+const lerFoco = (): Record<string, number> => { try { const f = JSON.parse(localStorage.getItem('cq:foco') ?? '{}'); return f && typeof f === 'object' && !('dia' in f) ? f : {}; } catch { return {}; } };
+
 // Modo foco: pomodoro de 25 min (ou 50) com pausa de 5; soma os minutos estudados no dia (cq:foco).
 function Foco() {
   const hoje = new Date().toDateString();
-  const lerMin = () => { try { const f = JSON.parse(localStorage.getItem('cq:foco') ?? '{}'); return f.dia === hoje ? (f.min as number) : 0; } catch { return 0; } };
+  const lerMin = () => lerFoco()[hoje] ?? 0;
   const [min, setMin] = useState(lerMin);
   const [fim, setFim] = useState<number | null>(null);
   const [dur, setDur] = useState(25);
@@ -800,7 +804,9 @@ function Foco() {
         clearInterval(t);
         if (!pausa) {
           const novo = lerMin() + dur;
-          try { localStorage.setItem('cq:foco', JSON.stringify({ dia: hoje, min: novo })); } catch { /* */ }
+          // Guarda os minutos por dia (últimos 60 dias) para o resumo da semana.
+          const f = { ...lerFoco(), [hoje]: novo };
+          try { localStorage.setItem('cq:foco', JSON.stringify(Object.fromEntries(Object.entries(f).slice(-60)))); } catch { /* */ }
           setMin(novo);
           try { navigator.vibrate?.(300); new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=').play().catch(() => undefined); } catch { /* */ }
           setPausa(true); setFim(Date.now() + 5 * 60000);
