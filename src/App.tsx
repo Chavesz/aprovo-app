@@ -1,5 +1,6 @@
 import Mentor, { PlanoDeHoje, resolverDisciplina, type PerfilMentor } from './Mentor';
 import Comecar from './Comecar';
+import Autorais from './Autorais';
 import Descobrir from './Descobrir';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
@@ -165,7 +166,8 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   const [pulouComecar, setPulouComecar] = usePersist('cq:comecar-pulado', false);
   // A conversa de boas-vindas segue na tela até o aluno sair dela (o perfil é salvo antes do diagnóstico).
   const [emConversa, setEmConversa] = useState(() => !lerPerfil() && !pulouComecar);
-  const comecar = emConversa || (!perfil && !pulouComecar);
+  const [diagnostico, setDiagnostico] = useState(false);
+  const comecar = emConversa || diagnostico || (!perfil && !pulouComecar);
   const salvarPerfil = (p: PerfilMentor) => {
     try { localStorage.setItem('cq:mentor', JSON.stringify(p)); } catch { /* sem armazenamento */ }
     setPerfilApp(p);
@@ -338,7 +340,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             {aviso} <button className="link" onClick={() => setAvisoPro('')}>Fechar</button>
           </p>
         )}
-        {questoes && comecar && <Comecar questoes={questoes} selecionar={(p) => doConcurso(questoes, p)} onResponder={registrar} onPronto={salvarPerfil} onPular={() => { setPulouComecar(true); setEmConversa(false); }} onIr={(a) => { setEmConversa(false); setAba(a); scrollTo(0, 0); }} />}
+        {questoes && comecar && <Comecar key={diagnostico ? 'diag' : 'ini'} inicial={diagnostico ? perfil : null} questoes={questoes} selecionar={(p) => doConcurso(questoes, p)} onResponder={registrar} onPronto={salvarPerfil} onPular={() => { setPulouComecar(true); setEmConversa(false); setDiagnostico(false); }} onIr={(a) => { setEmConversa(false); setDiagnostico(false); setAba(a); scrollTo(0, 0); }} />}
         {!cargo && !comecar && (
           <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
             <p className="rotulo">Para qual concurso você está estudando?</p>
@@ -364,6 +366,15 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         )}
         {questoes && !comecar && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
         {questoes && !comecar && aba === 'praticar' && <Foco />}
+        {questoes && !comecar && aba === 'praticar' && perfil && (
+          <Autorais perfil={perfil} questoes={questoes} onNovas={(qs) => { setGeradas((g) => [...qs, ...g]); setBloco(qs.map((q) => q.id)); setFiltros({ ...FILTROS_VAZIOS, status: 'bloco' }); }} />
+        )}
+        {questoes && !comecar && aba === 'simulado' && perfil && (
+          <div className="coluna diag-card">
+            <span><strong>Simulado para conhecer você</strong><small>10 questões do seu concurso. O Mentor vê onde você está e ajusta o plano. Opcional.</small></span>
+            <button className="btn btn-sec" onClick={() => { setDiagnostico(true); scrollTo(0, 0); }}>Fazer</button>
+          </div>
+        )}
         {questoes && !comecar && aba === 'praticar' && carregandoMais && (
           <p className="nota coluna carregando-mais" role="status">Carregando as provas da Cebraspe, OAB e ENEM… você já pode começar.</p>
         )}

@@ -916,3 +916,9 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .bot-prioridades small { font-weight: 400; margin-left: 6px; }
 .bot-prioridades .nok { color: var(--nok); } .bot-prioridades .ok { color: var(--ok); }
 .bot-pular { margin-top: 12px; }
+.autorais { border: 1px dashed var(--acento); border-radius: 14px; padding: 14px; margin: 0 0 14px; }
+.autorais .rotulo { margin: 0; } .autorais .nota { margin: 4px 0; }
+.autorais-linha { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.autorais-linha select { flex: 1 1 180px; min-height: 44px; padding: 0 10px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel); color: var(--tinta); font: inherit; }
+.diag-card { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 2px solid var(--acento); border-radius: 14px; padding: 14px; margin: 12px auto; }
+.diag-card small { display: block; color: var(--tinta-2); font-size: .88rem; margin-top: 2px; }

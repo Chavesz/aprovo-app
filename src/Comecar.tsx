@@ -27,8 +27,10 @@ type Msg = { de: 'mentor' | 'eu'; texto: string };
 
 const diasAte = (iso: string) => (iso ? Math.ceil((Date.parse(iso + 'T12:00:00') - Date.now()) / 86400000) : null);
 
-export default function Comecar({ questoes, selecionar, onResponder, onPronto, onPular, onIr }: {
+export default function Comecar({ questoes, selecionar, onResponder, onPronto, onPular, onIr, inicial }: {
   questoes: Questao[];
+  /** Perfil já feito: abre direto no convite do simulado diagnóstico (opção do Simulado). */
+  inicial?: PerfilMentor | null;
   /** Questões do concurso do perfil (as mesmas do filtro "Meu concurso"). */
   selecionar: (p: PerfilMentor) => Questao[];
   onResponder: (r: Resposta) => void;
@@ -36,12 +38,14 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
   onPular: () => void;
   onIr: (aba: 'mentor' | 'praticar' | 'simulado') => void;
 }) {
-  const [passo, setPasso] = useState<Passo>('alvo');
-  const [msgs, setMsgs] = useState<Msg[]>([
+  const [passo, setPasso] = useState<Passo>(inicial ? 'convite' : 'alvo');
+  const [msgs, setMsgs] = useState<Msg[]>(inicial ? [
+    { de: 'mentor', texto: `Vamos ver como você está em ${inicial.cargo || inicial.concurso}? São 10 questões do seu concurso, uma ou duas de cada matéria. No fim, eu ajusto o seu plano.` },
+  ] : [
     { de: 'mentor', texto: 'Oi! Eu sou o seu Mentor. Vou te fazer umas perguntas rápidas e montar um plano para você passar na sua prova.' },
     { de: 'mentor', texto: 'Você vai estudar para um concurso específico ou para vários da mesma área?' },
   ]);
-  const [p, setP] = useState<PerfilMentor>({ concurso: '', cargo: '', banca: '', editalAberto: false, dataProva: '', horasDia: 2, disciplinas: PADRAO, faceis: [], dificeis: [], cidade: '', uf: '', nivel: 'iniciante' });
+  const [p, setP] = useState<PerfilMentor>(inicial ?? { concurso: '', cargo: '', banca: '', editalAberto: false, dataProva: '', horasDia: 2, disciplinas: PADRAO, faceis: [], dificeis: [], cidade: '', uf: '', nivel: 'iniciante' });
   const [texto, setTexto] = useState('');
   const [marcadas, setMarcadas] = useState<string[]>([]);
   const fim = useRef<HTMLDivElement>(null);
@@ -126,7 +130,7 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
   return (
     <section className="coluna estreita comecar bot" aria-labelledby="comecar-titulo">
       <p className="sobretitulo">Mentor com IA</p>
-      <h1 className="titulo" id="comecar-titulo">Vamos montar o seu plano.</h1>
+      <h1 className="titulo" id="comecar-titulo">{inicial ? 'Simulado para conhecer você' : 'Vamos montar o seu plano.'}</h1>
       <div className="bot-conversa" aria-live="polite">
         {msgs.map((m, n) => (
           <p key={n} className={`balao ${m.de === 'eu' ? 'user' : 'assistant'}`}>{m.texto}</p>
