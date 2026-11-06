@@ -216,3 +216,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 
 ### Lote 34 (feito) — onboarding rápido
 - [x] Atalho "Pular perguntas e fazer o simulado agora" a partir da banca: do zero à 1ª questão do diagnóstico em 5 toques (Já sei qual → concurso → banca → pular → Bora)
+
+### Lote 35 (feito) — conversão
+- [x] Landing: bloco de preço virou tabela Grátis × Pro (deixa claro que o Pro = 300 usos de IA/dia, autorais, plano completo e PDF; o resto é grátis)
+- [x] CTA grátis reforça "diagnóstico de 10 questões, sem cartão"
