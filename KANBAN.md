@@ -8,6 +8,20 @@ O que os líderes fazem de melhor e o que copiamos da ideia (não do conteúdo):
 Prioridade: **P1** = vende muito e custa pouco · **P2** = vende bem e custa médio · **P3** = depois.
 
 ## A fazer
+### Lote 17+ (pedido 06/11: engajamento, batalha, convite, landing com movimento)
+- [ ] **Batalha entre amigos**: 10 ou 20 questões iguais para os dois, link pelo WhatsApp, placar ao vivo (atualiza a cada poucos segundos), vencedor por acertos e tempo
+- [ ] **Convite de amigos**: link pessoal; a cada 3 amigos que criarem conta, 7 dias de Pro grátis; contador no Ranking
+- [ ] **Ranking**: "Melhor do dia" em destaque, vitórias em batalhas, selo do top 3 da semana
+- [ ] **Landing com movimento**: chat do hero digitando ao vivo, números contando, seções surgindo ao rolar, faixa rolando com concursos abertos de verdade (respeitando prefers-reduced-motion)
+- [ ] **Liga semanal** (estilo Duolingo): grupos de 20 alunos do mesmo nível, sobe/desce de divisão no domingo
+- [ ] **Sequência de dias** com chama e meta diária na barra de cima; aviso "não perca a sequência"
+- [ ] **Mentor com IA proativo**: mensagem diária no app ("hoje: 30 min de Previdenciário, você errou 3 ontem") e resumo semanal
+- [ ] **Questão comentada pela IA sob demanda** com citação da lei e botão "reportar erro"
+- [ ] **Cadernos de erros** por matéria, exportáveis em PDF
+- [ ] **Concursos abertos**: salvar favoritos, aviso quando sair edital do cargo favorito, prazo de inscrição
+- [ ] **Novos prints** do app atualizados para a landing e as lojas
+- [ ] **Design do app** (padrão QConcursos/Gran/Duolingo): tela inicial "Hoje" com plano, sequência, batalha pendente e ranking resumido
+
 ### Benchmark 06/11/2026 (o que os concorrentes têm e o que puxar)
 Referências públicas: QConcursos e TEC (banco com filtros e comentários de professores), Gran e Estratégia (cursos, planos de estudo, simulados nacionais com ranking), PCI Concursos (lista de concursos abertos por estado), Aprova Concursos e Mentor Concursos (mentoria humana cara). Diferencial do Aprovô: **mentor com IA** que entrevista o aluno e monta e ajusta o plano, a preço de app.
 - [x] Mentor com IA em formato de entrevista (06/11, conversa + diagnóstico de 10 questões + plano em min/dia): 5 a 8 perguntas no chat (rotina, pontos fracos, provas anteriores) e plano gerado a partir das respostas, revisado toda semana com base no desempenho

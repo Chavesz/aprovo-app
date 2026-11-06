@@ -1,11 +1,12 @@
 // /api/conta: criar conta, entrar e sair.
 import { criarConta, entrar, json, sair } from '../lib/contas';
 import { registrarEmail } from '../lib/cakto';
+import { registrarConvite } from '../lib/convites';
 import { boasVindas, emails, emailValido, enviarEmail } from '../lib/email';
 
 export default async (req: Request) => {
   if (req.method !== 'POST') return json({ erro: 'Use POST.' }, 405);
-  let corpo: { acao?: string; usuario?: string; nome?: string; senha?: string; token?: string; email?: string };
+  let corpo: { acao?: string; usuario?: string; nome?: string; senha?: string; token?: string; email?: string; convite?: string };
   try {
     corpo = await req.json();
   } catch {
@@ -21,6 +22,7 @@ export default async (req: Request) => {
         await registrarEmail(c.usuario, email);
         await enviarEmail(email, 'Bem-vindo ao Aprovô: seu plano começa hoje', boasVindas(c.usuario, c.nome)).catch(() => false);
       }
+      if (corpo.convite) await registrarConvite(corpo.convite, c.usuario).catch(() => undefined);
       return json(c);
     }
     if (corpo.acao === 'entrar') return json(await entrar(corpo.usuario ?? '', corpo.senha ?? ''));

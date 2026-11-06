@@ -145,9 +145,11 @@ export default function Ranking({ conta }: { conta: Conta }) {
   const fora = todos.filter((l) => c.valor(l) < 0);
   const minhaPos = ordenadas.findIndex((l) => l.eu);
 
+  const [convite, setConvite] = useState<{ amigos: number; premios: number; faltam: number } | null>(null);
+  useEffect(() => { fetch('/api/convites', { headers: { authorization: `Bearer ${conta.token}` } }).then((r) => (r.ok ? r.json() : null)).then(setConvite).catch(() => undefined); }, [conta]);
   const compartilhar = () => {
-    const texto = 'Bora estudar pro concurso comigo no Aprovô? Tem ranking entre a galera:';
-    const url = location.origin;
+    const texto = 'Bora estudar pro concurso comigo no Aprovô? O mentor com IA monta seu plano e tem ranking e batalha entre a galera:';
+    const url = `${location.origin}/?convite=${encodeURIComponent(conta.usuario)}`;
     if (navigator.share) navigator.share({ title: 'Aprovô', text: texto, url }).catch(() => undefined);
     else window.open(`https://wa.me/?text=${encodeURIComponent(`${texto} ${url}`)}`, '_blank');
   };
@@ -254,9 +256,11 @@ export default function Ranking({ conta }: { conta: Conta }) {
         <p className="nota">Ainda sem pontuar aqui: {fora.map((l) => (l.eu ? 'você' : l.nome)).join(', ')}.</p>
       )}
 
-      <button className="btn btn-sec ranking-convite" onClick={compartilhar}>
-        Chamar a galera para o ranking
-      </button>
+      <div className="convite-card">
+        <p><strong>Convide 3 amigos e ganhe 7 dias de Pro.</strong> {convite ? `${convite.amigos} ${convite.amigos === 1 ? 'amigo entrou' : 'amigos entraram'} pelo seu link · faltam ${convite.faltam} para o próximo prêmio.` : 'A cada 3 amigos que criarem conta pelo seu link.'}</p>
+        <div className="convite-barra" aria-hidden><span style={{ width: `${convite ? ((3 - convite.faltam) / 3) * 100 : 0}%` }} /></div>
+        <button className="btn" onClick={compartilhar}>Convidar pelo WhatsApp</button>
+      </div>
     </section>
   );
 }

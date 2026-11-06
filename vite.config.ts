@@ -97,6 +97,29 @@ function iaDeExemplo(): Plugin {
           return res.end(JSON.stringify({ ...uso, edital: { concurso: 'Exemplo 2026', cargo: 'Agente', banca: 'EDUCA PB', dataProva: '', disciplinas: [{ nome: 'Português', questoes: 15, peso: 2, assuntos: ['Crase', 'Concordância'] }] } }));
         res.end(JSON.stringify({ ...uso, texto: 'Resposta de exemplo do **Mentor** (modo de teste).' }));
       });
+      // Batalha (memória): um jogador fictício "Rival" responde sozinho para testar o placar ao vivo.
+      const batalhas: Record<string, any> = {};
+      server.middlewares.use('/api/convites', (_req, res) => { res.setHeader('content-type', 'application/json'); res.end(JSON.stringify({ amigos: 1, premios: 0, faltam: 2 })); });
+      server.middlewares.use('/api/batalha', (req, res) => {
+        let corpo = '';
+        req.on('data', (c) => (corpo += c));
+        req.on('end', () => {
+          res.setHeader('content-type', 'application/json');
+          const u = new URL(req.url ?? '', 'http://x');
+          const eu = 'eu';
+          const rival = (b: any) => { const r = b.jogadores.rival; const n = Math.min(b.ids.length, Math.floor((Date.now() - r.inicio) / 3000)); r.respostas = b.ids.map((_: string, i: number) => (i < n ? i % 3 !== 0 : null)); if (n >= b.ids.length) r.fim = r.inicio + b.ids.length * 3000; };
+          if (req.method === 'GET') {
+            if (u.searchParams.has('minhas')) return res.end(JSON.stringify({ vitorias: 0, lista: Object.values(batalhas).map((b: any) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: 2 })) }));
+            const b = batalhas[u.searchParams.get('codigo') ?? '']; if (!b) { res.statusCode = 404; return res.end('{"erro":"Batalha não encontrada."}'); }
+            rival(b); return res.end(JSON.stringify({ ...b, eu }));
+          }
+          const p = JSON.parse(corpo || '{}');
+          if (p.acao === 'criar') { const codigo = 'TESTE' + Object.keys(batalhas).length; batalhas[codigo] = { codigo, titulo: p.titulo, ids: p.ids, criador: eu, criadaEm: Date.now(), jogadores: { [eu]: { nome: 'Você', respostas: p.ids.map(() => null), inicio: Date.now() }, rival: { nome: 'Rival', respostas: [], inicio: Date.now() } } }; return res.end(JSON.stringify({ codigo })); }
+          const b = batalhas[String(p.codigo).toUpperCase()]; if (!b) { res.statusCode = 404; return res.end('{"erro":"Batalha não encontrada."}'); }
+          if (p.acao === 'responder') { const j = b.jogadores[eu]; if (j.respostas[p.i] === null) j.respostas[p.i] = !!p.certa; if (j.respostas.every((r: any) => r !== null)) j.fim = Date.now(); }
+          rival(b); res.end(JSON.stringify({ ...b, eu }));
+        });
+      });
       server.middlewares.use('/api/concursos-abertos', (_req, res) => {
         const h = new Date().toISOString();
         res.setHeader('content-type', 'application/json');

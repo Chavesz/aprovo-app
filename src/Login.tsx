@@ -68,7 +68,8 @@ import { autenticar, type Conta } from './nuvem';
 export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
   // Veio do botão "Assinar" da landing: vai direto para criar a conta (sem o teste grátis no caminho).
   // ?comecar (botão grátis da landing): também cria a conta; a conversa com o Mentor vem logo depois, antes de qualquer questão.
-  const querAssinar = /[?&](assinar|comecar)/.test(location.search);
+  const origem = /[?&]batalha/.test(location.search) ? 'batalha' : /[?&]convite/.test(location.search) ? 'convite' : /[?&]assinar/.test(location.search) ? 'assinar' : /[?&]comecar/.test(location.search) ? 'comecar' : '';
+  const querAssinar = !!origem;
   const [modo, setModo] = useState<'entrar' | 'criar'>(querAssinar ? 'criar' : 'entrar');
   const [usuario, setUsuario] = useState('');
   const [nome, setNome] = useState('');
@@ -125,7 +126,7 @@ export default function Login({ onEntrar }: { onEntrar: (c: Conta) => void }) {
       ) : (
         <>
           <h1 className="titulo">{modo === 'entrar' ? 'Bem-vindo de volta.' : 'Crie sua conta.'}</h1>
-          {querAssinar && <p className="lead">{modo === 'criar' ? 'Primeiro a conta (1 minuto). Depois você assina o Pro com Pix ou cartão.' : 'Entre para assinar o Pro.'}</p>}
+          {querAssinar && <p className="lead">{origem === 'batalha' ? 'Te desafiaram para uma batalha! Crie a conta em 1 minuto (ou entre) para jogar.' : origem === 'convite' ? 'Um amigo te convidou. Crie a conta grátis e o Mentor monta o seu plano.' : origem === 'comecar' ? 'Crie a conta grátis. Depois, o Mentor conversa com você e monta o seu plano.' : modo === 'criar' ? 'Primeiro a conta (1 minuto). Depois você assina o Pro com Pix ou cartão.' : 'Entre para assinar o Pro.'}</p>}
           <button className="btn btn-sec teste-cta" onClick={() => setTeste('fazendo')}>
             Testar 5 questões grátis, sem cadastro
           </button>

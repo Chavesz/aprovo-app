@@ -62,7 +62,8 @@ export async function autenticar(acao: 'entrar' | 'criar', usuario: string, senh
   const c = await pedir<Conta>('/api/conta', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ acao, usuario, senha, nome, email }),
+    // Quem veio por link de convite (?convite=usuario) conta para o amigo que convidou.
+    body: JSON.stringify({ acao, usuario, senha, nome, email, convite: new URLSearchParams(location.search).get('convite') ?? '' }),
   });
   // Outra pessoa usava este aparelho: não mistura o progresso dela com o da nova conta.
   const dono = ler<string>('cq:dono', '');

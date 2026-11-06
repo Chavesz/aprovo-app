@@ -929,3 +929,26 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .abertos-tit { font-weight: 600; line-height: 1.35; }
 .abertos-fonte { font-size: .8rem; }
 .simulado-escolha { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; margin-top: 10px; }
+
+/* Batalha e convite */
+.batalha { margin-bottom: 28px; }
+.batalha-criar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.batalha-codigo { display: flex; gap: 8px; margin-top: 12px; }
+.batalha-codigo input { flex: 1; min-height: 44px; padding: 0 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--papel); color: var(--tinta); font: inherit; text-transform: uppercase; letter-spacing: .1em; }
+.batalha-historico ul { list-style: none; padding: 0; display: grid; gap: 6px; }
+.placar { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 8px; }
+.placar li { display: grid; grid-template-columns: 36px 1fr 80px 36px; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 12px; background: var(--papel); }
+.placar li.eu { border-color: var(--acento); }
+.placar-pos { font-weight: 700; text-align: center; }
+.placar-nome { font-weight: 600; } .placar-nome small { display: block; font-weight: 400; color: var(--tinta-2); font-size: .8rem; }
+.placar-barra { height: 6px; background: var(--papel-2); border-radius: 99px; overflow: hidden; }
+.placar-barra span { display: block; height: 100%; background: var(--acento); transition: width .4s ease; }
+.placar strong { font-size: 1.3rem; text-align: right; }
+.batalha-go { width: 100%; margin-top: 12px; }
+.batalha-questao { margin-top: 16px; border: 1px solid var(--linha); border-radius: 14px; padding: 16px; background: var(--papel); }
+.batalha-comando { font-family: var(--serifa, Georgia, serif); line-height: 1.55; white-space: pre-line; }
+.bot-alts .alt.ok { border-color: var(--ok); background: var(--ok-fundo); } .bot-alts .alt.nok { border-color: var(--nok); background: var(--nok-fundo); }
+.batalha-fim { margin-top: 16px; padding: 16px; border-radius: 14px; background: var(--papel-2); }
+.convite-card { margin-top: 20px; padding: 16px; border: 2px solid var(--acento); border-radius: 14px; display: grid; gap: 10px; }
+.convite-card p { margin: 0; }
+.convite-barra { height: 8px; background: var(--papel-2); border-radius: 99px; overflow: hidden; } .convite-barra span { display: block; height: 100%; background: var(--acento); }

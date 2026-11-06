@@ -1,6 +1,7 @@
 import Mentor, { PlanoDeHoje, resolverDisciplina, type PerfilMentor } from './Mentor';
 import Comecar from './Comecar';
 import Autorais from './Autorais';
+import Batalha from './Batalha';
 import Descobrir from './Descobrir';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
@@ -167,6 +168,9 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
   // A conversa de boas-vindas segue na tela até o aluno sair dela (o perfil é salvo antes do diagnóstico).
   const [emConversa, setEmConversa] = useState(() => !lerPerfil() && !pulouComecar);
   const [diagnostico, setDiagnostico] = useState(false);
+  // Link de batalha (?batalha=CODIGO): abre a aba Ranking com o duelo.
+  const [codigoBatalha] = useState(() => new URLSearchParams(location.search).get('batalha') ?? '');
+  useEffect(() => { if (codigoBatalha) { setAba('desempenho'); history.replaceState(null, '', location.pathname); } }, [codigoBatalha]); // eslint-disable-line react-hooks/exhaustive-deps
   const comecar = emConversa || diagnostico || (!perfil && !pulouComecar);
   const salvarPerfil = (p: PerfilMentor) => {
     try { localStorage.setItem('cq:mentor', JSON.stringify(p)); } catch { /* sem armazenamento */ }
@@ -457,6 +461,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {questoes && !comecar && aba === 'desempenho' && (
           <>
             <ResumoSemana historico={historico} questoes={questoes} />
+            <Batalha questoes={questoesPerfil ?? questoes} codigoInicial={codigoBatalha} titulo={perfil?.cargo || perfil?.concurso || 'Geral'} onResponder={registrar} />
             <Ranking conta={conta} />
             <Desempenho questoes={oficiais ?? questoes} onAnular={anular} anuladas={anuladas} revisar={revisar} onRevisar={alternarRevisar} historico={historico} provas={provas} onExcluir={excluirProva} onLimpar={() => setHistorico([])} />
           </>
