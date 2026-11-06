@@ -199,3 +199,6 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 30 (feito)
 - [x] Botão Revanche no fim da batalha (nova batalha do mesmo tamanho, pronta para mandar o link)
 - [x] Hoje: modo foco e "Falar com o Mentor" na mesma linha
+
+### Lote 31 (feito)
+- [x] Hoje avisa batalha pendente (entrou e não terminou, últimos 3 dias) com link "Jogar"

@@ -71,7 +71,7 @@ export default async (req: Request) => {
         const melhor = terminados.sort(([, a], [, z]) => pontos(z) - pontos(a) || (a.fim! - a.inicio) - (z.fim! - z.inicio))[0][0];
         if (melhor === usuario) vitorias++;
       }
-      return json({ vitorias, lista: lista.map((b) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: Object.keys(b.jogadores).length })) });
+      return json({ vitorias, lista: lista.map((b) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: Object.keys(b.jogadores).length, pendente: !!b.jogadores[usuario] && !b.jogadores[usuario].fim && Date.now() - b.criadaEm < 3 * 86400_000 })) });
     }
     const b = await carregar((url.searchParams.get('codigo') ?? '').toUpperCase(), usuario);
     return b ? json({ ...b, eu: usuario }) : json({ erro: 'Batalha não encontrada.' }, 404);

@@ -768,6 +768,7 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
           </li>
         ))}
       </ol>
+      <BatalhasPendentes />
       <div className="hoje-rodape">
         <Foco />
         <button className="link" onClick={onMentor}>Falar com o Mentor</button>
@@ -823,5 +824,22 @@ function Foco() {
       )}
       {min > 0 && <span className="nota">{min} min de foco hoje</span>}
     </div>
+  );
+}
+
+// Batalhas em que o aluno entrou e ainda não terminou (últimos 3 dias): puxa de volta para o duelo.
+function BatalhasPendentes() {
+  const [l, setL] = useState<{ codigo: string; titulo: string }[]>([]);
+  useEffect(() => {
+    fetch('/api/batalha?minhas=1', { headers: { authorization: `Bearer ${contaSalva()?.token ?? ''}` } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setL((d?.lista ?? []).filter((b: { pendente?: boolean }) => b.pendente)))
+      .catch(() => undefined);
+  }, []);
+  if (!l.length) return null;
+  return (
+    <a className="hoje-batalha" href={`/?batalha=${l[0].codigo}`}>
+      ⚔️ {l.length === 1 ? `Sua batalha "${l[0].titulo}" está esperando.` : `${l.length} batalhas esperando por você.`} <strong>Jogar</strong>
+    </a>
   );
 }

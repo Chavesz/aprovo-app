@@ -110,7 +110,7 @@ function iaDeExemplo(): Plugin {
           const eu = 'eu';
           const rival = (b: any) => { const r = b.jogadores.rival; const n = Math.min(b.ids.length, Math.floor((Date.now() - r.inicio) / 3000)); r.respostas = b.ids.map((_: string, i: number) => (i < n ? i % 3 !== 0 : null)); if (n >= b.ids.length) r.fim = r.inicio + b.ids.length * 3000; };
           if (req.method === 'GET') {
-            if (u.searchParams.has('minhas')) return res.end(JSON.stringify({ vitorias: 0, lista: Object.values(batalhas).map((b: any) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: 2 })) }));
+            if (u.searchParams.has('minhas')) return res.end(JSON.stringify({ vitorias: 0, lista: Object.values(batalhas).map((b: any) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: 2, pendente: Object.values(b.jogadores).some((j: any) => j.nome === 'Você' && !j.fim) })) }));
             const b = batalhas[u.searchParams.get('codigo') ?? '']; if (!b) { res.statusCode = 404; return res.end('{"erro":"Batalha não encontrada."}'); }
             rival(b); return res.end(JSON.stringify({ ...b, eu }));
           }
