@@ -1000,3 +1000,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .conquistas li { text-align: center; padding: 8px 4px; border: 1px solid var(--linha); border-radius: 12px; font-size: .75rem; line-height: 1.25; }
 .conquistas li b { display: block; font-size: 1.5rem; }
 .conquistas li.bloqueada { opacity: .4; filter: grayscale(1); }
+.batalha-diario { width: 100%; margin: 8px 0 12px; }

@@ -170,3 +170,6 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 22 (feito)
 - [x] Meta do dia com barra no painel Hoje (pelo tempo do plano)
 - [x] Conquistas (7 selos) no Ranking
+
+### Lote 23 (feito)
+- [x] Desafio do dia: 5 questões oficiais sorteadas pela data, iguais para todos, placar aberto (código D+AAMMDD)

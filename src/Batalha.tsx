@@ -53,6 +53,20 @@ export default function Batalha({ questoes, codigoInicial, titulo, onResponder }
     } catch (e) { setErro((e as Error).message); }
     setCriando(false);
   }
+  // Desafio do dia: 5 questões oficiais sorteadas pela data (iguais para todos), placar de todo mundo.
+  async function diario() {
+    setErro(''); setCriando(true);
+    try {
+      const dia = new Date(Date.now() - 3 * 3600_000).toISOString().slice(0, 10);
+      let semente = [...dia].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+      const rnd = () => ((semente = (semente * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+      const pool = questoes.filter((q) => !q.ia && q.alternativas.length >= 2 && q.gabarito).sort((a, b) => a.id.localeCompare(b.id));
+      const ids: string[] = [];
+      while (ids.length < 5 && ids.length < pool.length) { const q = pool[Math.floor(rnd() * pool.length)]; if (!ids.includes(q.id)) ids.push(q.id); }
+      setDados(await api<Dados>('POST', { acao: 'diario', ids }));
+    } catch (e) { setErro((e as Error).message); }
+    setCriando(false);
+  }
   async function entrar(codigo: string) {
     setErro('');
     try { setDados(await api<Dados>('POST', { acao: 'entrar', codigo: codigo.trim().toUpperCase() })); } catch (e) { setErro((e as Error).message); }
@@ -89,6 +103,7 @@ export default function Batalha({ questoes, codigoInicial, titulo, onResponder }
         <p className="sobretitulo">Batalha</p>
         <h1 className="titulo">Desafie um amigo.</h1>
         <p className="lead">Mesmas questões para os dois, placar ao vivo. Quem acertar mais vence; no empate, quem foi mais rápido.</p>
+        <button className="btn btn-grande batalha-diario" disabled={criando} onClick={diario}>☀️ Desafio do dia · 5 questões contra todo mundo</button>
         <div className="batalha-criar">
           <button className="btn btn-grande" disabled={criando} onClick={() => criar(10)}>{criando ? 'Montando…' : 'Batalha de 10 questões'}</button>
           <button className="btn btn-sec btn-grande" disabled={criando} onClick={() => criar(20)}>20 questões</button>

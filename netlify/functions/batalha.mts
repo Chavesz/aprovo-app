@@ -3,6 +3,7 @@
 // GET  ?codigo=XXXX                                   → batalha com o placar de todos
 // POST {acao:'entrar', codigo}                        → entra (até 10 pessoas)
 // POST {acao:'responder', codigo, i, certa}           → registra a resposta i (uma vez por questão)
+// POST {acao:'diario', ids}                         → desafio do dia (todos os alunos)
 // GET  ?minhas=1                                      → últimas batalhas do aluno e vitórias
 import { getStore } from '@netlify/blobs';
 import { randomBytes } from 'node:crypto';
@@ -72,13 +73,30 @@ export default async (req: Request) => {
     return json({ codigo });
   }
 
+  // Desafio do dia: uma batalha aberta a todos, com código fixo da data (D + AAMMDD) e sem limite de pessoas.
+  if (p.acao === 'diario') {
+    const hoje = new Date(Date.now() - 3 * 3600_000).toISOString().slice(2, 10).replace(/-/g, '');
+    const codigo = `D${hoje}`;
+    if (!(await store().get(codigo))) {
+      const ids = (p.ids ?? []).filter((x) => typeof x === 'string').slice(0, 10);
+      if (ids.length < 5) return json({ erro: 'Sem questões para o desafio.' }, 400);
+      await store().setJSON(codigo, { codigo, titulo: `Desafio do dia ${hoje.slice(4, 6)}/${hoje.slice(2, 4)}`, ids, criador: 'aprovo', criadaEm: Date.now(), jogadores: {} } satisfies Batalha);
+    }
+    const b = (await carregar(codigo))!;
+    if (!b.jogadores[usuario]) {
+      b.jogadores[usuario] = { nome: await nomeDe(usuario), respostas: b.ids.map(() => null), inicio: Date.now() };
+      await salvarJogador(codigo, usuario, b.jogadores[usuario]);
+    }
+    return json({ ...b, eu: usuario });
+  }
+
   const codigo = String(p.codigo ?? '').toUpperCase();
   const b = await carregar(codigo);
   if (!b) return json({ erro: 'Batalha não encontrada.' }, 404);
 
   if (p.acao === 'entrar') {
     if (!b.jogadores[usuario]) {
-      if (Object.keys(b.jogadores).length >= 10) return json({ erro: 'Esta batalha já tem 10 pessoas.' }, 409);
+      if (!/^D\d{6}$/.test(codigo) && Object.keys(b.jogadores).length >= 10) return json({ erro: 'Esta batalha já tem 10 pessoas.' }, 409);
       b.jogadores[usuario] = { nome: await nomeDe(usuario), respostas: b.ids.map(() => null), inicio: Date.now() };
       await salvarJogador(codigo, usuario, b.jogadores[usuario]);
       await lembrar(usuario, codigo);

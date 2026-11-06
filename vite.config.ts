@@ -116,6 +116,7 @@ function iaDeExemplo(): Plugin {
           }
           const p = JSON.parse(corpo || '{}');
           if (p.acao === 'criar') { const codigo = 'TESTE' + Object.keys(batalhas).length; batalhas[codigo] = { codigo, titulo: p.titulo, ids: p.ids, criador: eu, criadaEm: Date.now(), jogadores: { [eu]: { nome: 'Você', respostas: p.ids.map(() => null), inicio: Date.now() }, rival: { nome: 'Rival', respostas: [], inicio: Date.now() } } }; return res.end(JSON.stringify({ codigo })); }
+          if (p.acao === 'diario') { const codigo = 'D' + new Date().toISOString().slice(2, 10).replace(/-/g, ''); batalhas[codigo] ??= { codigo, titulo: 'Desafio do dia', ids: p.ids, criador: 'aprovo', criadaEm: Date.now(), jogadores: { rival: { nome: 'Rival', respostas: [true, true, false], inicio: Date.now() } } }; batalhas[codigo].jogadores[eu] ??= { nome: 'Você', respostas: p.ids.map(() => null), inicio: Date.now() }; return res.end(JSON.stringify({ ...batalhas[codigo], eu })); }
           const b = batalhas[String(p.codigo).toUpperCase()]; if (!b) { res.statusCode = 404; return res.end('{"erro":"Batalha não encontrada."}'); }
           if (p.acao === 'responder') { const j = b.jogadores[eu]; if (j.respostas[p.i] === null) j.respostas[p.i] = !!p.certa; if (j.respostas.every((r: any) => r !== null)) j.fim = Date.now(); }
           rival(b); res.end(JSON.stringify({ ...b, eu }));
