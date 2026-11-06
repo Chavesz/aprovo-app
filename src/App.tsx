@@ -388,7 +388,6 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
           /></>
         )}
         {questoes && !comecar && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
-        {questoes && !comecar && aba === 'praticar' && <Foco />}
         {questoes && !comecar && aba === 'praticar' && perfil && (
           <Autorais perfil={perfil} questoes={questoes} onNovas={(qs) => { setGeradas((g) => [...qs, ...g]); setBloco(qs.map((q) => q.id)); setFiltros({ ...FILTROS_VAZIOS, status: 'bloco' }); }} />
         )}
@@ -1108,47 +1107,6 @@ function montarProvaEstilo(questoes: Questao[], historico: Resposta[], origem: O
   });
 }
 
-/** Modo foco: 25 min de questões e 5 de pausa, com aviso sonoro simples. */
-function Foco() {
-  const [fim, setFim] = useState(0);
-  const [pausa, setPausa] = useState(false);
-  const [agora, setAgora] = useState(Date.now());
-  useEffect(() => {
-    if (!fim) return;
-    const t = setInterval(() => setAgora(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [fim]);
-  const resta = Math.max(0, Math.round((fim - agora) / 1000));
-  useEffect(() => {
-    if (fim && resta === 0) {
-      try {
-        const ctx = new AudioContext();
-        const o = ctx.createOscillator();
-        o.connect(ctx.destination);
-        o.start();
-        o.stop(ctx.currentTime + 0.4);
-      } catch {
-        /* sem áudio */
-      }
-      const p = !pausa;
-      setPausa(p);
-      setFim(Date.now() + (p ? 5 : 25) * 60000);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resta]);
-  if (!fim)
-    return (
-      <button className="link foco-btn" onClick={() => { setPausa(false); setFim(Date.now() + 25 * 60000); setAgora(Date.now()); }}>
-        ⏱ Modo foco 25/5
-      </button>
-    );
-  return (
-    <p className={`foco ${pausa ? 'pausa' : ''}`}>
-      {pausa ? 'Pausa' : 'Foco'} {String(Math.floor(resta / 60)).padStart(2, '0')}:{String(resta % 60).padStart(2, '0')}{' '}
-      <button className="link" onClick={() => setFim(0)}>parar</button>
-    </p>
-  );
-}
 
 /** "62% dos alunos acertam esta questão", como nos grandes bancos de questões. */
 /** Caderno: uma anotação sua por questão (fica na conta). Lê e grava direto, para vários cartões abertos não se sobrescreverem. */

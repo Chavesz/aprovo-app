@@ -1004,3 +1004,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .instalar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; border: 1px dashed var(--acento); border-radius: 12px; margin: 12px auto; }
 .foco { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .foco-relogio { font-size: 1.2rem; font-weight: 700; padding: 6px 12px; border-radius: 10px; background: var(--papel-2); }
+.autorais summary { cursor: pointer; }

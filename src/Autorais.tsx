@@ -65,8 +65,8 @@ export default function Autorais({ perfil, questoes, onNovas }: { perfil: Perfil
   }
 
   return (
-    <section className="coluna autorais">
-      <p className="rotulo">Questões autorais do seu concurso</p>
+    <details className="coluna autorais">
+      <summary className="rotulo">✦ Questões autorais do seu concurso</summary>
       <p className="nota">A IA escreve 5 questões inéditas no estilo {perfil.banca ? `da ${perfil.banca}` : 'da sua banca'}, no assunto que mais cai.</p>
       <div className="autorais-linha">
         <select value={disciplina} onChange={(e) => setDisciplina(e.target.value)} aria-label="Matéria">
@@ -76,6 +76,6 @@ export default function Autorais({ perfil, questoes, onNovas }: { perfil: Perfil
       </div>
       <p className="nota">Assunto: {assunto}</p>
       {erro && <p className="aviso" role="alert">{erro}</p>}
-    </section>
+    </details>
   );
 }
