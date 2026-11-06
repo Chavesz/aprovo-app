@@ -173,3 +173,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 
 ### Lote 23 (feito)
 - [x] Desafio do dia: 5 questões oficiais sorteadas pela data, iguais para todos, placar aberto (código D+AAMMDD)
+
+### Lote 24 (feito)
+- [x] Desafio do dia: placar resumido num blob só, devolve top 50 + o aluno
+- [x] Convite para instalar o app (Android/desktop com botão; iPhone com instrução), depois de 5 questões

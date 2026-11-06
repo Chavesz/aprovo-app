@@ -377,6 +377,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
         {questoes && !comecar && aba === 'praticar' && (
+          <><Instalar historico={historico.length} />
           <PlanoDeHoje
             questoes={questoes}
             historico={historico}
@@ -384,7 +385,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             onPraticar={(disciplina, assunto) => {
               praticarMateria(disciplina, assunto);
             }}
-          />
+          /></>
         )}
         {questoes && !comecar && aba === 'praticar' && <Meta meta={meta} onMeta={setMeta} historico={historico} />}
         {questoes && !comecar && aba === 'praticar' && <Foco />}
@@ -2706,5 +2707,26 @@ function ComentarioIA({ q }: { q: Questao }) {
       <button className="link" disabled={estado === 'carregando'} onClick={pedir}>{estado === 'carregando' ? 'A IA está comentando…' : '✦ Comentar com IA'}</button>
       {estado === 'erro' && <p className="aviso" role="alert">{erro}</p>}
     </>
+  );
+}
+
+// Convite para instalar o app na tela inicial (Android/desktop via beforeinstallprompt; iPhone com instrução).
+type EventoInstalar = Event & { prompt: () => Promise<void> };
+let eventoInstalar: EventoInstalar | null = null;
+if (typeof window !== 'undefined') window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); eventoInstalar = e as EventoInstalar; });
+function Instalar({ historico }: { historico: number }) {
+  const [fechado, setFechado] = useState(() => { try { return !!localStorage.getItem('cq:instalar-fechado'); } catch { return true; } });
+  const [, forcar] = useState(0);
+  useEffect(() => { const t = setTimeout(() => forcar(1), 1500); return () => clearTimeout(t); }, []);
+  const instalado = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone;
+  const ios = /iphone|ipad/i.test(navigator.userAgent);
+  if (fechado || instalado || historico < 5 || (!eventoInstalar && !ios)) return null;
+  const fechar = () => { try { localStorage.setItem('cq:instalar-fechado', '1'); } catch { /* */ } setFechado(true); };
+  return (
+    <p className="coluna instalar">
+      <span>📲 <strong>Tenha o Aprovô na tela inicial.</strong> {ios ? 'No Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início".' : 'Abre como app, mais rápido.'}</span>
+      {!ios && <button className="btn" onClick={async () => { await eventoInstalar?.prompt(); fechar(); }}>Instalar</button>}
+      <button className="link" onClick={fechar} aria-label="Fechar aviso">Agora não</button>
+    </p>
   );
 }

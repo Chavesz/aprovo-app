@@ -12,6 +12,7 @@ import { json, usuarioDaRequisicao } from '../lib/contas';
 interface Jogador { nome: string; respostas: (boolean | null)[]; inicio: number; fim?: number }
 export interface Batalha { codigo: string; titulo: string; ids: string[]; criador: string; criadaEm: number; jogadores: Record<string, Jogador> }
 
+const pontos = (j: Jogador) => j.respostas.filter((r) => r === true).length;
 const store = () => getStore({ name: 'batalhas', consistency: 'strong' });
 const minhas = () => getStore({ name: 'batalhas-aluno', consistency: 'strong' });
 const ALFA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -26,16 +27,33 @@ async function lembrar(usuario: string, codigo: string) {
   if (!l.includes(codigo)) await minhas().setJSON(usuario, [codigo, ...l].slice(0, 30));
 }
 // Cada jogador grava o próprio registro (codigo:usuario), para dois não sobrescreverem o placar um do outro.
-async function carregar(codigo: string): Promise<Batalha | null> {
+async function carregar(codigo: string, eu = ''): Promise<Batalha | null> {
   const b = (await store().get(codigo, { type: 'json' })) as Batalha | null;
   if (!b) return null;
+  if (diaria(codigo)) {
+    // Desafio do dia: lê o placar resumido e devolve os 50 melhores + o próprio aluno.
+    const pl = ((await store().get(`placar-${codigo}`, { type: 'json' })) as Record<string, Jogador> | null) ?? {};
+    const meu = eu ? ((await store().get(`${codigo}:${eu}`, { type: 'json' })) as Jogador | null) : null;
+    if (meu) pl[eu] = meu;
+    const ord = Object.entries(pl).sort(([, a], [, z]) => pontos(z) - pontos(a) || ((a.fim ?? 9e15) - a.inicio) - ((z.fim ?? 9e15) - z.inicio));
+    b.jogadores = Object.fromEntries(ord.filter(([u], i) => i < 50 || u === eu));
+    return b;
+  }
   const { blobs } = await store().list({ prefix: `${codigo}:` });
   const js = await Promise.all(blobs.map(async (x) => [x.key.slice(codigo.length + 1), await store().get(x.key, { type: 'json' })] as const));
   b.jogadores = Object.fromEntries(js.filter(([, j]) => j)) as Record<string, Jogador>;
   return b;
 }
-const salvarJogador = (codigo: string, usuario: string, j: Jogador) => store().setJSON(`${codigo}:${usuario}`, j);
-const pontos = (j: Jogador) => j.respostas.filter((r) => r === true).length;
+const salvarJogador = async (codigo: string, usuario: string, j: Jogador) => {
+  await store().setJSON(`${codigo}:${usuario}`, j);
+  if (diaria(codigo)) {
+    // Placar resumido do desafio do dia (um blob só): cada resposta regrava a linha do aluno, então uma corrida se corrige na próxima.
+    const pl = ((await store().get(`placar-${codigo}`, { type: 'json' })) as Record<string, Jogador> | null) ?? {};
+    pl[usuario] = j;
+    await store().setJSON(`placar-${codigo}`, pl);
+  }
+};
+const diaria = (codigo: string) => /^D\d{6}$/.test(codigo);
 
 export default async (req: Request) => {
   const usuario = await usuarioDaRequisicao(req);
@@ -45,7 +63,7 @@ export default async (req: Request) => {
   if (req.method === 'GET') {
     if (url.searchParams.has('minhas')) {
       const codigos = ((await minhas().get(usuario, { type: 'json' })) as string[] | null) ?? [];
-      const lista = (await Promise.all(codigos.map(carregar))).filter((b): b is Batalha => !!b);
+      const lista = (await Promise.all(codigos.map((c) => carregar(c, usuario)))).filter((b): b is Batalha => !!b);
       let vitorias = 0;
       for (const b of lista) {
         const terminados = Object.entries(b.jogadores).filter(([, j]) => j.fim);
@@ -55,7 +73,7 @@ export default async (req: Request) => {
       }
       return json({ vitorias, lista: lista.map((b) => ({ codigo: b.codigo, titulo: b.titulo, n: b.ids.length, criadaEm: b.criadaEm, jogadores: Object.keys(b.jogadores).length })) });
     }
-    const b = await carregar((url.searchParams.get('codigo') ?? '').toUpperCase());
+    const b = await carregar((url.searchParams.get('codigo') ?? '').toUpperCase(), usuario);
     return b ? json({ ...b, eu: usuario }) : json({ erro: 'Batalha não encontrada.' }, 404);
   }
 
@@ -82,7 +100,7 @@ export default async (req: Request) => {
       if (ids.length < 5) return json({ erro: 'Sem questões para o desafio.' }, 400);
       await store().setJSON(codigo, { codigo, titulo: `Desafio do dia ${hoje.slice(4, 6)}/${hoje.slice(2, 4)}`, ids, criador: 'aprovo', criadaEm: Date.now(), jogadores: {} } satisfies Batalha);
     }
-    const b = (await carregar(codigo))!;
+    const b = (await carregar(codigo, usuario))!;
     if (!b.jogadores[usuario]) {
       b.jogadores[usuario] = { nome: await nomeDe(usuario), respostas: b.ids.map(() => null), inicio: Date.now() };
       await salvarJogador(codigo, usuario, b.jogadores[usuario]);
@@ -91,7 +109,7 @@ export default async (req: Request) => {
   }
 
   const codigo = String(p.codigo ?? '').toUpperCase();
-  const b = await carregar(codigo);
+  const b = await carregar(codigo, usuario);
   if (!b) return json({ erro: 'Batalha não encontrada.' }, 404);
 
   if (p.acao === 'entrar') {
