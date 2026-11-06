@@ -967,3 +967,17 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .batalha-codigo input::placeholder { text-transform: none; letter-spacing: 0; }
 .abertos-li { display: flex; gap: 6px; align-items: stretch; }
 .abertos-fav { flex: 0 0 44px; border: 1px solid var(--linha); border-radius: 12px; background: var(--papel); font-size: 1.2rem; cursor: pointer; }
+/* Painel "Hoje" */
+.hoje { border: 1px solid var(--linha); border-radius: 16px; padding: 14px; margin: 12px auto; background: var(--papel); display: grid; gap: 10px; }
+.hoje-msg { display: flex; gap: 10px; align-items: flex-start; margin: 0; line-height: 1.45; }
+.hoje-avatar { flex: 0 0 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--acento); color: var(--papel); font-weight: 700; }
+.hoje-blocos { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.hoje-blocos li { display: grid; grid-template-columns: 58px 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--papel-2); }
+.hoje-blocos small { display: block; color: var(--tinta-2); font-size: .8rem; }
+.hoje > .link { justify-self: start; }
+.liga { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 12px; background: var(--papel-2); margin: 8px 0; }
+.liga-emblema { font-size: 1.6rem; }
+.liga small { display: block; color: var(--tinta-2); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; }
+.reportar { font-size: .85rem; color: var(--tinta-2); margin-top: 6px; }
+.reportar-form { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.reportar-form input { flex: 1 1 160px; }

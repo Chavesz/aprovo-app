@@ -100,6 +100,7 @@ function iaDeExemplo(): Plugin {
       // Batalha (memória): um jogador fictício "Rival" responde sozinho para testar o placar ao vivo.
       const batalhas: Record<string, any> = {};
       server.middlewares.use('/api/convites', (_req, res) => { res.setHeader('content-type', 'application/json'); res.end(JSON.stringify({ amigos: 1, premios: 0, faltam: 2 })); });
+      server.middlewares.use('/api/reportar', (_req, res) => { res.setHeader('content-type', 'application/json'); res.end('{"ok":true}'); });
       server.middlewares.use('/api/batalha', (req, res) => {
         let corpo = '';
         req.on('data', (c) => (corpo += c));

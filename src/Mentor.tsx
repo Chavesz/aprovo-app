@@ -701,8 +701,9 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
       return null;
     }
   }, []);
-  const bloco = useMemo(() => (perfil?.disciplinas?.length ? montarPlano(perfil, historico, questoes).semana[0]?.blocos[0] : null), [perfil, historico, questoes]);
-  if (!bloco)
+  const plano = useMemo(() => (perfil?.disciplinas?.length ? montarPlano(perfil, historico, questoes) : null), [perfil, historico, questoes]);
+  const blocos = plano?.semana[0]?.blocos ?? [];
+  if (!blocos.length)
     return (
       <p className="coluna plano-hoje">
         <span>Sem plano ainda. O Mentor monta o seu em 1 toque.</span>
@@ -711,15 +712,35 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
         </button>
       </p>
     );
+  // Mensagem do dia do Mentor, montada aqui (sem gastar IA): dias até a prova, erros de ontem e o foco de hoje.
+  const nome = (contaSalva()?.nome ?? '').split(' ')[0];
+  const h = new Date().getHours();
+  const saudacao = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  const ontem = new Date(Date.now() - 86400000).toDateString();
+  const porId = new Map(questoes.map((q) => [q.id, q]));
+  const errosOntem = historico.filter((r) => !r.certa && new Date(r.em).toDateString() === ontem);
+  const contagem = new Map<string, number>();
+  errosOntem.forEach((r) => { const d = porId.get(r.id)?.disciplina; if (d) contagem.set(d, (contagem.get(d) ?? 0) + 1); });
+  const pior = [...contagem.entries()].sort((x, y) => y[1] - x[1])[0];
+  const feitasHoje = historico.filter((r) => new Date(r.em).toDateString() === new Date().toDateString()).length;
+  const total = blocos.reduce((t, b) => t + b.min, 0);
+  const msg = [
+    plano?.dias != null && plano.dias > 0 ? `Faltam ${plano.dias} dias para a prova.` : '',
+    pior ? `Ontem você errou ${pior[1]} de ${pior[0]}: começa por ela hoje.` : feitasHoje ? `Já são ${feitasHoje} questões hoje, segue firme.` : `Hoje são ${total} min de estudo.`,
+  ].filter(Boolean).join(' ');
   return (
-    <p className="coluna plano-hoje">
-      <span>
-        <strong>Hoje:</strong> {bloco.min} min de {bloco.nome}
-        {bloco.assunto && <span className="nota"> · {bloco.assunto}</span>}
-      </span>
-      <button className="link" onClick={() => onPraticar(bloco.nome, bloco.assunto)}>
-        Treinar agora
-      </button>
-    </p>
+    <section className="coluna hoje" aria-label="Seu dia">
+      <p className="hoje-msg"><span className="hoje-avatar" aria-hidden>✦</span><span><strong>{saudacao}{nome ? `, ${nome}` : ''}!</strong> {msg}</span></p>
+      <ol className="hoje-blocos">
+        {blocos.slice(0, 4).map((b) => (
+          <li key={b.nome + b.assunto}>
+            <span className="mono">{b.min} min</span>
+            <span><strong>{b.nome}</strong>{b.assunto && <small>{b.assunto}</small>}</span>
+            <button className="link" onClick={() => onPraticar(b.nome, b.assunto)}>Treinar</button>
+          </li>
+        ))}
+      </ol>
+      <button className="link" onClick={onMentor}>Falar com o Mentor</button>
+    </section>
   );
 }

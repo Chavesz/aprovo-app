@@ -147,3 +147,9 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - [P1] **Página por banca**: estilo, dicas e onde baixar as provas anteriores oficiais (sites das bancas)
 - [P1] **Mais questões das matérias comuns**: Português, RLM, Informática, Direito Constitucional, Direito Administrativo e Atualidades (autorais, com base na lei, não copiadas)
 - [P1] **Dicas diárias e trilhas de aulas do mentor**: uma dica por dia e trilhas por matéria com aula no YouTube, fonte oficial e questões
+
+### Lote 18 (feito)
+- [x] Painel "Hoje" no Praticar com mensagem diária do Mentor (saudação, dias até a prova, erros de ontem, blocos do dia)
+- [x] Liga semanal por divisão no Ranking (Bronze/Prata/Ouro/Diamante pelos acertos de 7 dias)
+- [x] Caderno de erros em PDF (já existia no Revisar)
+- [x] Reportar erro na questão (/api/reportar → Blobs "reportes")

@@ -1011,6 +1011,7 @@ function QuestaoCard(props: {
               Por que errei? Perguntar ao Mentor
             </button>
           )}
+          <ReportarErro id={q.id} />
           {!certa && q.revisar && (
             <p className="feedback-extra">
               <span className="rotulo">O que revisar</span>
@@ -2588,3 +2589,25 @@ const IconSpark = () => <svg {...svg}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 
 const IconBook = () => <svg {...svg}><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z" /></svg>;
 const IconTheme = () => <svg {...svg}><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" /></svg>;
 
+
+// Aluno avisa que a questão tem gabarito, enunciado ou imagem com problema; vai para /api/reportar.
+function ReportarErro({ id }: { id: string }) {
+  const [estado, setEstado] = useState<'' | 'aberto' | 'enviado'>('');
+  const [motivo, setMotivo] = useState('Gabarito errado');
+  const [texto, setTexto] = useState('');
+  if (estado === 'enviado') return <p className="nota">Obrigado! Vamos conferir esta questão.</p>;
+  if (!estado) return <button className="link reportar" onClick={() => setEstado('aberto')}>Reportar erro na questão</button>;
+  return (
+    <form className="reportar-form" onSubmit={(e) => {
+      e.preventDefault();
+      fetch('/api/reportar', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${contaSalva()?.token ?? ''}` }, body: JSON.stringify({ id, motivo, texto }) }).catch(() => undefined);
+      setEstado('enviado');
+    }}>
+      <select value={motivo} onChange={(e) => setMotivo(e.target.value)} aria-label="Tipo de problema">
+        {['Gabarito errado', 'Questão anulada', 'Enunciado incompleto', 'Imagem ou tabela faltando', 'Outro'].map((m) => <option key={m}>{m}</option>)}
+      </select>
+      <input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={400} placeholder="Detalhe (opcional)" aria-label="Detalhe" />
+      <button className="btn btn-sec">Enviar</button>
+    </form>
+  );
+}

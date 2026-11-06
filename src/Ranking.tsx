@@ -182,6 +182,23 @@ export default function Ranking({ conta }: { conta: Conta }) {
           </p>
         );
       })()}
+      {(() => {
+        // Liga semanal: divisão pelos acertos dos últimos 7 dias; posição dentro da divisão.
+        const DIV = [{ n: 'Diamante', min: 300, e: '💎' }, { n: 'Ouro', min: 150, e: '🥇' }, { n: 'Prata', min: 50, e: '🥈' }, { n: 'Bronze', min: 0, e: '🥉' }];
+        const div = (a = 0) => DIV.find((d) => a >= d.min)!;
+        const eu = todos.find((l) => l.eu);
+        if (!eu) return null;
+        const minha = div(eu.semanaA);
+        const mesma = todos.filter((l) => div(l.semanaA).n === minha.n).sort((a, b) => (b.semanaA ?? 0) - (a.semanaA ?? 0));
+        const acima = DIV[DIV.indexOf(minha) - 1];
+        return (
+          <p className="liga">
+            <span className="liga-emblema" aria-hidden>{minha.e}</span>
+            <span><small>Liga da semana</small><strong>{minha.n} · {mesma.findIndex((l) => l.eu) + 1}º de {mesma.length}</strong>
+              {acima ? ` Faltam ${acima.min - (eu.semanaA ?? 0)} acertos para subir para ${acima.n}.` : ' Topo da liga. Segura a posição!'}</span>
+          </p>
+        );
+      })()}
       <div className="ranking-abas ranking-recorte" role="group" aria-label="Quem entra no ranking">
         <button className="ranking-aba" aria-pressed={recorte === 'brasil'} onClick={() => setRecorte('brasil')}>Brasil</button>
         {meuConcurso && <button className="ranking-aba" aria-pressed={recorte === 'concurso'} onClick={() => setRecorte('concurso')}>{meuConcurso.length > 22 ? meuConcurso.slice(0, 21) + '…' : meuConcurso}</button>}
