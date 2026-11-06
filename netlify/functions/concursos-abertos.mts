@@ -31,7 +31,7 @@ function ler(xml: string): Aberto[] {
       const t = Date.parse(limpa(it.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? ''));
       const data = Number.isFinite(t) ? new Date(t).toISOString() : '';
       const uf = link.match(/\/concursos\/([a-z]{2})\//)?.[1] ?? '';
-      return { titulo, link, uf: uf.toUpperCase(), data, tipo: /sele[cç][aã]o|processo seletivo|cadastro|chamada/i.test(titulo) ? 'selecao' : 'concurso', area: area(titulo) } as Aberto;
+      return { titulo, link, uf: uf.toUpperCase(), data, tipo: /sele[cç][aã]o|seletiv|cadastro|chamada|tempor[aá]ri/i.test(titulo) ? 'selecao' : 'concurso', area: area(titulo) } as Aberto;
     })
     .filter((a) => a.titulo && a.uf && a.link.startsWith(FONTE));
 }

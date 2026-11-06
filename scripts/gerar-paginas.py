@@ -99,43 +99,97 @@ NCOM = f"{sum(1 for q in qs if q.get('comentario')):,}".replace(",", ".")
 # checkout configurado na Netlify (Cakto, Mercado Pago ou link pronto) ou para a criação de conta.
 PRO_PRECO = "50"
 
-CSS_LANDING = """.hero-print{margin:0;display:flex;justify-content:center}.hero-print img{width:min(300px,60vw);height:auto;border-radius:30px;border:8px solid #1d1530;box-shadow:0 30px 60px -30px rgba(74,47,122,.7);transform:rotate(2deg)}.numeros{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.numeros li{border:1px solid var(--linha);border-radius:14px;padding:14px 16px;color:var(--tinta2);font-size:.92rem}.numeros strong{display:block;font-size:1.35rem;color:var(--tinta)}
-.hero h1{font-size:clamp(2rem,7vw,3.2rem)}.beneficios{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:0}.beneficios li{background:var(--sup);border:1px solid var(--linha);border-radius:16px;padding:20px}.beneficios strong{display:block;font-size:1.15rem;margin-bottom:4px}
-.prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(72%,260px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;margin:0 -2px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}}.prints figure{margin:0;scroll-snap-align:start}.prints img{width:100%;height:auto;aspect-ratio:375/812;border-radius:22px;border:1px solid var(--linha);box-shadow:0 18px 40px -28px rgba(42,31,61,.5);background:var(--sup)}.prints figcaption{font-size:.9rem;color:var(--tinta2);margin-top:8px}
-.preco-bloco{max-width:440px;margin:0 auto;background:var(--sup);border:2px solid var(--marca);border-radius:22px;padding:28px 22px;text-align:center}.preco-bloco h3{margin:0;font-size:1.3rem}.preco-bloco .preco{font-size:3rem;margin:8px 0 0}.preco-bloco .check{text-align:left;margin:18px 0}.preco-bloco .cta{width:100%}.cancele{margin:10px 0 0;font-weight:600}.gratis{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--linha);font-size:.95rem;color:var(--tinta2)}.gratis a{font-weight:700;color:var(--marca)}
-.rodape{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}.rodape a{color:var(--tinta2)}.legal h2{font-size:1.2rem;margin-top:28px}.legal p,.legal li{color:var(--tinta2)}"""
+CSS_LANDING = """.rodape{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}.rodape a{color:var(--tinta2)}.legal h2{font-size:1.2rem;margin-top:28px}.legal p,.legal li{color:var(--tinta2)}
+.lp{--serif:'Source Serif 4',Georgia,serif;--ease:cubic-bezier(.22,1,.36,1)}
+.lp h1,.lp h2{font-family:var(--serif);font-weight:400;letter-spacing:-.02em}
+.lp h1{font-size:clamp(2.6rem,9vw,4.6rem);line-height:1;margin:.2em 0 .35em}.lp h1 em{font-style:italic;color:var(--marca)}
+.lp h2{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:0 0 .4em}
+.lp .rotulo{font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta2);margin:0 0 14px;display:flex;gap:10px;align-items:center}.lp .rotulo b{color:var(--marca)}
+.lp section{padding:72px 0}@media (min-width:880px){.lp section{padding:104px 0}}
+.lp .lead{font-size:1.12rem;max-width:34em}
+.lp a.cta{min-height:54px;font-size:1.02rem;border-radius:12px;padding:0 28px;box-shadow:0 1px 0 rgba(0,0,0,.08),inset 0 -2px 0 rgba(0,0,0,.08);transition:transform .25s var(--ease)}.lp a.cta:hover{transform:translateY(-1px)}
+.lp-hero{display:grid;gap:40px;padding:16px 0 56px;align-items:center}@media (min-width:900px){.lp-hero{grid-template-columns:1.05fr .95fr;gap:56px;padding:40px 0 88px}}
+.lp-acoes{display:flex;flex-wrap:wrap;align-items:center;gap:8px 4px;margin:26px 0 0}.lp-acoes a.sec{margin-left:12px}@media (max-width:520px){.lp-acoes a.cta{width:100%}.lp-acoes a.sec{margin:0 auto}}
+.lp .selo{display:flex;flex-wrap:wrap;gap:4px 16px}.lp .selo span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:7px;vertical-align:middle}
+.tel{background:var(--sup);border:1px solid var(--linha);border-radius:26px;padding:14px;box-shadow:0 40px 80px -48px rgba(42,31,61,.55);max-width:430px;width:100%;justify-self:center}
+.tel-topo{display:flex;align-items:center;gap:10px;padding:4px 6px 12px;border-bottom:1px solid var(--linha);margin-bottom:12px}.tel-topo img{width:30px;height:30px}.tel-topo strong{font-size:.95rem;display:block;line-height:1.2}.tel-topo small{color:var(--ok);font-size:.78rem;font-weight:600}
+.bal{display:grid;gap:8px}.bal p{margin:0;padding:10px 14px;border-radius:16px;font-size:.93rem;line-height:1.45;max-width:86%}.bal .ia{background:var(--ia);border-bottom-left-radius:4px}.bal .eu{justify-self:end;background:var(--marca);color:#fff;border-bottom-right-radius:4px}
+@media (prefers-color-scheme:dark){.bal .eu{background:#5b3d91}.tel{box-shadow:0 40px 80px -40px #000}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px}.chips span{border:1px solid var(--linha);border-radius:999px;padding:5px 11px;font-size:.82rem;font-weight:600;background:var(--bg)}
+.lp-prova{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}@media (min-width:760px){.lp-prova{grid-template-columns:repeat(4,1fr)}}
+.lp-prova div{padding:20px 16px 20px 0}.lp-prova div+div{padding-left:16px;border-left:1px solid var(--linha)}@media (max-width:759px){.lp-prova div:nth-child(3){padding-left:0;border-left:0}.lp-prova div:nth-child(n+3){border-top:1px solid var(--linha)}}
+.lp-prova strong{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,4.5vw,2.2rem);line-height:1.1}.lp-prova span{font-size:.86rem;color:var(--tinta2)}
+.passo{display:grid;gap:24px;padding:40px 0;border-top:1px solid var(--linha);align-items:center}@media (min-width:880px){.passo{grid-template-columns:5fr 6fr;gap:64px}.passo:nth-of-type(even) .passo-txt{order:2}}
+.passo-n{font-family:var(--serif);font-size:3.4rem;line-height:1;color:var(--marca);display:block;margin-bottom:6px}.passo h3{font-size:1.45rem;margin:0 0 .4em}.passo-txt p{color:var(--tinta2);margin:0;max-width:30em}
+.cartao{background:var(--sup);border:1px solid var(--linha);border-radius:20px;padding:18px}
+.abertos{list-style:none;margin:0;padding:0}.abertos li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:12px 2px;border-bottom:1px solid var(--linha);font-size:.94rem}.abertos li:last-child{border:0}.abertos small{color:var(--tinta2);display:block;font-size:.8rem}.abertos em{font-style:normal;font-size:.76rem;font-weight:700;color:var(--ok);background:var(--okbg);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.diag{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:4px 0 14px}.diag i{aspect-ratio:1;border-radius:6px;background:var(--okbg);border:1.5px solid var(--ok)}.diag i.x{background:var(--nokbg);border-color:var(--nok)}
+.barra{display:grid;grid-template-columns:7.5em 1fr 2.6em;gap:10px;align-items:center;font-size:.88rem;margin:8px 0}.barra span:nth-child(2){height:8px;border-radius:9px;background:var(--raised);overflow:hidden}.barra span:nth-child(2) i{display:block;height:100%;background:var(--marca);border-radius:9px}.barra b{text-align:right}
+.plano-dia{list-style:none;margin:0;padding:0}.plano-dia li{display:grid;grid-template-columns:3.6em 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--linha);font-size:.93rem}.plano-dia li:last-child{border:0}.plano-dia b{font-variant-numeric:tabular-nums;color:var(--marca)}.plano-dia small{display:block;color:var(--tinta2)}
+.cab-cartao{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta2);margin-bottom:8px}
+.recursos{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0}@media (min-width:880px){.recursos{grid-template-columns:1fr 1fr;column-gap:56px}}
+.recursos li{padding:22px 0;border-top:1px solid var(--linha);display:grid;grid-template-columns:2.4em 1fr;gap:4px 14px}.recursos li>span{font-size:.78rem;font-weight:700;color:var(--tinta2);padding-top:4px}.recursos strong{font-size:1.1rem}.recursos p{grid-column:2;margin:0;color:var(--tinta2)}
+.marca-q{display:inline-block;font-size:.72rem;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:2px;border:1px solid var(--linha)}
+.prints{display:grid;grid-auto-flow:column;grid-auto-columns:min(70%,250px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 2px 14px;margin-top:28px}@media (min-width:880px){.prints{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);gap:32px}.prints figure:nth-child(2){transform:translateY(32px)}}
+.prints figure{margin:0;scroll-snap-align:start}.prints img{width:100%;height:auto;aspect-ratio:375/812;border-radius:24px;border:1px solid var(--linha);box-shadow:0 24px 48px -32px rgba(42,31,61,.55);background:var(--sup)}.prints figcaption{font-size:.9rem;color:var(--tinta2);margin-top:10px}
+.lp-preco{display:grid;gap:32px;align-items:start}@media (min-width:880px){.lp-preco{grid-template-columns:1fr 1fr;gap:64px}}
+.preco-bloco{background:var(--sup);border:2px solid var(--marca);border-radius:24px;padding:28px 22px}.preco-bloco h3{margin:0;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;color:var(--marca)}.preco-bloco .preco{font-family:var(--serif);font-weight:400;font-size:4rem;line-height:1;margin:12px 0 4px}.preco-bloco .preco small{font-family:Archivo,system-ui,sans-serif;font-size:1rem}.preco-bloco .dia{margin:0;color:var(--tinta2);font-size:.92rem}.preco-bloco .check{margin:20px 0}.preco-bloco .cta{width:100%}
+.cancele{margin:12px 0 0;font-weight:600;text-align:center;font-size:.93rem}.gratis{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--linha);font-size:.93rem;color:var(--tinta2)}.gratis a{font-weight:700;color:var(--marca)}
+.faq details{padding:4px 0}.faq summary{font-size:1.05rem;justify-content:space-between;gap:16px;list-style:none}.faq summary::-webkit-details-marker{display:none}.faq summary::after{content:"+";font-size:1.4rem;font-weight:400;color:var(--marca);transition:transform .3s var(--ease)}.faq details[open] summary::after{transform:rotate(45deg)}.faq details p{max-width:40em}
+.lp-final{border-top:1px solid var(--linha);text-align:left}.lp-final h2{max-width:14em}
+@media (prefers-reduced-motion:reduce){.lp *{transition:none!important}}"""
 
 def bloco_preco():
-    return f"""<div class="preco-bloco"><h3>Plano Pro</h3><p class="preco">R$ {PRO_PRECO}<small>/mês</small></p>
-<ul class="check"><li>Banco com {NQ} questões e simulados no estilo da banca</li><li>Mentor com IA: 300 mensagens por dia e "Por que errei?" em toda questão</li><li>Plano de estudos até o dia da prova, revisado toda semana</li><li>Resumo do assunto em PDF</li></ul>
-<a class="cta" href="/api/assinar?ir=1">Assinar</a><p class="cancele">Cancele quando quiser. Pix ou cartão.</p>
-<p class="gratis">Quer testar antes? <a href="/?teste=1">Comece grátis</a>: 5 questões sem cadastro e, com conta, 15 mensagens por dia com o Mentor.</p></div>"""
+    return f"""<div class="preco-bloco"><h3>Aprovô Pro</h3><p class="preco">R$ {PRO_PRECO}<small>/mês</small></p><p class="dia">Menos de R$ 1,70 por dia. Sem fidelidade.</p>
+<ul class="check"><li>Mentor com IA: entrevista, diagnóstico e plano até a prova</li><li>Concursos com inscrição aberta, filtrados para você</li><li>Simulados com questões reais da banca e autorais no estilo dela</li><li>Ranking no Brasil, no cargo e no estado</li><li>Revisão dos erros em 1, 3, 7 e 30 dias</li><li>Banco com {NQ} questões e "Por que errei?" em todas</li></ul>
+<a class="cta" href="/api/assinar?ir=1">Assinar o Pro</a><p class="cancele">Cancele quando quiser. Pix ou cartão.</p>
+<p class="gratis">Quer testar antes? <a href="/?teste=1">Testar grátis</a>: 5 questões sem cadastro e, com conta, 15 mensagens por dia com o Mentor.</p></div>"""
 
-paginas.append(pagina("aprovo.html", "Aprovô: questões de concurso, simulados e mentor com IA",
-  f"Estude para concurso com {NQ} questões com gabarito, simulados no estilo da banca e um mentor com IA que monta o seu plano. Plano Pro R$ {PRO_PRECO}/mês, cancele quando quiser.",
-  f"""<div class="hero"><div><p class="kicker">Estudo para concurso, do edital à prova</p>
-<h1>Estude o que <span class="grifo">cai na sua prova</span>, todo dia.</h1>
-<p class="lead">Questões com gabarito, simulados no estilo da banca e um mentor com IA que monta o seu plano e explica cada erro. Você estuda com método; o resto é com você.</p>
-<p><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a><a class="sec" href="/?teste=1">Testar grátis</a></p><p class="selo">Cancele quando quiser. Teste 5 questões sem cadastro.</p></div>
-<figure class="hero-print"><img src="/img/print-questao.jpg" width="375" height="812" alt="Questão respondida no Aprovô com o gabarito e o botão Por que errei"></figure></div>
-<ul class="numeros"><li><strong>{NQ}</strong>questões com gabarito</li><li><strong>Cebraspe, FGV</strong>e outras bancas</li><li><strong>IA</strong>que explica cada erro</li><li><strong>R$ {PRO_PRECO}</strong>por mês, sem fidelidade</li></ul>
-<section><p class="kicker">Por que o Aprovô</p><h2>Três coisas, bem feitas.</h2><ul class="beneficios">
-<li><strong>{NQ} questões com gabarito</strong>Provas oficiais com fonte e gabarito definitivo (Cebraspe, FGV, Consulplan e outras) e questões autorais marcadas como "estilo".</li>
-<li><strong>Simulados no estilo da banca</strong>Cronômetro, Certo/Errado com a nota que desconta o erro, simulado da semana com ranking e revisão do que você errou.</li>
-<li><strong>Mentor com IA</strong>Lê o seu edital, monta o plano do dia pelo tempo que você tem e explica por que você errou cada questão.</li></ul></section>
-<section><p class="kicker">Por dentro do app</p><h2>É assim no seu celular.</h2><div class="prints">
-<figure><img src="/img/print-questao.jpg" width="375" height="812" loading="lazy" alt="Questão respondida com o gabarito e o botão Por que errei? Perguntar ao Mentor"><figcaption>Errou? O Mentor explica o porquê.</figcaption></figure>
+paginas.append(pagina("aprovo.html", "Aprovô: mentor com IA, simulados e questões de concurso",
+  f"Um mentor com IA que entende o seu concurso, aplica um diagnóstico e monta o plano até a prova. {NQ} questões com fonte, simulados da banca e revisão dos erros. Pro R$ {PRO_PRECO}/mês.",
+  f"""<div class="lp"><div class="lp-hero"><div><p class="rotulo"><b>Mentor com IA</b> para concursos públicos</p>
+<h1>Um plano até a prova, feito <em>para o seu concurso</em>.</h1>
+<p class="lead">Você conta qual concurso, a banca e quanto tempo tem. O mentor faz um diagnóstico de 10 questões e devolve o que estudar em cada dia, em minutos.</p>
+<div class="lp-acoes"><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a><a class="sec" href="/?teste=1">Testar grátis</a></div>
+<p class="selo"><span>Cancele quando quiser</span><span>5 questões sem cadastro</span></p></div>
+<div class="tel" aria-label="Exemplo de conversa com o mentor"><div class="tel-topo"><img src="/icons/icone.svg" alt="" width="30" height="30"><div><strong>Mentor Aprovô</strong><small>online</small></div></div>
+<div class="bal"><p class="ia">Oi! Para qual concurso você está estudando?</p><p class="eu">INSS, técnico. Banca Cebraspe.</p><p class="ia">O edital já saiu ou você está se adiantando? E quantas horas por dia consegue estudar?</p><p class="eu">Ainda não saiu. Tenho 2h por dia.</p><p class="ia">Perfeito. Antes do plano, vamos a um diagnóstico rápido de 10 questões para eu ver seus pontos fortes.</p>
+<div class="chips"><span>Começar diagnóstico</span><span>Ver concursos abertos</span></div></div></div></div>
+<div class="lp-prova"><div><strong>{NQ}</strong><span>questões com gabarito</span></div><div><strong>10</strong><span>questões no diagnóstico</span></div><div><strong>1·3·7·30</strong><span>dias de revisão dos erros</span></div><div><strong>R$ {PRO_PRECO}</strong><span>por mês, sem fidelidade</span></div></div>
+
+<section id="como"><p class="rotulo"><b>01</b> Como funciona</p><h2>Dez minutos de conversa. Um plano até o dia da prova.</h2>
+<div class="passo"><div class="passo-txt"><span class="passo-n">1</span><h3>O mentor conhece você</h3><p>Concurso, banca, se o edital saiu, data da prova, seu nível, horas por dia e as matérias que você domina ou trava. Sem formulário: é uma conversa.</p></div>
+<div class="cartao bal"><p class="ia">Quais matérias você sente mais dificuldade?</p><p class="eu">Raciocínio lógico e Direito Previdenciário. Português eu vou bem.</p><p class="ia">Anotado. Vou dar mais peso a essas duas no seu plano.</p></div></div>
+<div class="passo"><div class="passo-txt"><span class="passo-n">2</span><h3>Mostra quem está com inscrição aberta</h3><p>Se você ainda não escolheu, o mentor lista os concursos com inscrições abertas agora, com prazo e banca, para você decidir com informação.</p></div>
+<div class="cartao"><div class="cab-cartao"><span>Inscrições abertas</span><span>exemplo</span></div><ul class="abertos"><li><div>Técnico Administrativo<small>Tribunal estadual · FGV</small></div><em>aberta</em></li><li><div>Agente Administrativo<small>Prefeitura · Cebraspe</small></div><em>aberta</em></li><li><div>Analista Judiciário<small>Tribunal federal · FCC</small></div><em>aberta</em></li></ul></div></div>
+<div class="passo"><div class="passo-txt"><span class="passo-n">3</span><h3>Aplica um diagnóstico de 10 questões</h3><p>Questões no estilo da sua banca para medir onde você está de verdade, não onde acha que está.</p></div>
+<div class="cartao"><div class="cab-cartao"><span>Diagnóstico</span><span>7 de 10</span></div><div class="diag" aria-label="7 acertos e 3 erros"><i></i><i></i><i class="x"></i><i></i><i></i><i class="x"></i><i></i><i></i><i class="x"></i><i></i></div>
+<div class="barra"><span>Português</span><span><i style="width:90%"></i></span><b>90%</b></div><div class="barra"><span>Previdenciário</span><span><i style="width:55%"></i></span><b>55%</b></div><div class="barra"><span>Rac. lógico</span><span><i style="width:40%"></i></span><b>40%</b></div></div></div>
+<div class="passo"><div class="passo-txt"><span class="passo-n">4</span><h3>Monta o plano até a prova</h3><p>Cada dia dividido em minutos, pelo peso da matéria no edital e pelo que você errou. O plano se ajusta conforme você avança.</p></div>
+<div class="cartao"><div class="cab-cartao"><span>Hoje · 2h</span><span>plano</span></div><ul class="plano-dia"><li><b>40 min</b><div>Raciocínio lógico<small>Proposições e equivalências</small></div></li><li><b>35 min</b><div>Direito Previdenciário<small>Segurados obrigatórios</small></div></li><li><b>30 min</b><div>Simulado curto Cebraspe<small>15 itens Certo/Errado</small></div></li><li><b>15 min</b><div>Revisão dos erros<small>4 questões vencendo hoje</small></div></li></ul></div></div></section>
+
+<section><p class="rotulo"><b>02</b> Treino</p><h2>Treine com a prova que você vai fazer.</h2>
+<ul class="recursos"><li><span>A</span><strong>Simulado do seu concurso</strong><p>Com questões reais da banca, cada uma com a fonte <span class="marca-q">Cebraspe 2022</span>, ou autorais escritas pela IA no estilo dela <span class="marca-q">estilo</span>.</p></li>
+<li><span>B</span><strong>Ranking de verdade</strong><p>Veja sua posição no Brasil, entre quem disputa o mesmo cargo e no seu estado.</p></li>
+<li><span>C</span><strong>Revisão espaçada dos erros</strong><p>Cada questão errada volta em 1, 3, 7 e 30 dias, até virar acerto.</p></li>
+<li><span>D</span><strong>"Por que errei?"</strong><p>Em qualquer questão, o mentor explica o raciocínio da banca e a pegadinha.</p></li></ul></section>
+
+<section><p class="rotulo"><b>03</b> Por dentro do app</p><h2>É assim no seu celular.</h2><div class="prints">
+<figure><img src="/img/print-mentor.jpg" width="375" height="812" loading="lazy" alt="Plano de estudos do Mentor com as matérias por prioridade"><figcaption>O plano do mentor, pelo peso de cada matéria.</figcaption></figure>
 <figure><img src="/img/print-simulado.jpg" width="375" height="812" loading="lazy" alt="Simulado com cronômetro, mapa de questões e item oficial da Cebraspe"><figcaption>Simulado cronometrado, no formato da banca.</figcaption></figure>
-<figure><img src="/img/print-mentor.jpg" width="375" height="812" loading="lazy" alt="Plano de estudos do Mentor com as matérias por prioridade"><figcaption>Plano pelo peso de cada matéria no edital.</figcaption></figure></div></section>
-<section id="planos"><p class="kicker">Preço</p><h2>Um plano só, sem pegadinha.</h2>{bloco_preco()}</section>
-<section><p class="kicker">Dúvidas</p><h2>Perguntas frequentes</h2>
-<details><summary>O Aprovô garante a aprovação?</summary><p>Não. Ninguém garante. O Aprovô organiza o seu estudo: o que estudar, quanto treinar e o que revisar. A constância é sua.</p></details>
-<details><summary>Como cancelo?</summary><p>No app, em Mentor → Planos → Cancelar assinatura. Não há multa nem fidelidade: você segue Pro até o fim do mês já pago e não é cobrado de novo.</p></details>
-<details><summary>Dá para usar de graça?</summary><p>Dá. Teste 5 questões sem cadastro. Com conta grátis, você treina questões e simulados e tem 15 mensagens por dia com o Mentor.</p></details>
-<details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas, com a fonte em cada questão, e de questões autorais marcadas como "estilo". Nada copiado de material pago.</p></details>
+<figure><img src="/img/print-questao.jpg" width="375" height="812" loading="lazy" alt="Questão respondida com o gabarito e o botão Por que errei? Perguntar ao Mentor"><figcaption>Errou? O mentor explica o porquê.</figcaption></figure></div></section>
+
+<section id="planos"><div class="lp-preco"><div><p class="rotulo"><b>04</b> Preço</p><h2>Um plano só. Tudo incluído.</h2><p class="lead">Menos que uma apostila, com um mentor que acompanha você todo dia. Não prometemos aprovação: prometemos método, constância e treino no formato certo.</p></div>{bloco_preco()}</div></section>
+
+<section class="faq"><p class="rotulo"><b>05</b> Dúvidas</p><h2>Perguntas frequentes</h2>
+<details><summary>O Aprovô garante a aprovação?</summary><p>Não. Ninguém pode garantir. O Aprovô organiza o seu estudo: o que estudar, quanto treinar e o que revisar. A constância é sua.</p></details>
+<details><summary>Meu edital ainda não saiu. Vale a pena?</summary><p>Vale. O mentor monta o plano pelo último edital e pela banca provável, e ajusta quando o novo sair.</p></details>
+<details><summary>De onde vêm as questões?</summary><p>De provas oficiais e públicas, com a fonte em cada questão, e de questões autorais escritas pela IA, sempre marcadas como "estilo". Nada copiado de material pago.</p></details>
+<details><summary>Como cancelo?</summary><p>No app, em Mentor → Planos → Cancelar assinatura. Sem multa nem fidelidade: você segue Pro até o fim do mês já pago.</p></details>
+<details><summary>Dá para usar de graça?</summary><p>Dá. Teste 5 questões sem cadastro. Com conta grátis, você treina questões e tem 15 mensagens por dia com o mentor.</p></details>
 <details><summary>Funciona no celular?</summary><p>Funciona. Dá para instalar como app pela tela inicial do navegador.</p></details></section>
-<section class="final"><h2>Comece hoje. Amanhã você já revisa o que errou.</h2><p>R$ {PRO_PRECO}/mês · cancele quando quiser</p><p><a class="cta" href="/api/assinar?ir=1">Assinar o Pro</a></p></section>
-<div class="cta-fixa" hidden><a class="cta" href="/api/assinar?ir=1">Assinar · R$ {PRO_PRECO}/mês</a></div>
+<section class="lp-final"><h2>Comece a conversa hoje. O plano sai em minutos.</h2><div class="lp-acoes"><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a><a class="sec" href="/?entrar=1">Já tenho conta</a></div><p class="selo"><span>Cancele quando quiser</span><span>Pix ou cartão</span></p></section></div>
+<div class="cta-fixa" hidden><a class="cta" href="/api/assinar?ir=1">Assinar o Pro · R$ {PRO_PRECO}/mês</a></div>
 <script>(function(){{var b=document.querySelector('.cta-fixa'),h=document.querySelector('a.cta');if(!b||!h)return;function f(){{b.hidden=h.getBoundingClientRect().bottom>0}}addEventListener('scroll',f,{{passive:true}});f()}})()</script>"""))
 
 paginas.append(pagina("termos.html", "Termos de uso | Aprovô", "Termos de uso do Aprovô: plano grátis, plano Pro mensal, cancelamento e regras de uso.",
