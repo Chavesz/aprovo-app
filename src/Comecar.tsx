@@ -259,6 +259,12 @@ export default function Comecar({ questoes, selecionar, onResponder, onPronto, o
             <button className="btn">Enviar</button>
           </form>
         )}
+        {/* Atalho: do concurso escolhido direto ao simulado (onboarding em menos de 2 minutos); o resto o Mentor pergunta depois. */}
+        {['edital', 'data', 'nivel', 'horas', 'faceis', 'dificeis', 'local'].includes(passo) && (
+          <button className="link bot-pular" onClick={() => responder('Quero ir direto ao simulado', 'convite', 'Fechado! O resto eu pergunto depois, no Mentor. Bora fazer 10 questões do seu concurso?')}>
+            Pular perguntas e fazer o simulado agora →
+          </button>
+        )}
         {passo === 'convite' && opcoes([
           ['Bora, 10 questões', () => { onPronto(p); responder('Bora!', 'diag', 'Valendo! Sem pressa e sem consulta.'); }],
           ['Depois', semDiagnostico],

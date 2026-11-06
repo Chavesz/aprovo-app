@@ -1018,3 +1018,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .paywall h2 { margin: 0; font-size: 1.3rem; }
 .paywall-preco strong { font-size: 1.6rem; color: var(--acento); }
 @media (min-width: 600px) { .paywall-fundo { place-items: center; } }
+.bot-pular { display: block; margin: 10px 0 0 auto; font-size: .9rem; }

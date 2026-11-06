@@ -213,3 +213,6 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - [x] Batalha, Ranking, Concursos e Edital carregam sob demanda (JS inicial 106 → 91 KB gzip)
 - [x] Bancos grandes (Cebraspe/OAB/ENEM) começam a baixar 1,5 s depois, sem disputar a primeira tela
 - [x] Removido o seletor antigo de cargo (ACE/ACS) que aparecia depois do Mentor: um passo a menos no onboarding
+
+### Lote 34 (feito) — onboarding rápido
+- [x] Atalho "Pular perguntas e fazer o simulado agora" a partir da banca: do zero à 1ª questão do diagnóstico em 5 toques (Já sei qual → concurso → banca → pular → Bora)
