@@ -252,6 +252,7 @@ export default function Mentor({ questoes, historico, onPraticar }: { questoes: 
       )}
       {aviso && <p className="aviso">{aviso}</p>}
 
+      <ResumoSemana historico={historico} questoes={questoes} />
       {plano && <Plano plano={plano} perfil={perfil} onPraticar={onPraticar} onAviso={setAviso} onUso={setUso} />}
       <Chat ctx={() => (plano ? contexto(perfil, historico, questoes, plano) : '')} uso={uso} onUso={setUso} />
       <Planos uso={uso} />
@@ -426,6 +427,31 @@ function baixarAgenda(semana: ReturnType<typeof montarPlano>['semana']) {
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
   a.download = 'plano-aprovo.ics';
   a.click();
+}
+
+// Resumo da semana do Mentor: compara os últimos 7 dias com os 7 anteriores, sem gastar IA.
+function ResumoSemana({ historico, questoes }: { historico: Resposta[]; questoes: Questao[] }) {
+  const agora = Date.now(), D = 86400000;
+  const s1 = historico.filter((r) => r.em > agora - 7 * D), s0 = historico.filter((r) => r.em <= agora - 7 * D && r.em > agora - 14 * D);
+  if (!s1.length && !s0.length) return null;
+  const taxa = (l: Resposta[]) => (l.length ? Math.round((l.filter((r) => r.certa).length / l.length) * 100) : 0);
+  const porId = new Map(questoes.map((q) => [q.id, q]));
+  const disc = new Map<string, { t: number; a: number }>();
+  s1.forEach((r) => { const d = porId.get(r.id)?.disciplina; if (!d) return; const g = disc.get(d) ?? { t: 0, a: 0 }; g.t++; if (r.certa) g.a++; disc.set(d, g); });
+  const ord = [...disc.entries()].filter(([, g]) => g.t >= 3).sort((x, y) => x[1].a / x[1].t - y[1].a / y[1].t);
+  const dias = new Set(s1.map((r) => new Date(r.em).toDateString())).size;
+  const delta = taxa(s1) - taxa(s0);
+  const frases = [
+    `${s1.length} questões em ${dias} ${dias === 1 ? 'dia' : 'dias'}, ${taxa(s1)}% de acerto${s0.length ? ` (${delta >= 0 ? '+' : ''}${delta} pontos sobre a semana passada)` : ''}.`,
+    ord.length > 1 ? `Melhor matéria: ${ord[ord.length - 1][0]}. Precisa de atenção: ${ord[0][0]}.` : '',
+    dias < 4 ? 'Meta da próxima semana: estudar pelo menos 5 dias, mesmo que pouco.' : 'Constância boa! Mantém o ritmo e aumenta 10 questões por dia.',
+  ].filter(Boolean);
+  return (
+    <div className="resumo-semana">
+      <p className="rotulo">Resumo da sua semana</p>
+      {frases.map((f) => <p key={f}>{f}</p>)}
+    </div>
+  );
 }
 
 function Plano({ plano, perfil, onPraticar, onAviso, onUso }: {

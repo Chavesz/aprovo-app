@@ -44,10 +44,23 @@ export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; on
     return novo;
   });
   const [soFavs, setSoFavs] = useState(false);
+  // Alertas: o que saiu desde a última visita (por estado) e notícias novas sobre os concursos salvos.
+  const chaveVisto = `cq:abertos-visto:${uf || 'br'}`;
+  const [visto, setVisto] = useState(0);
   useEffect(() => {
     setLista(null);
-    fetch(`/api/concursos-abertos${uf ? `?uf=${uf}` : ''}`).then((r) => r.json()).then((d) => setLista(d.lista ?? [])).catch(() => setLista([]));
-  }, [uf]);
+    let v = 0; try { v = Number(localStorage.getItem(chaveVisto) ?? 0); } catch { /* */ }
+    setVisto(v);
+    fetch(`/api/concursos-abertos${uf ? `?uf=${uf}` : ''}`).then((r) => r.json()).then((d) => {
+      setLista(d.lista ?? []);
+      try { localStorage.setItem(chaveVisto, String(Date.now())); } catch { /* */ }
+    }).catch(() => setLista([]));
+  }, [uf]); // eslint-disable-line react-hooks/exhaustive-deps
+  const orgao = (t: string) => t.toLowerCase().split(/[–:-]/)[0].replace(/concurso|processo seletivo|sele[cç][aã]o|\d{4}/g, '').trim();
+  const ehNovo = (a: Aberto) => !!visto && !!a.data && Date.parse(a.data) > visto;
+  const doSalvo = (a: Aberto) => !favs.some((f) => f.link === a.link) && favs.some((f) => orgao(f.titulo).length > 5 && orgao(a.titulo) === orgao(f.titulo));
+  const alertas = (lista ?? []).filter(doSalvo);
+  const novos = (lista ?? []).filter(ehNovo).length;
   const filtrada = (soFavs ? favs : lista ?? []).filter((a) => !busca || a.titulo.toLowerCase().includes(busca.toLowerCase()));
   return (
     <div className="abertos">
@@ -59,6 +72,8 @@ export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; on
         </select>
       </div>
       {favs.length > 0 && <button className="link" onClick={() => setSoFavs((v) => !v)}>{soFavs ? 'Ver todos' : `⭐ Meus salvos (${favs.length})`}</button>}
+      {alertas.length > 0 && <p className="abertos-alerta">🔔 {alertas.length === 1 ? 'Saiu notícia nova' : `Saíram ${alertas.length} notícias novas`} sobre concursos que você salvou: {alertas[0].titulo}</p>}
+      {novos > 0 && !soFavs && <p className="nota">{novos} {novos === 1 ? 'novo' : 'novos'} desde a sua última visita.</p>}
       {!lista && <p className="nota">Buscando concursos abertos…</p>}
       {lista && !filtrada.length && <p className="nota">Nada encontrado agora. Tente outro estado ou escreva o seu concurso.</p>}
       <ul className="abertos-lista">
@@ -66,7 +81,7 @@ export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; on
           <li key={a.link} className="abertos-li">
             <button className="abertos-fav" aria-pressed={favs.some((x) => x.link === a.link)} aria-label="Salvar concurso" onClick={() => alternarFav(a)}>{favs.some((x) => x.link === a.link) ? '⭐' : '☆'}</button>
             <button className="abertos-item" onClick={() => onEscolher(a)}>
-              <span className="abertos-tit">{a.titulo}</span>
+              <span className="abertos-tit">{(ehNovo(a) || doSalvo(a)) && <span className="tag-novo">{doSalvo(a) ? 'salvo' : 'novo'}</span>}{a.titulo}</span>
               <span className="nota">{a.uf} · {a.area} · {a.tipo === 'selecao' ? 'seleção' : 'concurso'}{a.data ? ` · ${new Date(a.data).toLocaleDateString('pt-BR')}` : ''}</span>
             </button>
           </li>

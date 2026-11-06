@@ -33,6 +33,9 @@ pre{background:var(--sup);border:1px solid var(--linha);border-radius:10px;paddi
 </div>
 </form>
 <pre id="saida" aria-live="polite"></pre>
+<h2>Erros reportados</h2>
+<button type="button" id="ver-reportes">Ver reportes</button>
+<pre id="reportes"></pre>
 </main>
 <script>
 (function () {
@@ -58,6 +61,21 @@ pre{background:var(--sup);border:1px solid var(--linha);border-radius:10px;paddi
           : (d.erro || 'Erro ' + r.status);
       } catch (e) { $('saida').className = 'nok'; $('saida').textContent = 'Sem conexão.'; }
     });
+  });
+  $('ver-reportes').addEventListener('click', async function () {
+    var token = $('token').value.trim();
+    if (!token) { $('reportes').textContent = 'Preencha a chave.'; return; }
+    try {
+      var r = await fetch('/api/admin?reportes=1', { headers: { authorization: 'Bearer ' + token } }), d = await r.json();
+      if (!r.ok) { $('reportes').textContent = d.erro || 'Erro ' + r.status; return; }
+      $('reportes').textContent = d.length ? d.map(function (x) {
+        return x.id + ' (' + x.avisos.length + ')
+' + x.avisos.map(function (a) { return '  · ' + a.motivo + (a.texto ? ': ' + a.texto : '') + ' — ' + a.usuario + ', ' + new Date(a.em).toLocaleDateString('pt-BR'); }).join('
+');
+      }).join('
+
+') : 'Nenhum erro reportado.';
+    } catch (e) { $('reportes').textContent = 'Sem conexão.'; }
   });
 })();
 </script>

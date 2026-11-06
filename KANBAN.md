@@ -153,3 +153,8 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - [x] Liga semanal por divisão no Ranking (Bronze/Prata/Ouro/Diamante pelos acertos de 7 dias)
 - [x] Caderno de erros em PDF (já existia no Revisar)
 - [x] Reportar erro na questão (/api/reportar → Blobs "reportes")
+
+### Lote 19 (feito)
+- [x] Admin: lista de erros reportados (/admin.html → "Ver reportes")
+- [x] Resumo semanal do Mentor (7 dias vs. semana anterior, melhor/pior matéria, meta)
+- [x] Alertas em Concursos: "novo desde a última visita" e notícias novas sobre concursos salvos

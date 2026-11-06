@@ -981,3 +981,7 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .reportar { font-size: .85rem; color: var(--tinta-2); margin-top: 6px; }
 .reportar-form { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .reportar-form input { flex: 1 1 160px; }
+.resumo-semana { border-left: 3px solid var(--acento); padding: 8px 12px; margin: 12px 0; background: var(--papel-2); border-radius: 0 10px 10px 0; }
+.resumo-semana p { margin: 4px 0; }
+.abertos-alerta { padding: 8px 12px; border-radius: 10px; background: var(--ok-fundo); color: var(--tinta); margin: 6px 0; }
+.tag-novo { display: inline-block; font-size: .7rem; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 6px; background: var(--acento); color: var(--papel); margin-right: 6px; vertical-align: 1px; }

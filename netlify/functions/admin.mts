@@ -5,6 +5,7 @@
 // GET  ?usuario=x                       → plano atual
 // POST { usuario, acao: 'pro', dias? }  → libera o Pro por N dias (padrão 31; 0 = sem prazo)
 // POST { usuario, acao: 'gratis' }      → volta ao grátis
+// GET  ?reportes=1                       → erros reportados nas questões
 import { timingSafeEqual } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
 import { json, normalizar } from '../lib/contas';
@@ -23,6 +24,13 @@ export default async (req: Request) => {
   if (!process.env.ADMIN_TOKEN || process.env.ADMIN_TOKEN.length < 32) return json({ erro: 'Admin desligado: defina ADMIN_TOKEN (32+ caracteres) na Netlify.' }, 503);
   if (!autorizado(req)) return json({ erro: 'Não autorizado.' }, 401);
   const url = new URL(req.url);
+  // GET ?reportes=1 → avisos de erro em questões enviados pelos alunos (mais recentes primeiro).
+  if (req.method === 'GET' && url.searchParams.has('reportes')) {
+    const st = getStore({ name: 'reportes', consistency: 'strong' });
+    const { blobs } = await st.list();
+    const lista = await Promise.all(blobs.map(async (b) => ({ id: b.key, avisos: ((await st.get(b.key, { type: 'json' })) as { em: number }[] | null) ?? [] })));
+    return json(lista.sort((x, y) => Math.max(0, ...y.avisos.map((a) => a.em)) - Math.max(0, ...x.avisos.map((a) => a.em))).slice(0, 100));
+  }
   const corpo = req.method === 'POST' ? ((await req.json().catch(() => ({}))) as { usuario?: string; acao?: string; dias?: number }) : {};
   // Aceita o usuário ou o e-mail da conta (o e-mail que o aluno usou na Cakto).
   const informado = String(corpo.usuario ?? url.searchParams.get('usuario') ?? '').trim();
