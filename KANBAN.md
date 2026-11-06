@@ -166,3 +166,7 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 21 (feito)
 - [x] Landing: recursos novos (batalha, liga, concursos abertos com alerta, cadernos e comentário com a lei)
 - [x] Landing: print novo do ranking/batalha (4 prints)
+
+### Lote 22 (feito)
+- [x] Meta do dia com barra no painel Hoje (pelo tempo do plano)
+- [x] Conquistas (7 selos) no Ranking

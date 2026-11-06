@@ -199,6 +199,7 @@ export default function Ranking({ conta }: { conta: Conta }) {
           </p>
         );
       })()}
+      <Conquistas />
       <div className="ranking-abas ranking-recorte" role="group" aria-label="Quem entra no ranking">
         <button className="ranking-aba" aria-pressed={recorte === 'brasil'} onClick={() => setRecorte('brasil')}>Brasil</button>
         {meuConcurso && <button className="ranking-aba" aria-pressed={recorte === 'concurso'} onClick={() => setRecorte('concurso')}>{meuConcurso.length > 22 ? meuConcurso.slice(0, 21) + '…' : meuConcurso}</button>}
@@ -290,5 +291,30 @@ export default function Ranking({ conta }: { conta: Conta }) {
         <button className="btn" onClick={compartilhar}>Convidar pelo WhatsApp</button>
       </div>
     </section>
+  );
+}
+
+// Selos calculados do histórico local (cq:historico): volume, sequência de dias, acerto e batalhas.
+function Conquistas() {
+  const h = (() => { try { return JSON.parse(localStorage.getItem('cq:historico') ?? '[]') as { certa: boolean; em: number }[]; } catch { return []; } })();
+  const dias = [...new Set(h.map((r) => new Date(r.em).toDateString()))].map((d) => Date.parse(d)).sort((a, b) => a - b);
+  let seq = 0, melhor = 0;
+  dias.forEach((d, i) => { seq = i && d - dias[i - 1] <= 90000000 ? seq + 1 : 1; melhor = Math.max(melhor, seq); });
+  const hoje = h.filter((r) => new Date(r.em).toDateString() === new Date().toDateString());
+  const sel = [
+    { e: '✏️', n: 'Primeira questão', ok: h.length >= 1 },
+    { e: '💯', n: '100 questões', ok: h.length >= 100 },
+    { e: '🏔️', n: '1.000 questões', ok: h.length >= 1000 },
+    { e: '🔥', n: '7 dias seguidos', ok: melhor >= 7 },
+    { e: '🌋', n: '30 dias seguidos', ok: melhor >= 30 },
+    { e: '🎯', n: '10 acertos num dia', ok: hoje.filter((r) => r.certa).length >= 10 },
+    { e: '🧠', n: '80% em 50+ questões', ok: h.length >= 50 && h.filter((r) => r.certa).length / h.length >= 0.8 },
+  ];
+  const n = sel.filter((x) => x.ok).length;
+  return (
+    <details className="conquistas">
+      <summary><strong>Conquistas</strong> <span className="nota">{n} de {sel.length}</span></summary>
+      <ul>{sel.map((x) => <li key={x.n} className={x.ok ? '' : 'bloqueada'}><b aria-hidden>{x.e}</b>{x.n}</li>)}</ul>
+    </details>
   );
 }

@@ -757,6 +757,17 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
   return (
     <section className="coluna hoje" aria-label="Seu dia">
       <p className="hoje-msg"><span className="hoje-avatar" aria-hidden>✦</span><span><strong>{saudacao}{nome ? `, ${nome}` : ''}!</strong> {msg}</span></p>
+      {(() => {
+        // Meta do dia: 2 questões por 10 min de plano (mín. 10), barra cheia quando bate.
+        const meta = Math.max(10, Math.round(total / 5));
+        const p = Math.min(100, Math.round((feitasHoje / meta) * 100));
+        return (
+          <div className="hoje-meta" aria-label={`Meta do dia: ${feitasHoje} de ${meta} questões`}>
+            <span>{feitasHoje >= meta ? '🎯 Meta do dia batida!' : `Meta do dia: ${feitasHoje}/${meta} questões`}</span>
+            <span className="hoje-meta-barra"><span style={{ width: `${p}%` }} /></span>
+          </div>
+        );
+      })()}
       <ol className="hoje-blocos">
         {blocos.slice(0, 4).map((b) => (
           <li key={b.nome + b.assunto}>
