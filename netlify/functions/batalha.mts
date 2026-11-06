@@ -127,6 +127,8 @@ export default async (req: Request) => {
     const i = Number(p.i);
     if (!j || !Number.isInteger(i) || i < 0 || i >= b.ids.length) return json({ erro: 'Resposta inválida.' }, 400);
     if (j.respostas[i] === null) {
+      // O tempo conta da primeira resposta, não de quando a pessoa abriu o link.
+      if (j.respostas.every((r) => r === null)) j.inicio = Date.now();
       j.respostas[i] = !!p.certa;
       if (j.respostas.every((r) => r !== null)) j.fim = Date.now();
       await salvarJogador(codigo, usuario, j);

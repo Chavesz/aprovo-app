@@ -177,3 +177,8 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 ### Lote 24 (feito)
 - [x] Desafio do dia: placar resumido num blob só, devolve top 50 + o aluno
 - [x] Convite para instalar o app (Android/desktop com botão; iPhone com instrução), depois de 5 questões
+
+### Lote 25 (feito)
+- [x] Produção conferida: reportar, batalha, concursos abertos, landing nova e print
+- [x] Compartilhar resultado da batalha/desafio (🟩🟥 + posição, sem revelar questões)
+- [x] Tempo da batalha conta a partir da primeira resposta
