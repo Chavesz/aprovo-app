@@ -36,11 +36,19 @@ export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; on
   const [uf, setUf] = useState(ufInicial ?? '');
   const [lista, setLista] = useState<Aberto[] | null>(null);
   const [busca, setBusca] = useState('');
+  // Favoritos ficam no aparelho e sincronizam com a conta (chave cq:).
+  const [favs, setFavs] = useState<Aberto[]>(() => { try { return JSON.parse(localStorage.getItem('cq:abertos-favoritos') ?? '[]'); } catch { return []; } });
+  const alternarFav = (a: Aberto) => setFavs((l) => {
+    const novo = l.some((x) => x.link === a.link) ? l.filter((x) => x.link !== a.link) : [a, ...l].slice(0, 30);
+    try { localStorage.setItem('cq:abertos-favoritos', JSON.stringify(novo)); } catch { /* sem armazenamento */ }
+    return novo;
+  });
+  const [soFavs, setSoFavs] = useState(false);
   useEffect(() => {
     setLista(null);
     fetch(`/api/concursos-abertos${uf ? `?uf=${uf}` : ''}`).then((r) => r.json()).then((d) => setLista(d.lista ?? [])).catch(() => setLista([]));
   }, [uf]);
-  const filtrada = (lista ?? []).filter((a) => !busca || a.titulo.toLowerCase().includes(busca.toLowerCase()));
+  const filtrada = (soFavs ? favs : lista ?? []).filter((a) => !busca || a.titulo.toLowerCase().includes(busca.toLowerCase()));
   return (
     <div className="abertos">
       <div className="bot-texto">
@@ -50,11 +58,13 @@ export function ListaAbertos({ ufInicial, onEscolher }: { ufInicial?: string; on
           {UFS.map((u) => <option key={u}>{u}</option>)}
         </select>
       </div>
+      {favs.length > 0 && <button className="link" onClick={() => setSoFavs((v) => !v)}>{soFavs ? 'Ver todos' : `⭐ Meus salvos (${favs.length})`}</button>}
       {!lista && <p className="nota">Buscando concursos abertos…</p>}
       {lista && !filtrada.length && <p className="nota">Nada encontrado agora. Tente outro estado ou escreva o seu concurso.</p>}
       <ul className="abertos-lista">
         {filtrada.slice(0, 30).map((a) => (
-          <li key={a.link}>
+          <li key={a.link} className="abertos-li">
+            <button className="abertos-fav" aria-pressed={favs.some((x) => x.link === a.link)} aria-label="Salvar concurso" onClick={() => alternarFav(a)}>{favs.some((x) => x.link === a.link) ? '⭐' : '☆'}</button>
             <button className="abertos-item" onClick={() => onEscolher(a)}>
               <span className="abertos-tit">{a.titulo}</span>
               <span className="nota">{a.uf} · {a.area} · {a.tipo === 'selecao' ? 'seleção' : 'concurso'}{a.data ? ` · ${new Date(a.data).toLocaleDateString('pt-BR')}` : ''}</span>

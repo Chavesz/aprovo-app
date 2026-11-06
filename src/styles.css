@@ -965,3 +965,5 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
   .topo .marca span, .topo .marca-texto { font-size: 1rem; }
 }
 .batalha-codigo input::placeholder { text-transform: none; letter-spacing: 0; }
+.abertos-li { display: flex; gap: 6px; align-items: stretch; }
+.abertos-fav { flex: 0 0 44px; border: 1px solid var(--linha); border-radius: 12px; background: var(--papel); font-size: 1.2rem; cursor: pointer; }
