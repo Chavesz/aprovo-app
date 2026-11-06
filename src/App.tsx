@@ -309,6 +309,18 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
             </button>
           ))}
         </nav>
+        {(() => {
+          // Sequência de dias estudando (a chama apaga se passar um dia sem responder nada).
+          const dias = new Set(historico.map((h) => diaChave(h.em)));
+          let seq = 0;
+          for (let d = dias.has(diaChave(Date.now())) ? 0 : 1; dias.has(diaChave(Date.now() - d * 86400000)); d++) seq++;
+          const hoje = dias.has(diaChave(Date.now()));
+          return (
+            <span className={`chama ${hoje ? 'acesa' : ''}`} title={hoje ? `${seq} dias seguidos estudando` : seq ? `Responda 1 questão hoje para manter os ${seq} dias` : 'Comece sua sequência hoje'}>
+              🔥 <b className="mono">{seq}</b>
+            </span>
+          );
+        })()}
         {cargo && (
           <button
             className="conta-btn"

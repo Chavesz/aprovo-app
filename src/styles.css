@@ -952,3 +952,16 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
 .convite-card { margin-top: 20px; padding: 16px; border: 2px solid var(--acento); border-radius: 14px; display: grid; gap: 10px; }
 .convite-card p { margin: 0; }
 .convite-barra { height: 8px; background: var(--papel-2); border-radius: 99px; overflow: hidden; } .convite-barra span { display: block; height: 100%; background: var(--acento); }
+.melhor-dia { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 14px; background: linear-gradient(135deg, var(--acao, #ffd43b), color-mix(in srgb, var(--acao, #ffd43b) 55%, var(--papel))); color: #2a1f3d; margin: 8px 0 14px; }
+.melhor-dia.vazio { background: var(--papel-2); color: var(--tinta-2); }
+.melhor-dia-medalha { font-size: 2rem; }
+.melhor-dia small { display: block; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; font-weight: 700; }
+.melhor-dia strong { font-size: 1.15rem; margin-right: 6px; }
+.chama { display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; min-height: 36px; border-radius: 99px; border: 1px solid var(--linha); font-size: .9rem; filter: grayscale(1); opacity: .7; flex-shrink: 0; }
+.chama.acesa { filter: none; opacity: 1; border-color: #ff9f43; background: color-mix(in srgb, #ff9f43 14%, transparent); }
+@media (max-width: 440px) {
+  .topo .conta-btn[title] { display: none; }
+  .chama { padding: 0 8px; min-height: 32px; }
+  .topo .marca span, .topo .marca-texto { font-size: 1rem; }
+}
+.batalha-codigo input::placeholder { text-transform: none; letter-spacing: 0; }

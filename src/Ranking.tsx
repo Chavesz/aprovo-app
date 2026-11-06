@@ -171,6 +171,17 @@ export default function Ranking({ conta }: { conta: Conta }) {
         )}
       </h1>
 
+      {(() => {
+        // Melhor do dia: quem mais acertou hoje (no recorte escolhido).
+        const top = [...todos].filter((l) => l.acertosHoje > 0).sort((a, b) => b.acertosHoje - a.acertosHoje)[0];
+        if (!top) return <p className="melhor-dia vazio">🏅 Ninguém pontuou hoje ainda. O primeiro acerto do dia já te coloca em destaque.</p>;
+        return (
+          <p className="melhor-dia">
+            <span className="melhor-dia-medalha" aria-hidden>🏅</span>
+            <span><small>Melhor do dia</small><strong>{top.eu ? 'Você!' : top.nome}</strong> {top.acertosHoje} acertos em {top.hoje} questões hoje</span>
+          </p>
+        );
+      })()}
       <div className="ranking-abas ranking-recorte" role="group" aria-label="Quem entra no ranking">
         <button className="ranking-aba" aria-pressed={recorte === 'brasil'} onClick={() => setRecorte('brasil')}>Brasil</button>
         {meuConcurso && <button className="ranking-aba" aria-pressed={recorte === 'concurso'} onClick={() => setRecorte('concurso')}>{meuConcurso.length > 22 ? meuConcurso.slice(0, 21) + '…' : meuConcurso}</button>}
