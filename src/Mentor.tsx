@@ -768,8 +768,10 @@ export function PlanoDeHoje({ questoes, historico, onPraticar, onMentor }: { que
           </li>
         ))}
       </ol>
-      <Foco />
-      <button className="link" onClick={onMentor}>Falar com o Mentor</button>
+      <div className="hoje-rodape">
+        <Foco />
+        <button className="link" onClick={onMentor}>Falar com o Mentor</button>
+      </div>
     </section>
   );
 }

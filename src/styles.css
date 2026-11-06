@@ -1011,3 +1011,4 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
   .hoje + .meta-dia { margin-top: 0; border-top: 0; border-radius: 0 0 16px 16px; grid-template-columns: auto 1fr; padding: 8px 12px; }
   .hoje-blocos li { padding: 6px 8px; }
 }
+.hoje-rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }

@@ -165,7 +165,7 @@ export default function Batalha({ questoes, codigoInicial, titulo, onResponder }
       {meu?.fim && (
         <div className="batalha-fim">
           <p><strong>Você fez {acertos(meu)} de {dados.ids.length}</strong> em {mmss(tempo(meu))}.</p>
-          {todosTerminaram ? <p>{placar[0][0] === dados.eu ? 'Vitória! 🏆' : `${placar[0][1].nome} venceu. Bora a revanche?`}</p> : <p className="nota">Esperando os outros terminarem. O placar atualiza sozinho.</p>}
+          {todosTerminaram ? <p>{placar[0][0] === dados.eu ? 'Vitória! 🏆' : `${placar[0][1].nome} venceu. Bora a revanche? Toque em Revanche e mande o novo link.`}</p> : <p className="nota">Esperando os outros terminarem. O placar atualiza sozinho.</p>}
           <div className="linha-botoes">
             <button className="btn" onClick={() => {
               // Resultado em quadradinhos (🟩 acerto, 🟥 erro), sem revelar as questões.
@@ -177,7 +177,8 @@ Consegue me passar?`;
               if (navigator.share) navigator.share({ text: texto, url: link }).catch(() => undefined);
               else window.open(`https://wa.me/?text=${encodeURIComponent(`${texto} ${link}`)}`, '_blank');
             }}>Compartilhar resultado</button>
-            <button className="btn btn-sec" onClick={() => { setDados(null); setJogando(false); }}>Nova batalha</button>
+            {!/^D\d{6}$/.test(dados.codigo) && <button className="btn btn-sec" disabled={criando} onClick={async () => { const n = dados.ids.length; setJogando(false); await criar(n); }}>{criando ? 'Montando…' : 'Revanche'}</button>}
+            <button className="link" onClick={() => { setDados(null); setJogando(false); }}>Nova batalha</button>
           </div>
         </div>
       )}
