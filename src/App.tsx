@@ -1,15 +1,16 @@
 import Mentor, { PlanoDeHoje, resolverDisciplina, type PerfilMentor } from './Mentor';
 import Comecar from './Comecar';
 import Autorais from './Autorais';
-import Batalha from './Batalha';
-import Descobrir from './Descobrir';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+// Abas fora do Praticar só baixam quando o aluno abre (o app abre mais rápido no celular).
+const Batalha = lazy(() => import('./Batalha'));
+const Descobrir = lazy(() => import('./Descobrir'));
+const Edital = lazy(() => import('./Edital'));
+const Ranking = lazy(() => import('./Ranking'));
 import type { Filtros, ProvaFeita, Questao, Resposta } from './types';
 import { usePersist } from './store';
 import { comandoExibido, md } from './md';
-import Edital from './Edital';
 import Login from './Login';
-import Ranking from './Ranking';
 import { baixar, contaSalva, enviar, sairDaConta, type Conta } from './nuvem';
 
 type Aba = 'mentor' | 'concursos' | 'praticar' | 'simulado' | 'edital' | 'desempenho' | 'revisar';
@@ -124,7 +125,9 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
     confirm('Anular esta questão? Ela sai do banco e, se você errou, o ponto volta para a sua nota.') &&
     setMinhasAnuladas((l) => (l.includes(id) ? l : [...l, id]));
   // Cargo da prova: muda só os conhecimentos específicos (Português, Informática e Gerais valem para os dois).
-  const [cargo, setCargo] = usePersist<Cargo | ''>('cq:cargo', /^kaua/.test(conta.usuario) ? 'ACE' : '');
+  const [cargo, setCargo] = usePersist<Cargo | ''>('cq:cargo', /^kaua/.test(conta.usuario) ? 'ACE' : 'OUTRO');
+  // O seletor antigo de cargo (ACE/ACS de Cuité) atrasava o onboarding: agora o concurso vem do Mentor e o padrão é "Outro".
+  useEffect(() => { if (!cargo) setCargo('OUTRO'); }, [cargo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     carregarDificeis();
@@ -142,7 +145,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       .then((partes) => {
         setOficiais(partes.flat());
         // Os bancos grandes (Cebraspe, OAB e ENEM, ~1,8 MB comprimidos) entram depois que o app já abriu.
-        return Promise.all(['/data/cebraspe.json', '/data/oab.json', '/data/questoes.json'].map(opcional)).then((ps) => ps.flat()).then((c) => c.length && setOficiais((v) => { const ja = new Set((v ?? []).map((q) => q.id)); return [...(v ?? []), ...c.filter((q) => !ja.has(q.id))]; })).finally(() => setCarregandoMais(false));
+        return new Promise((ok) => setTimeout(ok, 1500)).then(() => Promise.all(['/data/cebraspe.json', '/data/oab.json', '/data/questoes.json'].map(opcional)).then((ps) => ps.flat()).then((c) => c.length && setOficiais((v) => { const ja = new Set((v ?? []).map((q) => q.id)); return [...(v ?? []), ...c.filter((q) => !ja.has(q.id))]; })).finally(() => setCarregandoMais(false)));
       })
       .catch(() => setErro(true));
   }, []);
@@ -357,23 +360,13 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
       </header>
 
       <main className="conteudo">
+        <Suspense fallback={<p className="nota coluna">Carregando…</p>}>
         {aviso && (
           <p className="aviso-nota ok aviso-pro" role="status">
             {aviso} <button className="link" onClick={() => setAvisoPro('')}>Fechar</button>
           </p>
         )}
         {questoes && comecar && <Comecar key={diagnostico ? 'diag' : 'ini'} inicial={diagnostico ? perfil : null} questoes={questoes} selecionar={(p) => doConcurso(questoes, p)} onResponder={registrar} onPronto={salvarPerfil} onPular={() => { setPulouComecar(true); setEmConversa(false); setDiagnostico(false); }} onIr={(a) => { setEmConversa(false); setDiagnostico(false); setAba(a); scrollTo(0, 0); }} />}
-        {!cargo && !comecar && (
-          <div className="escolha-cargo" role="dialog" aria-label="Escolha o cargo">
-            <p className="rotulo">Para qual concurso você está estudando?</p>
-            <p className="nota">As questões de conhecimentos específicos mudam conforme o cargo. Dá para trocar depois no topo.</p>
-            {(Object.keys(CARGOS) as Cargo[]).map((c) => (
-              <button key={c} className="btn" onClick={() => setCargo(c)}>
-                {c === 'OUTRO' ? CARGOS[c] : `${c} · ${CARGOS[c]}`}
-              </button>
-            ))}
-          </div>
-        )}
         {erro && <p className="aviso">Não foi possível carregar o banco de questões. Recarregue a página.</p>}
         {!questoes && !erro && <Carregando />}
         {questoes && !comecar && aba === 'praticar' && (
@@ -503,6 +496,7 @@ function Painel({ conta, onSair }: { conta: Conta; onSair: () => void }) {
           />
         )}
         <Paywall />
+        </Suspense>
       </main>
     </div>
   );

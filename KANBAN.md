@@ -208,3 +208,8 @@ _Reordenado em 04/11/2026 pela crítica de conversão (`notas/design/critica-202
 - [x] Paywall: ao bater o limite grátis de IA (429) abre aviso com o que o Pro libera e botão "Ver o Pro"
 - [x] Tabela Grátis × Pro atualizada (autorais, comentário com a lei, batalhas/liga grátis)
 - Já existia: e-mail de boas-vindas (Resend, ao criar conta com e-mail)
+
+### Lote 33 (feito) — velocidade e onboarding
+- [x] Batalha, Ranking, Concursos e Edital carregam sob demanda (JS inicial 106 → 91 KB gzip)
+- [x] Bancos grandes (Cebraspe/OAB/ENEM) começam a baixar 1,5 s depois, sem disputar a primeira tela
+- [x] Removido o seletor antigo de cargo (ACE/ACS) que aparecia depois do Mentor: um passo a menos no onboarding
