@@ -1053,3 +1053,32 @@ h1, h2, h3 { font-family: var(--serif); letter-spacing: -0.02em; }
   .app .topo .aba[aria-current='page'] { color: var(--acento); font-weight: 700; }
   .app .topo .aba .contador { margin-left: auto; }
 }
+
+/* ---------- Polimento visual 11/2026: superfícies com profundidade, menu com destaque, cantos e sombras mais suaves ---------- */
+:root { --raio: 12px; --sombra: 0 1px 2px rgba(42,31,61,.06), 0 8px 24px -16px rgba(42,31,61,.28); --brilho: color-mix(in srgb, var(--acento) 10%, transparent); }
+:root[data-theme='dark'] { --sombra: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 28px -18px rgba(0,0,0,.8); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --sombra: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 28px -18px rgba(0,0,0,.8); } }
+body { background: radial-gradient(900px 500px at 100% -10%, var(--brilho), transparent 70%) no-repeat, var(--papel); background-attachment: fixed; }
+.topo { background: var(--papel); }
+.titulo { font-weight: 700; letter-spacing: -0.03em; }
+.subtitulo { font-weight: 700; letter-spacing: -0.01em; }
+.sobretitulo { color: var(--acento); font-weight: 700; }
+.btn { border-radius: 10px; font-weight: 700; box-shadow: 0 1px 0 rgba(0,0,0,.06), inset 0 -2px 0 rgba(0,0,0,.08); transition: transform .15s var(--ease), box-shadow .2s, filter .2s; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-sec { box-shadow: none; }
+.filtros, .cartao, .painel-gerar, .alt { background: var(--superficie); }
+.filtros, .cartao, .painel-gerar { box-shadow: var(--sombra); }
+.cartao { border-radius: 16px; }
+.alt { border-radius: 12px; }
+.alt:not(:disabled):hover { border-color: var(--acento); box-shadow: 0 0 0 3px var(--brilho); }
+.bloco { border-color: var(--linha); border-radius: 16px; background: var(--superficie); box-shadow: var(--sombra); }
+select, input[type='text'], input[type='password'], textarea { border-radius: 10px; background-color: var(--superficie); }
+.chip { border-radius: 999px; background: var(--superficie); }
+@media (min-width: 1000px) {
+  .app .topo .abas { background: var(--superficie); box-shadow: 1px 0 0 var(--linha); }
+  .app .topo .aba { color: var(--tinta-2); transition: background .15s, color .15s; }
+  .app .topo .aba:hover { background: var(--papel-2); color: var(--tinta); }
+}
+.app .topo .aba[aria-current='page'] { background: var(--brilho); color: var(--acento); box-shadow: inset 3px 0 0 var(--acento); }
+@media (max-width: 999px) { .app .topo .abas { background: var(--superficie); } }
+.marca-selo { color: transparent; overflow: hidden; }

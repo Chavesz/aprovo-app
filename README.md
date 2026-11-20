@@ -1,6 +1,20 @@
-# Aprovô — questões para o seu edital
+# Aprovô — mentor com IA para concursos
 
-App web para estudar para concursos: questões oficiais com filtros, simulado cronometrado, **questões geradas por IA a partir do seu edital (por texto ou voz)** e um painel de desempenho completo. Mobile-first, modo claro e escuro; o progresso fica salvo no navegador.
+Um mentor com IA para quem vai fazer concurso: ele conversa com você sobre o concurso, a banca e o tempo que você tem, aplica um diagnóstico de 10 questões e monta o plano de estudo até a prova. Por baixo, um app completo de questões com gabarito, simulado cronometrado, questões geradas por IA a partir do edital (texto ou voz) e painel de desempenho. Mobile-first, com modo claro e escuro.
+
+Site: [aprovoapp.netlify.app/aprovo](https://aprovoapp.netlify.app/aprovo)
+
+![Landing do Aprovô no desktop](docs/landing-desktop.png)
+
+| Landing (claro) | Landing no celular |
+| --- | --- |
+| ![Landing clara](docs/landing-desktop-claro.png) | <img src="docs/landing-mobile.jpg" width="280" alt="Landing no celular" /> |
+
+| App: Praticar (desktop) | App: Mentor (celular) |
+| --- | --- |
+| ![Praticar no desktop](docs/app-praticar-desktop.jpg) | <img src="docs/app-mentor-mobile.jpg" width="280" alt="Mentor no celular" /> |
+
+<details><summary>Prints anteriores</summary>
 
 | Meu edital (celular) | Painel de desempenho (desktop, escuro) |
 | --- | --- |
@@ -10,9 +24,7 @@ App web para estudar para concursos: questões oficiais com filtros, simulado cr
 | --- | --- |
 | ![Praticar](docs/praticar-desktop.jpg) | ![Simulado](docs/simulado-desktop.jpg) |
 
-| Celular, modo escuro | Desempenho no celular |
-| --- | --- |
-| <img src="docs/praticar-mobile-escuro.jpg" width="280" alt="Praticar no celular, modo escuro" /> | <img src="docs/desempenho-mobile.jpg" width="280" alt="Desempenho no celular" /> |
+</details>
 
 ## Funcionalidades
 

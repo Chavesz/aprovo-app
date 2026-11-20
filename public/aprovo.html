@@ -90,7 +90,30 @@ footer{color:var(--tinta2);font-size:.88rem;padding-top:28px}
 .mov .diag i{opacity:0;transform:scale(.85);transition:opacity .3s,transform .3s var(--ease);transition-delay:var(--d,0s)}.mov .diag.ve i{opacity:1;transform:none}
 .mov .lp-hero a.cta::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-120%);animation:lp-brilho 7s var(--ease) 2.5s infinite}
 @keyframes lp-brilho{0%{transform:translateX(-120%)}14%,100%{transform:translateX(120%)}}
-}</style></head><body><main>
+}
+/* Polimento visual 2026-11: profundidade, ritmo e cartões */
+body{background:radial-gradient(1100px 620px at 85% -8%,color-mix(in srgb,var(--marca) 16%,transparent),transparent 70%),radial-gradient(800px 500px at -10% 30%,color-mix(in srgb,var(--acao) 10%,transparent),transparent 70%),var(--bg);background-repeat:no-repeat}
+nav{position:sticky;top:0;z-index:20;margin:-20px -16px 24px;padding:14px 16px;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid color-mix(in srgb,var(--linha) 60%,transparent)}
+nav .entrar{background:var(--sup);transition:border-color .2s}nav .entrar:hover{border-color:var(--marca)}
+.lp .rotulo b{background:color-mix(in srgb,var(--marca) 14%,transparent);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.tel{border-radius:28px;box-shadow:0 1px 0 color-mix(in srgb,#fff 40%,transparent) inset,0 50px 100px -50px color-mix(in srgb,var(--marca) 70%,#000),0 0 0 8px color-mix(in srgb,var(--marca) 7%,transparent)}
+.lp-prova{border:1px solid var(--linha);border-radius:20px;background:color-mix(in srgb,var(--sup) 80%,transparent);overflow:hidden}
+.lp-prova div{padding:22px 20px}.lp-prova div+div{padding-left:20px}@media (max-width:759px){.lp-prova div:nth-child(3){padding-left:20px}}
+.lp-prova strong{color:var(--marca);font-size:clamp(1.4rem,3vw,1.9rem)}.lp-prova strong span{font-size:inherit;color:inherit}
+.cartao{border-radius:22px;box-shadow:0 30px 60px -45px color-mix(in srgb,var(--marca) 60%,#000)}
+.passo{border-top:0;padding:28px 0}.passo+.passo{border-top:1px dashed var(--linha)}
+.passo-n{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;font-size:1.8rem;background:color-mix(in srgb,var(--marca) 12%,transparent);margin-bottom:14px}
+.recursos{gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}@media (min-width:880px){.recursos{grid-template-columns:repeat(2,1fr);column-gap:14px}}
+.recursos li{border:1px solid var(--linha);border-radius:18px;padding:20px;background:var(--sup);transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.recursos li:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--marca) 50%,var(--linha));box-shadow:0 24px 40px -32px color-mix(in srgb,var(--marca) 70%,#000)}
+.recursos li>span{display:grid;place-items:center;width:30px;height:30px;padding:0;border-radius:10px;background:var(--acao);color:var(--acaot);font-size:.8rem}
+.preco-bloco{border:1px solid transparent;background:linear-gradient(var(--sup),var(--sup)) padding-box,linear-gradient(135deg,var(--marca),var(--acao)) border-box;box-shadow:0 40px 80px -50px color-mix(in srgb,var(--marca) 80%,#000)}
+.lp-final{border:0;border-radius:28px;padding:56px 24px;margin-top:40px;text-align:center;background:radial-gradient(600px 300px at 50% 0%,color-mix(in srgb,var(--acao) 22%,transparent),transparent),linear-gradient(160deg,var(--marca),color-mix(in srgb,var(--marca) 55%,#000));color:#fff}
+.lp-final h2{color:#fff;margin-left:auto;margin-right:auto}.lp-final p,.lp-final .selo{color:#eee7fb;justify-content:center}.lp-final a.sec{color:#fff}
+@media (prefers-color-scheme:dark){.lp-final{background:radial-gradient(600px 300px at 50% 0%,color-mix(in srgb,var(--acao) 14%,transparent),transparent),linear-gradient(160deg,#3a2763,#1c1a22)}}
+.faq details{border:1px solid var(--linha);border-radius:14px;padding:4px 18px;margin:10px 0;background:var(--sup)}
+.prints img{border-radius:28px}
+</style></head><body><main>
 <nav><a class="marca" href="/aprovo"><img src="/icons/icone.svg" alt="" width="34" height="34">Aprovô</a><a href="/concursos/">Questões</a><a class="entrar" href="/?entrar=1">Entrar</a></nav><div class="lp"><div class="lp-hero"><div><p class="rotulo"><b>Mentor com IA</b> para concursos públicos</p>
 <h1>Um plano até a prova, feito <em>para o seu concurso</em>.</h1>
 <p class="lead">Você conta qual concurso, a banca e quanto tempo tem. O mentor faz um diagnóstico de 10 questões e devolve o que estudar em cada dia, em minutos.</p>
@@ -99,9 +122,9 @@ footer{color:var(--tinta2);font-size:.88rem;padding-top:28px}
 <div class="tel" aria-label="Exemplo de conversa com o mentor"><div class="tel-topo"><img src="/icons/icone.svg" alt="" width="30" height="30"><div><strong>Mentor Aprovô</strong><small>online</small></div></div>
 <div class="bal"><p class="ia">Oi! Para qual concurso você está estudando?</p><p class="eu">INSS, técnico. Banca Cebraspe.</p><p class="ia">O edital já saiu ou você está se adiantando? E quantas horas por dia consegue estudar?</p><p class="eu">Ainda não saiu. Tenho 2h por dia.</p><p class="ia">Perfeito. Antes do plano, vamos a um diagnóstico rápido de 10 questões para eu ver seus pontos fortes.</p>
 <div class="chips"><span>Começar diagnóstico</span><span>Ver concursos abertos</span></div></div></div></div>
-<div class="lp-prova"><div><strong class="num" data-n="11033">11.033</strong><span>questões com gabarito</span></div><div><strong>Cebraspe, FGV</strong><span>Consulplan, EDUCA e outras bancas</span></div><div><strong><span class="num" data-n="10">10</span> min</strong><span>para o plano ficar pronto</span></div><div><strong>Sem fidelidade</strong><span>Pix ou cartão, cancele quando quiser</span></div></div><div class="lp-faixa" hidden aria-label="Concursos com inscrição aberta agora"><span class="lp-faixa-rot">Abertos agora</span><div class="lp-faixa-trilho"></div></div>
+<div class="lp-prova"><div><strong class="num" data-n="11033">11.033</strong><span>questões com gabarito</span></div><div><strong>Cebraspe, FGV</strong><span>Consulplan, EDUCA e outras bancas</span></div><div><strong><span class="num" data-n="10">10</span> questões</strong><span>no diagnóstico antes do plano</span></div><div><strong>Sem fidelidade</strong><span>Pix ou cartão, cancele quando quiser</span></div></div><div class="lp-faixa" hidden aria-label="Concursos com inscrição aberta agora"><span class="lp-faixa-rot">Abertos agora</span><div class="lp-faixa-trilho"></div></div>
 
-<section id="como"><p class="rotulo"><b>01</b> Como funciona</p><h2>Dez minutos de conversa. Um plano até o dia da prova.</h2>
+<section id="como"><p class="rotulo"><b>01</b> Como funciona</p><h2>Uma conversa curta. Um plano até o dia da prova.</h2>
 <div class="passo"><div class="passo-txt"><span class="passo-n">1</span><h3>O mentor conhece você</h3><p>Concurso, banca, se o edital saiu, data da prova, seu nível, horas por dia e as matérias que você domina ou trava. Sem formulário: é uma conversa.</p></div>
 <div class="cartao bal"><p class="ia">Quais matérias você sente mais dificuldade?</p><p class="eu">Raciocínio lógico e Direito Previdenciário. Português eu vou bem.</p><p class="ia">Anotado. Vou dar mais peso a essas duas no seu plano.</p></div></div>
 <div class="passo"><div class="passo-txt"><span class="passo-n">2</span><h3>Mostra quem está com inscrição aberta</h3><p>Se você ainda não escolheu, o mentor lista os concursos com inscrições abertas agora, com prazo e banca, para você decidir com informação.</p></div>
